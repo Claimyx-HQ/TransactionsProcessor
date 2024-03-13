@@ -7,21 +7,28 @@ class TransactionMathcher:
     # Return matching and unmatched transactions
     def find_matched_unmatched(
         self, bank_transactions: List[float], system_transactions: List[float]
-    ) -> Tuple[list[float], list[float]]:
+    ) -> Tuple[list[float], list[float], list[float]]:
         matches = []
-        bank_amounts = np.array(bank_transactions)
-        system_amounts = np.array(system_transactions)
-        for bank_amount in bank_amounts:
-            match = np.where(system_amounts == bank_amount)
-            if match[0].size > 0:
-                matches.append(bank_amount)
-                system_amounts = np.delete(system_amounts, match[0][0])
-        unmatched = np.setdiff1d(bank_amounts, matches)
-        return matches, unmatched
+        unmatched_bank_amounts = []
+        unmatched_system_amounts = []
+        bank_amounts = set(bank_transactions)
+        system_amounts = set(system_transactions)
+
+        for amount in bank_amounts:
+            if amount in system_amounts:
+                matches.append(amount)
+            else:
+                unmatched_bank_amounts.append(amount)
+
+        for amount in system_amounts:
+            if amount not in bank_amounts:
+                unmatched_system_amounts.append(amount)
+
+        return matches, unmatched_bank_amounts, unmatched_system_amounts
 
     def find_reconciling_matches(
         self, bank_transactions: List[float], system_transactions: List[float]
-    ) -> Dict[float, List[float]]:
+    ) -> Tuple[Dict[float, List[float]], List[float], List[float]]:
         logger = logging.getLogger(__name__)
 
         def find_matches_n_sum(
@@ -123,9 +130,7 @@ class TransactionMathcher:
 
             logger.info(f"new matches: {matches}")
 
-        #
-        #
-        return validated_matches
+        return validated_matches, bank_transactions, system_transactions
 
     def _validate_transactions_possibility(
         self, amounts: List[float], possibilities: Dict[float, int]

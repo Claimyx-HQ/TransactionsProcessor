@@ -1,9 +1,10 @@
 import pandas as pd
 import xlsxwriter
 
+from transactions_process_service.schemas.transaction import Transaction
+
 
 class ExcelController:
-
     def create_transaction_excel(
         self,
         sorted_transactions,
@@ -18,7 +19,9 @@ class ExcelController:
             bank_name=bank_name,
             system_name=system_name,
         )
-        self._write_data(sorted_transactions, workbook, worksheet, green_format, color_formats)
+        self._write_data(
+            sorted_transactions, workbook, worksheet, green_format, color_formats
+        )
         workbook.close()
 
     # Private methods
@@ -100,61 +103,120 @@ class ExcelController:
 
     def _write_data(self, data_dict, workbook, worksheet, green_format, color_formats):
         # Example of writing data with formatting - you'll need to adapt this to your data structure
-        def _write_transaction(worksheet, row_index, column_start_index, transaction, format=None):
+        def _write_transaction(
+            worksheet,
+            row_index,
+            column_start_index,
+            transaction: Transaction,
+            format=None,
+        ):
             print(transaction)
-            uid, date, description, amount = transaction.values()
-            worksheet.write(row_index, 0 + column_start_index, uid, format) 
-            worksheet.write(row_index, 1 + column_start_index, date, format) 
-            worksheet.write(row_index, 2 + column_start_index, description, format) 
-            worksheet.write(row_index, 3 + column_start_index, amount, format) 
+
+            worksheet.write(row_index, 0 + column_start_index, transaction.uuid, format)
+            worksheet.write(row_index, 1 + column_start_index, transaction.date, format)
+            worksheet.write(
+                row_index, 2 + column_start_index, transaction.description, format
+            )
+            worksheet.write(
+                row_index, 3 + column_start_index, transaction.amount, format
+            )
 
         def _get_full_transaction_by_amount(transaction_list, amount):
             for transaction in transaction_list:
                 if transaction["amount"] == amount:
                     transaction_list.pop(transaction_list.index(transaction))
                     return transaction
-        
+
         system_row_index, bank_row_index = 3, 3
         multi_to_one_color_index = 0
         system_start_col_index, bank_start_col_index = 0, 5
         system_transactions = data_dict["transactions"]["system"]
         bank_transactions = data_dict["transactions"]["bank"]
-        print(f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}")
+        print(
+            f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+        )
 
-        color_formats = {index: workbook.add_format({"bg_color": value}) for index, (key, value) in enumerate(color_formats.items())}
-                
+        color_formats = {
+            index: workbook.add_format({"bg_color": value})
+            for index, (key, value) in enumerate(color_formats.items())
+        }
+
         for key, values in data_dict["matches"].items():
             print(f"{key}: {values}")
             if key == "one_to_one":
                 for value in values:
-                    _write_transaction(worksheet, system_row_index, system_start_col_index, _get_full_transaction_by_amount(system_transactions, value), format=green_format)
-                    _write_transaction(worksheet, bank_row_index, bank_start_col_index, _get_full_transaction_by_amount(bank_transactions, value), format=green_format)
+                    _write_transaction(
+                        worksheet,
+                        system_row_index,
+                        system_start_col_index,
+                        _get_full_transaction_by_amount(system_transactions, value),
+                        format=green_format,
+                    )
+                    _write_transaction(
+                        worksheet,
+                        bank_row_index,
+                        bank_start_col_index,
+                        _get_full_transaction_by_amount(bank_transactions, value),
+                        format=green_format,
+                    )
                     system_row_index += 1
                     bank_row_index += 1
-                print(f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}")
+                print(
+                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
             elif key == "multi_to_one":
                 for bank_transaction, system_combination_transactions in values.items():
                     if multi_to_one_color_index >= len(color_formats):
                         multi_to_one_color_index = 0
-                    _write_transaction(worksheet, bank_row_index, bank_start_col_index, _get_full_transaction_by_amount(bank_transactions, amount=bank_transaction), format=color_formats[multi_to_one_color_index])
+                    _write_transaction(
+                        worksheet,
+                        bank_row_index,
+                        bank_start_col_index,
+                        _get_full_transaction_by_amount(
+                            bank_transactions, amount=bank_transaction
+                        ),
+                        format=color_formats[multi_to_one_color_index],
+                    )
                     bank_row_index += 1
-                    for transaction in system_combination_transactions: 
-                        _write_transaction(worksheet, system_row_index, system_start_col_index, _get_full_transaction_by_amount(system_transactions, amount=transaction), color_formats[multi_to_one_color_index])
+                    for transaction in system_combination_transactions:
+                        _write_transaction(
+                            worksheet,
+                            system_row_index,
+                            system_start_col_index,
+                            _get_full_transaction_by_amount(
+                                system_transactions, amount=transaction
+                            ),
+                            color_formats[multi_to_one_color_index],
+                        )
                         system_row_index += 1
                     multi_to_one_color_index += 1
-                print(f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}")
+                print(
+                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
             elif key == "unmatched_system":
                 for value in values:
-                    _write_transaction(worksheet, system_row_index, system_start_col_index, _get_full_transaction_by_amount(system_transactions, value))
+                    _write_transaction(
+                        worksheet,
+                        system_row_index,
+                        system_start_col_index,
+                        _get_full_transaction_by_amount(system_transactions, value),
+                    )
                     system_row_index += 1
-                print(f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}")
+                print(
+                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
             elif key == "unmatched_bank":
                 print(f"bank_transactions: {bank_transactions}")
                 for value in values:
-                    _write_transaction(worksheet, bank_row_index, bank_start_col_index, _get_full_transaction_by_amount(bank_transactions, value))
+                    _write_transaction(
+                        worksheet,
+                        bank_row_index,
+                        bank_start_col_index,
+                        _get_full_transaction_by_amount(bank_transactions, value),
+                    )
                     bank_row_index += 1
-                print(f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}")
+                print(
+                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
             else:
                 raise ValueError(f"Unknown key: {key}")
-
-        

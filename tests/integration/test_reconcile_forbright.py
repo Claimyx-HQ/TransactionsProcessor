@@ -1,0 +1,61 @@
+from transactions_process_service.services.parsers.system_parsers.system_parser import (
+    PharmBillsParser,
+)
+from transactions_process_service.services.parsers.bank_parsers.forbright_bank_parser import (
+    ForbrightBankParser,
+)
+from transactions_process_service.services.transaction_matcher import (
+    TransactionMathcher,
+)
+
+from transactions_process_service.services.excel_creator import ExcelController
+
+
+def test_reconcile_forbright_bank():
+    bank_file_path = "tests/data/forbright_bank.pdf"
+    system_file_path = "tests/data/bankst.xls"
+    workbook_name = "tests/output_tests_data/transactions_output.xlsx"
+    bank_name = "Bank"
+    system_name = "PharmBills System"
+    transaction_matcher = TransactionMathcher()
+    bank_parser = ForbrightBankParser()
+    system_parser = PharmBillsParser()
+    excel_controller = ExcelController()
+
+    bank_transactions = bank_parser.parse_transactions(bank_file_path)
+    system_transactions = system_parser.parse_transactions(system_file_path)
+
+    (
+        perfect_matches,
+        unmatched_bank_amounts,
+        unmatched_system_amounts,
+    ) = transaction_matcher.find_matched_unmatched(
+        [t.amount for t in bank_transactions], [t.amount for t in system_transactions]
+    )
+
+    (
+        matches,
+        unmatched_bank_amounts,
+        unmatched_system_amounts,
+    ) = transaction_matcher.find_reconciling_matches(
+        unmatched_bank_amounts, unmatched_system_amounts
+    )
+
+    data = {
+        "transactions": {
+            "system": system_transactions,
+            "bank": bank_transactions,
+        },
+        "matches": {
+            "one_to_one": perfect_matches,
+            "multi_to_one": matches,
+            "unmatched_system": unmatched_system_amounts,
+            "unmatched_bank": unmatched_bank_amounts,
+        },
+    }
+
+    excel_controller.create_transaction_excel(
+        data, workbook_name, bank_name, system_name
+    )
+
+    assert True

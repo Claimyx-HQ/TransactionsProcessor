@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse
 
 
 router = APIRouter()
-some_file_path = "README.md"
+some_file_path = "tests/data/bankst.xls"
 
 
 @router.post(
@@ -18,6 +18,7 @@ some_file_path = "README.md"
 async def process_transactions(
     system_file: Annotated[bytes, File()], bank_file: Annotated[bytes, File()]
 ):
+    # return {"info": "OK"}
     return FileResponse(some_file_path)
 
 
