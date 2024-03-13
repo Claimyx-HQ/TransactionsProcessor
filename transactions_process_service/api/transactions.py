@@ -79,4 +79,4 @@ async def process_transactions(system_file: UploadFile, bank_file: UploadFile):
         data, workbook_name, bank_name, system_name
     )
 
-    return FileResponse(bank_file_path)
+    return FileResponse(workbook_name)

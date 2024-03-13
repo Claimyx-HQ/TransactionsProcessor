@@ -113,7 +113,12 @@ class ExcelController:
             print(transaction)
 
             worksheet.write(row_index, 0 + column_start_index, transaction.uuid, format)
-            worksheet.write(row_index, 1 + column_start_index, transaction.date, format)
+            worksheet.write(
+                row_index,
+                1 + column_start_index,
+                transaction.date.strftime("%m-%d-%Y"),
+                format,
+            )
             worksheet.write(
                 row_index, 2 + column_start_index, transaction.description, format
             )
