@@ -54,3 +54,19 @@ class UnitedBankParser(FileParser):
             return True
         except ValueError:
             return False
+
+# Local Test
+        
+logging.basicConfig(
+    filename="united_bank_parser.log",
+    filemode="w",
+    format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG,
+)
+logger = logging.getLogger(__name__)
+logger.info("App started")
+file_path = "tests/data/united_bank.pdf"
+
+parser = UnitedBankParser()
+transactions = parser.parse_transactions(file_path)
+logger.info(transactions)
