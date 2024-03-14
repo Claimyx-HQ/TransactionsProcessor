@@ -75,7 +75,9 @@ def test_reconcile_forbright_bank():
             "unmatched_bank": unmatched_bank_amounts,
         },
     }
-
+    logger.debug(
+        f"Data for excel :one_to_one: {len(perfect_matches)},multi_to_one: {len(matches)},unmatched_system: {len(unmatched_system_amounts)}, unmatched_bank: {len(unmatched_bank_amounts)}"
+    )
     excel_controller.create_transaction_excel(
         data, workbook_name, bank_name, system_name
     )

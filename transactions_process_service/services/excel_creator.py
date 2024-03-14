@@ -51,9 +51,6 @@ class ExcelController:
         )
         green_format = workbook.add_format({"bg_color": "#C6EFCE"})
         color_formats_reversed = {
-            "silver": "#C0C0C0",  # Neutral, starting with it for contrast
-            "salmon": "#FA8072",
-            "light_coral": "#F08080",
             "pink": "#FFC0CB",
             "fuchsia": "#FF00FF",
             "purple": "#8A2BE2",
@@ -74,8 +71,7 @@ class ExcelController:
             "yellow": "#FFFF00",  # Added for completeness
             "gold": "#FFD700",
             "orange": "#FFA500",
-            "red": "#FF0000",
-            "maroon": "#800000",
+
         }
         return green_format, color_formats_reversed
 
@@ -113,7 +109,6 @@ class ExcelController:
 
     def _write_data(self, data_dict, workbook, worksheet, green_format, color_formats):
         # Example of writing data with formatting - you'll need to adapt this to your data structure
-        logger = logging.getLogger(__name__)
 
         def _write_transaction(
             worksheet,
@@ -147,6 +142,7 @@ class ExcelController:
                     transaction_list.pop(transaction_list.index(transaction))
                     return transaction
 
+        logger = logging.getLogger(__name__)
         system_row_index, bank_row_index = 3, 3
         multi_to_one_color_index = 0
         system_start_col_index, bank_start_col_index = 0, 5
@@ -161,6 +157,7 @@ class ExcelController:
             index: workbook.add_format({"bg_color": value})
             for index, (key, value) in enumerate(color_formats.items())
         }
+        logger.debug(data_dict["matches"].keys())
 
         for key, values in data_dict["matches"].items():
             logger.debug(f"key {key} with {len(values)} amount of values")
@@ -245,11 +242,11 @@ class ExcelController:
             else:
                 raise ValueError(f"Unknown key: {key}")
 
-            logger.debug("Finished writing all transactions")
-            logger.debug(
-                f"Finished len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
-            )
-            if len(system_transactions) != 0 and len(bank_transactions) != 0:
-                logger.debug(f"system_transactions: {system_transactions}")
-                logger.debug(f"bank_transactions: {bank_transactions}")
-                raise ValueError("There are still unmatched transactions")
+        logger.debug("Finished writing all transactions")
+        logger.debug(
+            f"Finished len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+        )
+        if len(system_transactions) != 0 and len(bank_transactions) != 0:
+            logger.debug(f"system_transactions: {system_transactions}")
+            logger.debug(f"bank_transactions: {bank_transactions}")
+            raise ValueError("There are still unmatched transactions")
