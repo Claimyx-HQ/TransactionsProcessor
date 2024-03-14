@@ -8,11 +8,11 @@ from transactions_process_service.services.transaction_matcher import (
 # TODO: Handle duplicates
 def test_find_matches():
     transaction_matcher = TransactionMathcher()
-    bank_amounts: List[float] = [100, 200, 300]
-    system_amounts: List[float] = [100, 200, 400]
-    expected_matched = [200, 100]
-    expected_unmatched_bank_amounts = [300]
-    expected_unmatched_system_amounts = [400]
+    bank_amounts: List[float] = [100, 200, 200, 300, 500]
+    system_amounts: List[float] = [100, 200, 300, 300, 400]
+    expected_matched = [100, 200, 300]
+    expected_unmatched_bank_amounts = [200, 500]
+    expected_unmatched_system_amounts = [300, 400]
 
     (
         matched,

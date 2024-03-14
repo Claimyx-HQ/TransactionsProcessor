@@ -11,18 +11,43 @@ class TransactionMathcher:
         matches = []
         unmatched_bank_amounts = []
         unmatched_system_amounts = []
-        bank_amounts = set(bank_transactions)
-        system_amounts = set(system_transactions)
+        bank_amounts = {}
+        system_amounts = {}
+        matched_amounts = set()
+
+        for amount in bank_transactions:
+            bank_amounts[amount] = bank_amounts.get(amount, 0) + 1
+
+        for amount in system_transactions:
+            system_amounts[amount] = system_amounts.get(amount, 0) + 1
 
         for amount in bank_amounts:
             if amount in system_amounts:
-                matches.append(amount)
+                if bank_amounts[amount] >= system_amounts[amount]:
+                    for i in range(bank_amounts[amount] - system_amounts[amount]):
+                        unmatched_bank_amounts.append(amount)
+                    for i in range(system_amounts[amount]):
+                        matches.append(amount)
+                    matched_amounts.add(amount)
+                elif bank_amounts[amount] < system_amounts[amount]:
+                    for i in range(system_amounts[amount] - bank_amounts[amount]):
+                        unmatched_system_amounts.append(amount)
+                    for i in range(bank_amounts[amount]):
+                        matches.append(amount)
+                    matched_amounts.add(amount)
             else:
-                unmatched_bank_amounts.append(amount)
+                for i in range(bank_amounts[amount]):
+                    unmatched_bank_amounts.append(amount)
+                matched_amounts.add(amount)
 
         for amount in system_amounts:
-            if amount not in bank_amounts:
-                unmatched_system_amounts.append(amount)
+            if amount not in matched_amounts:
+                for i in range(system_amounts[amount]):
+                    unmatched_system_amounts.append(amount)
+
+        print(f"matches: {matches}")
+        print(f"unmatched_bank_amounts: {unmatched_bank_amounts}")
+        print(f"unmatched_system_amounts: {unmatched_system_amounts}")
 
         return matches, unmatched_bank_amounts, unmatched_system_amounts
 

@@ -1,6 +1,9 @@
 import logging
 import pandas as pd
 import xlsxwriter
+import io
+
+from xlsxwriter.packager import BytesIO
 
 from transactions_process_service.schemas.transaction import Transaction
 
@@ -9,12 +12,24 @@ class ExcelController:
     def create_transaction_excel(
         self,
         sorted_transactions,
-        workbook_name="transactions_output.xlsx",
+        workbook_name=None,
         bank_name="Bank",
         system_name="PharmBills System",
+<<<<<<< Updated upstream
     ):
         looger = logging.getLogger(__name__)
         workbook, worksheet = self._create_excel(workbook_name)
+||||||| Stash base
+    ):
+        workbook, worksheet = self._create_excel(workbook_name)
+=======
+    ) -> BytesIO | None:
+        output = workbook_name
+        if workbook_name is None:
+            output = io.BytesIO()
+        print(output)
+        workbook, worksheet = self._create_excel(output)
+>>>>>>> Stashed changes
         green_format, color_formats = self._setup_excel(
             workbook=workbook,
             worksheet=worksheet,
@@ -25,6 +40,9 @@ class ExcelController:
             sorted_transactions, workbook, worksheet, green_format, color_formats
         )
         workbook.close()
+        if output is not None:
+            output.seek(0)
+        return output
 
     # Private methods
     def _create_excel(self, workbook_name):

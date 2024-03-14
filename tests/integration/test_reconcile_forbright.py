@@ -49,6 +49,7 @@ def test_reconcile_forbright_bank():
     ) = transaction_matcher.find_reconciling_matches(
         unmatched_bank_amounts, unmatched_system_amounts
     )
+<<<<<<< Updated upstream
     formatted_bank_log_message = "\n".join(
         str(transaction_dict) for transaction_dict in bank_transactions
     )
@@ -71,9 +72,64 @@ def test_reconcile_forbright_bank():
             "unmatched_bank": unmatched_bank_amounts,
         },
     }
+||||||| Stash base
 
+    data = {
+        "transactions": {
+            "system": system_transactions,
+            "bank": bank_transactions,
+        },
+        "matches": {
+            "one_to_one": perfect_matches,
+            "multi_to_one": matches,
+            "unmatched_system": unmatched_system_amounts,
+            "unmatched_bank": unmatched_bank_amounts,
+        },
+    }
+=======
+
+    print(f"one_to_ont: {len(perfect_matches)}")
+    unmatched_s = len(unmatched_system_amounts)
+    unmatched_b = len(unmatched_bank_amounts)
+>>>>>>> Stashed changes
+
+<<<<<<< Updated upstream
     excel_controller.create_transaction_excel(
         data, workbook_name, bank_name, system_name
     )
     logger.info("Test finished")
+||||||| Stash base
+    excel_controller.create_transaction_excel(
+        data, workbook_name, bank_name, system_name
+    )
+
+=======
+    for key, value in matches.items():
+        unmatched_b -= 1
+        unmatched_s -= len(value)
+
+    print(f"unmatched_system: {unmatched_s}")
+    print(f"unmatched_bank: {unmatched_b}")
+
+    print(f"calculated unmatched_system: {len(unmatched_system_amounts)}")
+    print(f"calculated unmatched_bank: {len(unmatched_bank_amounts)}")
+
+    # data = {
+    #     "transactions": {
+    #         "system": system_transactions,
+    #         "bank": bank_transactions,
+    #     },
+    #     "matches": {
+    #         "one_to_one": perfect_matches,
+    #         "multi_to_one": matches,
+    #         "unmatched_system": unmatched_system_amounts,
+    #         "unmatched_bank": unmatched_bank_amounts,
+    #     },
+    # }
+    #
+    # excel_controller.create_transaction_excel(
+    #     data, workbook_name, bank_name, system_name
+    # )
+
+>>>>>>> Stashed changes
     assert True
