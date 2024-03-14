@@ -7,8 +7,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
 from transactions_process_service.services.excel_creator import ExcelController
-from transactions_process_service.services.parsers.bank_parsers.forbright_bank_parser import (
-    ForbrightBankParser,
+from transactions_process_service.services.parsers.find_correct_parser import (
+    FindCorrectParser
 )
 from transactions_process_service.services.parsers.system_parsers.system_parser import (
     PharmBillsParser,
@@ -32,7 +32,7 @@ async def process_transactions(system_file: UploadFile, bank_file: UploadFile):
         bank_name = "Bank"
         system_name = "PharmBills System"
         transaction_matcher = TransactionMathcher()
-        bank_parser = ForbrightBankParser()
+        bank_parser = FindCorrectParser().find_parser(bank_file.file)()
         system_parser = PharmBillsParser()
         excel_controller = ExcelController()
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
@@ -28,6 +29,7 @@ def test_parse_forbright_bank():
 
 
 def test_parse_united_bank():
+    logger = logging.getLogger(__name__)
     file_path = "tests/data/united_bank.pdf"
     first_transaction = Transaction(
         date=datetime(2024, 2, 2, 0, 0),
@@ -38,6 +40,9 @@ def test_parse_united_bank():
     parser = UnitedBankParser()
 
     transactions = parser.parse_transactions(file_path)
+    # Assuming `transactions` is a list of transaction objects or dictionaries you want to log
+    formatted_transactions = " \n".join(str(t) for t in transactions)
+    logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date

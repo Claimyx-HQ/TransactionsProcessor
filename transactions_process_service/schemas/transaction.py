@@ -36,7 +36,8 @@ class Transaction(BaseModel):
 
         if isinstance(date, str) and date_pattern.match(date):
             try:
-                for fmt in ("%m/%d/%y", "%m-%d-%y", "%m.%d.%y"):
+                for fmt in ("%m/%d/%y", "%m-%d-%y", "%m.%d.%y","%m/%d/%Y", "%m-%d-%Y", "%m.%d.%Y"):
+                    # logger.debug(f"trying date {date} with format {fmt}")
                     try:
                         return datetime.strptime(date, fmt)
                     except Exception as e:
@@ -124,6 +125,7 @@ class Transaction(BaseModel):
                     pass
 
         if date is None or description is None or amount is None:
+            logger.error(f"Invalid input data: {raw_data} and date: {date} description: {description} amount: {amount}")
             raise ValueError("Invalid input data")
 
         return cls(date=date, description=description, amount=amount)

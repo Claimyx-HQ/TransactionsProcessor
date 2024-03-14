@@ -29,6 +29,7 @@ class UnitedBankParser(FileParser):
         ] = []  # Use a Python list for accumulating transactions
         bank_transactions_amounts = []  # Likewise, for amounts
 
+
         for table in df:
             table_data: List = table.values.tolist()  # type: ignore
             for row in table_data:
@@ -41,10 +42,14 @@ class UnitedBankParser(FileParser):
                     )
                     if math.isnan(amount) or amount <= 0.0:  # Skip if amount is NaN
                         continue
+                    description = row[2]
+                    date = row[1]
+                    bank_transactions.append(
+                        Transaction.from_raw_data([date, description, amount])
+                    )
                     bank_transactions_amounts.append(amount)
-
-        print(bank_transactions_amounts)
-        return []
+                    # self.logger.debug(f"row {row}")
+        return bank_transactions
 
     def _valid_date(self, date: str | float) -> bool:
         try:
@@ -56,17 +61,4 @@ class UnitedBankParser(FileParser):
             return False
 
 # Local Test
-        
-logging.basicConfig(
-    filename="united_bank_parser.log",
-    filemode="w",
-    format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
-    level=logging.DEBUG,
-)
-logger = logging.getLogger(__name__)
-logger.info("App started")
-file_path = "tests/data/united_bank.pdf"
 
-parser = UnitedBankParser()
-transactions = parser.parse_transactions(file_path)
-logger.info(transactions)
