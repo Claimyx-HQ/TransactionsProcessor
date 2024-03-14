@@ -58,6 +58,3 @@ class ForbrightBankParser(FileParser):
                         self.logger.exception(e)
                         continue
         return bank_transactions
-        self.decoded_data = [transaction.to_dict() for transaction in bank_transactions]
-        return self.decoded_data
-        return self.decoded_data, bank_transactions_amounts
