@@ -4,15 +4,17 @@ from datetime import datetime
 import pytest
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.services.parsers.bank_parsers.united_bank_parser import (
-    UnitedBankParser
+    UnitedBankParser,
 )
 from transactions_process_service.services.parsers.bank_parsers.forbright_bank_parser import (
-    ForbrightBankParser
+    ForbrightBankParser,
 )
 from transactions_process_service.services.parsers.find_correct_parser import (
-    FindCorrectParser
+    FindCorrectParser,
 )
-from transactions_process_service.services.parsers.parser_exceptions import CorrectParserNotFound
+from transactions_process_service.services.parsers.parser_exceptions import (
+    CorrectParserNotFound,
+)
 
 
 def test_find_correct_parser_for_unknown_PDF():
@@ -21,8 +23,7 @@ def test_find_correct_parser_for_unknown_PDF():
     with pytest.raises(CorrectParserNotFound):
         parser = FindCorrectParser()
         found_parser = parser.find_parser(file_path)
-        initiates_parser = found_parser()
-        
+
 
 def test_find_correct_parser_for_united_bank():
     logger = logging.getLogger(__name__)
@@ -37,17 +38,17 @@ def test_find_correct_parser_for_united_bank():
 
     parser = FindCorrectParser()
     found_parser = parser.find_parser(file_path)
-    initiated_parser = found_parser()
-    transactions = initiated_parser.parse_transactions(file_path)
+    transactions = found_parser.parse_transactions(file_path)
     # Assuming `transactions` is a list of transaction objects or dictionaries you want to log
     formatted_transactions = " \n".join(str(t) for t in transactions)
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert type(correct_parser) == type(found_parser)
+    assert isinstance(found_parser, correct_parser)
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
+
 
 def test_find_correct_parser_for_forbright_bank():
     logger = logging.getLogger(__name__)
@@ -62,13 +63,12 @@ def test_find_correct_parser_for_forbright_bank():
 
     parser = FindCorrectParser()
     found_parser = parser.find_parser(file_path)
-    initiated_parser = found_parser()
-    transactions = initiated_parser.parse_transactions(file_path)
+    transactions = found_parser.parse_transactions(file_path)
     formatted_transactions = " \n".join(str(t) for t in transactions)
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert type(correct_parser) == type(found_parser)
+    assert isinstance(found_parser, correct_parser)
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount

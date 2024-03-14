@@ -3,6 +3,7 @@ __pycache__/
 .mypy_cache/
 /__pycache_
 output/
+data/
 *.log
 .config
 .env

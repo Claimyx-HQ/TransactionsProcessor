@@ -65,11 +65,17 @@ class TransactionMathcher:
                     matches.append(copy_path)
             else:
                 find_matches_n_sum(nums, target, max, index + 1, copy_path, matches)
-                copy_path.append(nums[index])
-                find_matches_n_sum(
-                    nums, target - nums[index], max - 1, index + 1, copy_path, matches
-                )
-                copy_path.pop()
+                if nums[index] <= target:
+                    copy_path.append(nums[index])
+                    find_matches_n_sum(
+                        nums,
+                        round(target - nums[index], 3),
+                        max - 1,
+                        index + 1,
+                        copy_path,
+                        matches,
+                    )
+                    copy_path.pop()
 
         validated_matches: Dict[float, List[float]] = {}
         matches: Dict[float, List[List[float]]] = {}
