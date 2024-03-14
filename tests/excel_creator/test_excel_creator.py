@@ -1,9 +1,5 @@
 import os
 from typing import List
-from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.transaction_matcher import (
-    TransactionMathcher,
-)
 from transactions_process_service.services.excel_creator import ExcelController
 from tests.mocks.excel_creator.mock_transactions_and_matches import mock_data
     

@@ -1,3 +1,4 @@
+import logging
 from transactions_process_service.services.parsers.system_parsers.system_parser import (
     PharmBillsParser,
 )
@@ -12,6 +13,14 @@ from transactions_process_service.services.excel_creator import ExcelController
 
 
 def test_reconcile_forbright_bank():
+    logging.basicConfig(
+        filename="tests.log",
+        filemode="w",
+        format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
+        level=logging.DEBUG,
+    )
+    logger = logging.getLogger(__name__)
+    logger.info("App started")
     bank_file_path = "tests/data/forbright_bank.pdf"
     system_file_path = "tests/data/bankst.xls"
     workbook_name = "tests/output_tests_data/transactions_output.xlsx"
@@ -40,7 +49,16 @@ def test_reconcile_forbright_bank():
     ) = transaction_matcher.find_reconciling_matches(
         unmatched_bank_amounts, unmatched_system_amounts
     )
-
+    formatted_bank_log_message = "\n".join(
+        str(transaction_dict) for transaction_dict in bank_transactions
+    )
+    formatted_system_log_message = "\n".join(
+        str(transaction_dict) for transaction_dict in system_transactions
+    )
+    # logger.info(formatted_log_message)
+    logger.debug(f"{len(bank_transactions)} bank_transactions_formated \n{formatted_bank_log_message}\n\n")
+    logger.debug(f"{len(system_transactions)} all_system_transactions \n{formatted_system_log_message}\n\n")
+    
     data = {
         "transactions": {
             "system": system_transactions,
@@ -57,5 +75,5 @@ def test_reconcile_forbright_bank():
     excel_controller.create_transaction_excel(
         data, workbook_name, bank_name, system_name
     )
-
+    logger.info("Test finished")
     assert True

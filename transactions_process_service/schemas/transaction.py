@@ -95,9 +95,9 @@ class Transaction(BaseModel):
         for value in raw_data:
             if date is None:
                 try:
-                    logger.debug(f"trying value {value} for date")
+                    # logger.debug(f"trying value {value} for date")
                     date = cls.validate_date(value)  # type: ignore
-                    logger.debug(f"value {value} accepted for date")
+                    # logger.debug(f"value {value} accepted for date")
                     continue
                 except ValueError:
                     # logger.exception(f"Invalid date: {value}")
@@ -105,9 +105,9 @@ class Transaction(BaseModel):
 
             if amount is None:
                 try:
-                    logger.debug(f"trying value {value} for amount")
+                    # logger.debug(f"trying value {value} for amount")
                     amount = cls.validate_amount(value)  # type: ignore
-                    logger.debug(f"value {value} accepted for amount")
+                    # logger.debug(f"value {value} accepted for amount")
                     continue
                 except ValueError:
                     # logger.exception(f"Invalid amount: {value}")
@@ -115,9 +115,9 @@ class Transaction(BaseModel):
 
             if description is None:
                 try:
-                    logger.debug(f"trying value {value} for description")
+                    # logger.debug(f"trying value {value} for description")
                     description = cls.validate_description(value)  # type: ignore
-                    logger.debug(f"value {value} accepted for description")
+                    # logger.debug(f"value {value} accepted for description")
                     continue
                 except ValueError:
                     # logger.exception(f"Invalid description: {value}")
