@@ -1,6 +1,7 @@
 import pandas as pd
 import xlsxwriter
 import io
+import logging
 
 from xlsxwriter.packager import BytesIO
 
@@ -18,7 +19,6 @@ class ExcelController:
         output = workbook_name
         if workbook_name is None:
             output = io.BytesIO()
-        print(output)
         workbook, worksheet = self._create_excel(output)
         green_format, color_formats = self._setup_excel(
             workbook=workbook,
@@ -113,6 +113,8 @@ class ExcelController:
 
     def _write_data(self, data_dict, workbook, worksheet, green_format, color_formats):
         # Example of writing data with formatting - you'll need to adapt this to your data structure
+        logger = logging.getLogger(__name__)
+
         def _write_transaction(
             worksheet,
             row_index,
@@ -120,7 +122,10 @@ class ExcelController:
             transaction: Transaction,
             format=None,
         ):
-            print(transaction)
+            logger = logging.getLogger(__name__)
+            logger.debug(
+                f" writing transaction {transaction} in excel's row {row_index} and from column index {column_start_index}"
+            )
 
             worksheet.write(row_index, 0 + column_start_index, transaction.uuid, format)
             worksheet.write(
@@ -147,7 +152,8 @@ class ExcelController:
         system_start_col_index, bank_start_col_index = 0, 5
         system_transactions = data_dict["transactions"]["system"]
         bank_transactions = data_dict["transactions"]["bank"]
-        print(
+
+        logger.debug(
             f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
         )
 
@@ -157,8 +163,11 @@ class ExcelController:
         }
 
         for key, values in data_dict["matches"].items():
-            print(f"{key}: {values}")
+            logger.debug(f"key {key} with {len(values)} amount of values")
             if key == "one_to_one":
+                logger.debug(
+                    f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
                 for value in values:
                     _write_transaction(
                         worksheet,
@@ -176,10 +185,11 @@ class ExcelController:
                     )
                     system_row_index += 1
                     bank_row_index += 1
-                print(
-                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
-                )
+                logger.debug("Finished writing all one to one matches")
             elif key == "multi_to_one":
+                logger.debug(
+                    f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
                 for bank_transaction, system_combination_transactions in values.items():
                     if multi_to_one_color_index >= len(color_formats):
                         multi_to_one_color_index = 0
@@ -205,10 +215,11 @@ class ExcelController:
                         )
                         system_row_index += 1
                     multi_to_one_color_index += 1
-                print(
-                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
-                )
+                logger.debug("Finished writing all multi to one matches")
             elif key == "unmatched_system":
+                logger.debug(
+                    f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
                 for value in values:
                     _write_transaction(
                         worksheet,
@@ -217,11 +228,11 @@ class ExcelController:
                         _get_full_transaction_by_amount(system_transactions, value),
                     )
                     system_row_index += 1
-                print(
-                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
-                )
+                logger.debug("Finished writing all unmatched system transactions")
             elif key == "unmatched_bank":
-                print(f"bank_transactions: {bank_transactions}")
+                logger.debug(
+                    f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+                )
                 for value in values:
                     _write_transaction(
                         worksheet,
@@ -230,8 +241,15 @@ class ExcelController:
                         _get_full_transaction_by_amount(bank_transactions, value),
                     )
                     bank_row_index += 1
-                print(
-                    f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
-                )
+                logger.debug("Finished writing all unmatched bank transactions")
             else:
                 raise ValueError(f"Unknown key: {key}")
+
+            logger.debug("Finished writing all transactions")
+            logger.debug(
+                f"Finished len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
+            )
+            if len(system_transactions) != 0 and len(bank_transactions) != 0:
+                logger.debug(f"system_transactions: {system_transactions}")
+                logger.debug(f"bank_transactions: {bank_transactions}")
+                raise ValueError("There are still unmatched transactions")
