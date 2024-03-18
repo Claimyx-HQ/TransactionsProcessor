@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Body, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
-from transactions_process_service.services.excel_creator import ExcelController
+from transactions_process_service.services.excel_creation.excel_controller import ExcelController
 from transactions_process_service.services.parsers.bank_parsers.forbright_bank_parser import (
     ForbrightBankParser,
 )

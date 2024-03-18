@@ -1,0 +1,38 @@
+import openpyxl
+import io
+import logging
+from typing import Union
+
+from transactions_process_service.schemas.transaction import Transaction
+from transactions_process_service.services.excel_creation.excel_helper_functions import (
+    ExcelHelpers
+)
+from transactions_process_service.services.excel_creation.excel_matches_functions import (
+    ExcelMatchesAlocator
+)
+
+class ExcelController:
+    def create_transaction_excel(
+        self,
+        sorted_transactions,
+        workbook_name: Union[str, None] = None,
+        bank_name="Bank",
+        system_name="PharmBills System",
+    ) -> io.BytesIO | None:
+        output = io.BytesIO() if workbook_name is None else workbook_name
+        workbook = openpyxl.Workbook()
+        worksheet = workbook.active
+        green_fill, color_fills = ExcelHelpers._setup_excel(
+            worksheet=worksheet,
+            bank_name=bank_name,
+            system_name=system_name,
+        )
+        ExcelMatchesAlocator.write_data(sorted_transactions, worksheet, green_fill, color_fills)
+        if workbook_name is None:
+            workbook.save(output)
+            output.seek(0)
+        else:
+            workbook.save(workbook_name)
+        return output
+
+    # Private methods
