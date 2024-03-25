@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
@@ -14,7 +14,7 @@ class PharmBillsParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file_path: str) -> List[Transaction]:
+    def parse_transactions(self, file_path: Any) -> List[Transaction]:
         excel_df = pd.read_excel(
             file_path, sheet_name=0
         )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)

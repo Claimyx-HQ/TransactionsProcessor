@@ -7,21 +7,53 @@ class TransactionMathcher:
     # Return matching and unmatched transactions
     def find_matched_unmatched(
         self, bank_transactions: List[float], system_transactions: List[float]
-    ) -> Tuple[list[float], list[float]]:
+    ) -> Tuple[list[float], list[float], list[float]]:
         matches = []
-        bank_amounts = np.array(bank_transactions)
-        system_amounts = np.array(system_transactions)
-        for bank_amount in bank_amounts:
-            match = np.where(system_amounts == bank_amount)
-            if match[0].size > 0:
-                matches.append(bank_amount)
-                system_amounts = np.delete(system_amounts, match[0][0])
-        unmatched = np.setdiff1d(bank_amounts, matches)
-        return matches, unmatched
+        unmatched_bank_amounts = []
+        unmatched_system_amounts = []
+        bank_amounts = {}
+        system_amounts = {}
+        matched_amounts = set()
+
+        for amount in bank_transactions:
+            bank_amounts[amount] = bank_amounts.get(amount, 0) + 1
+
+        for amount in system_transactions:
+            system_amounts[amount] = system_amounts.get(amount, 0) + 1
+
+        for amount in bank_amounts:
+            if amount in system_amounts:
+                if bank_amounts[amount] >= system_amounts[amount]:
+                    for i in range(bank_amounts[amount] - system_amounts[amount]):
+                        unmatched_bank_amounts.append(amount)
+                    for i in range(system_amounts[amount]):
+                        matches.append(amount)
+                    matched_amounts.add(amount)
+                elif bank_amounts[amount] < system_amounts[amount]:
+                    for i in range(system_amounts[amount] - bank_amounts[amount]):
+                        unmatched_system_amounts.append(amount)
+                    for i in range(bank_amounts[amount]):
+                        matches.append(amount)
+                    matched_amounts.add(amount)
+            else:
+                for i in range(bank_amounts[amount]):
+                    unmatched_bank_amounts.append(amount)
+                matched_amounts.add(amount)
+
+        for amount in system_amounts:
+            if amount not in matched_amounts:
+                for i in range(system_amounts[amount]):
+                    unmatched_system_amounts.append(amount)
+
+        print(f"matches: {matches}")
+        print(f"unmatched_bank_amounts: {unmatched_bank_amounts}")
+        print(f"unmatched_system_amounts: {unmatched_system_amounts}")
+
+        return matches, unmatched_bank_amounts, unmatched_system_amounts
 
     def find_reconciling_matches(
         self, bank_transactions: List[float], system_transactions: List[float]
-    ) -> Dict[float, List[float]]:
+    ) -> Tuple[Dict[float, List[float]], List[float], List[float]]:
         logger = logging.getLogger(__name__)
 
         def find_matches_n_sum(
@@ -33,11 +65,17 @@ class TransactionMathcher:
                     matches.append(copy_path)
             else:
                 find_matches_n_sum(nums, target, max, index + 1, copy_path, matches)
-                copy_path.append(nums[index])
-                find_matches_n_sum(
-                    nums, target - nums[index], max - 1, index + 1, copy_path, matches
-                )
-                copy_path.pop()
+                if nums[index] <= target:
+                    copy_path.append(nums[index])
+                    find_matches_n_sum(
+                        nums,
+                        round(target - nums[index], 3),
+                        max - 1,
+                        index + 1,
+                        copy_path,
+                        matches,
+                    )
+                    copy_path.pop()
 
         validated_matches: Dict[float, List[float]] = {}
         matches: Dict[float, List[List[float]]] = {}
@@ -123,9 +161,7 @@ class TransactionMathcher:
 
             logger.info(f"new matches: {matches}")
 
-        #
-        #
-        return validated_matches
+        return validated_matches, bank_transactions, system_transactions
 
     def _validate_transactions_possibility(
         self, amounts: List[float], possibilities: Dict[float, int]

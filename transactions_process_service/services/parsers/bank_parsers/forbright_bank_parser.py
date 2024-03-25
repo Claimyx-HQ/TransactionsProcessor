@@ -4,6 +4,7 @@ from typing import Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
+from tabula.util import FileLikeObj
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.services.parsers.file_parser import FileParser
 
@@ -14,7 +15,7 @@ class ForbrightBankParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file_path: str) -> List[Transaction]:
+    def parse_transactions(self, file_path: FileLikeObj) -> List[Transaction]:
         df = tabula.io.read_pdf(
             file_path,
             multiple_tables=True,
@@ -57,6 +58,3 @@ class ForbrightBankParser(FileParser):
                         self.logger.exception(e)
                         continue
         return bank_transactions
-        self.decoded_data = [transaction.to_dict() for transaction in bank_transactions]
-        return self.decoded_data
-        return self.decoded_data, bank_transactions_amounts
