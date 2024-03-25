@@ -33,32 +33,33 @@ class ExcelMatchesAlocator:
         logger.debug(
             f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
         )
-        system_row_index = ExcelHelpers._create_title_row(
-            worksheet,
-            "One to One Matches",
-            column_start_index=system_start_col_index,
-            row_index=system_row_index,
-        )
-        bank_row_index = ExcelHelpers._create_title_row(
-            worksheet,
-            "One to One Matches",
-            column_start_index=bank_start_col_index,
-            row_index=bank_row_index,
-        )
-        ExcelSorting.create_table(
-            worksheet=worksheet,
-            table_name="One_to_One_Matches_in_System_table",
-            matches=matches,
-            row_index=system_row_index,
-            start_col_index=system_start_col_index,
-        )
-        ExcelSorting.create_table(
-            worksheet=worksheet,
-            table_name="One_to_One_Matches_in_Bank_table",
-            matches=matches,
-            row_index=bank_row_index,
-            start_col_index=bank_start_col_index,
-        )
+        if len(matches) > 0:
+            system_row_index = ExcelHelpers._create_title_row(
+                worksheet,
+                "One to One Matches",
+                column_start_index=system_start_col_index,
+                row_index=system_row_index,
+            )
+            bank_row_index = ExcelHelpers._create_title_row(
+                worksheet,
+                "One to One Matches",
+                column_start_index=bank_start_col_index,
+                row_index=bank_row_index,
+            )
+            ExcelSorting.create_table(
+                worksheet=worksheet,
+                table_name="One_to_One_Matches_in_System_table",
+                matches=matches,
+                row_index=system_row_index,
+                start_col_index=system_start_col_index,
+            )
+            ExcelSorting.create_table(
+                worksheet=worksheet,
+                table_name="One_to_One_Matches_in_Bank_table",
+                matches=matches,
+                row_index=bank_row_index,
+                start_col_index=bank_start_col_index,
+            )
         for value in matches:
             ExcelHelpers._write_transaction(
                 worksheet,
@@ -101,33 +102,34 @@ class ExcelMatchesAlocator:
         logger.debug(
             f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
         )
-        system_row_index = ExcelHelpers._create_title_row(
-            worksheet,
-            "Multi to One Matches",
-            column_start_index=system_start_col_index,
-            row_index=system_row_index,
-        )
-        bank_row_index = ExcelHelpers._create_title_row(
-            worksheet,
-            "Multi to One Matches",
-            column_start_index=bank_start_col_index,
-            row_index=bank_row_index,
-        )
-        multi_matches = [system_transaction for key, values in matches.items() for system_transaction in values]
-        ExcelSorting.create_table(
-            worksheet=worksheet,
-            table_name="Multi_to_One_Matches_in_System_table",
-            matches=multi_matches,
-            row_index=system_row_index,
-            start_col_index=system_start_col_index,
-        )
-        ExcelSorting.create_table(
-            worksheet=worksheet,
-            table_name="Multi_to_One_Matches_in_Bank_table",
-            matches=matches,
-            row_index=bank_row_index,
-            start_col_index=bank_start_col_index,
-        )
+        if len(matches) > 0:
+            system_row_index = ExcelHelpers._create_title_row(
+                worksheet,
+                "Multi to One Matches",
+                column_start_index=system_start_col_index,
+                row_index=system_row_index,
+            )
+            bank_row_index = ExcelHelpers._create_title_row(
+                worksheet,
+                "Multi to One Matches",
+                column_start_index=bank_start_col_index,
+                row_index=bank_row_index,
+            )
+            multi_matches = [system_transaction for key, values in matches.items() for system_transaction in values]
+            ExcelSorting.create_table(
+                worksheet=worksheet,
+                table_name="Multi_to_One_Matches_in_System_table",
+                matches=multi_matches,
+                row_index=system_row_index,
+                start_col_index=system_start_col_index,
+            )
+            ExcelSorting.create_table(
+                worksheet=worksheet,
+                table_name="Multi_to_One_Matches_in_Bank_table",
+                matches=matches,
+                row_index=bank_row_index,
+                start_col_index=bank_start_col_index,
+            )
         for bank_transaction, system_combination_transactions in matches.items():
             if multi_to_one_color_index >= len(format):
                 multi_to_one_color_index = 0
@@ -168,19 +170,20 @@ class ExcelMatchesAlocator:
         logger.debug(
             f" len system: {len(system_transactions)} and len unmatched system: {len(unmatched_system_transactions)}"
         )
-        system_row_index = ExcelHelpers._create_title_row(
-            worksheet,
-            "Unmatched System Transactions",
-            column_start_index=system_start_col_index,
-            row_index=system_row_index,
-        )
-        ExcelSorting.create_table(
-            worksheet=worksheet,
-            table_name="Unmatched_System_Transactions_in_System_table",
-            matches=unmatched_system_transactions,
-            row_index=system_row_index,
-            start_col_index=system_start_col_index,
-        )
+        if len(unmatched_system_transactions) > 0:
+            system_row_index = ExcelHelpers._create_title_row(
+                worksheet,
+                "Unmatched System Transactions",
+                column_start_index=system_start_col_index,
+                row_index=system_row_index,
+            )
+            ExcelSorting.create_table(
+                worksheet=worksheet,
+                table_name="Unmatched_System_Transactions_in_System_table",
+                matches=unmatched_system_transactions,
+                row_index=system_row_index,
+                start_col_index=system_start_col_index,
+            )
         
 
         for value in unmatched_system_transactions:
@@ -208,19 +211,20 @@ class ExcelMatchesAlocator:
         logger.debug(
             f" len bank: {len(bank_transactions)} and len unmatched bank: {len(unmatched_bank_transactions)}"
         )
-        bank_row_index = ExcelHelpers._create_title_row(
-            worksheet,
-            "Unmatched Bank Transactions",
-            column_start_index=bank_start_col_index,
-            row_index=bank_row_index,
-        )
-        ExcelSorting.create_table(
-            worksheet=worksheet,
-            table_name="Unmatched_Bank_Transactions_in_System_table",
-            matches=unmatched_bank_transactions,
-            row_index=bank_row_index,
-            start_col_index=bank_start_col_index,
-        )
+        if len(unmatched_bank_transactions) > 0:    
+            bank_row_index = ExcelHelpers._create_title_row(
+                worksheet,
+                "Unmatched Bank Transactions",
+                column_start_index=bank_start_col_index,
+                row_index=bank_row_index,
+            )
+            ExcelSorting.create_table(
+                worksheet=worksheet,
+                table_name="Unmatched_Bank_Transactions_in_System_table",
+                matches=unmatched_bank_transactions,
+                row_index=bank_row_index,
+                start_col_index=bank_start_col_index,
+            )
 
         for value in unmatched_bank_transactions:
             ExcelHelpers._write_transaction(
