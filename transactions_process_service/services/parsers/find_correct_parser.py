@@ -46,8 +46,10 @@ class FindCorrectParser:
                                     )
                                     return formatted_all_parsers[parser_key]
             raise CorrectParserNotFound(file)
+        except CorrectParserNotFound as e:
+            raise e
         except Exception as e:
-            raise e(f"In Find Correct Parser for file {file.filename} got this error: \n{str(e)}")
+            raise Exception(f"In Find Correct Parser for file {file.filename} got this error: \n{str(e)}") from e
         finally:
             file.file.seek(0)
         
