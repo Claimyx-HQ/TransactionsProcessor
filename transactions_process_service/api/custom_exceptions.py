@@ -1,7 +1,6 @@
 
 from typing import List
 
-
 class ParserMismatchException(Exception):
     def __init__(self, parsers: List|None = None, message: str = None):
         if parsers is not None:

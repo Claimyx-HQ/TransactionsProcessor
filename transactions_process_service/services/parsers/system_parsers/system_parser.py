@@ -1,6 +1,7 @@
 import logging
 import math
 from typing import Any, Dict, List, Union
+from fastapi import UploadFile
 import tabula
 import pandas as pd
 import numpy as np
@@ -14,10 +15,11 @@ class PharmBillsParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file_path: Any) -> List[Transaction]:
+    def parse_transactions(self, file: UploadFile) -> List[Transaction]:
         excel_df = pd.read_excel(
-            file_path, sheet_name=0
+            file.file, sheet_name=0
         )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)
+        file.file.seek(0)
         important_columns = excel_df.iloc[:, [0, 1, 3]]
         if pd.api.types.is_numeric_dtype(important_columns):
             # If the column is already numeric, directly convert to array

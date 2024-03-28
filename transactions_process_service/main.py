@@ -5,9 +5,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from .api.api import api_router
+from dotenv import load_dotenv  
 
 
-
+load_dotenv()
 app = FastAPI(
     title="Transactions Process Service",
     description="Process transactions and return the result",

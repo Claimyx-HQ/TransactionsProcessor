@@ -3,7 +3,6 @@ import re
 from typing import Any, List
 from fastapi import UploadFile
 import tabula
-from tabula.util import FileLikeObj
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.services.parsers.file_parser import FileParser
 from .parsers_dict import all_parsers
@@ -22,6 +21,7 @@ class FindCorrectParser:
             pandas_options={"header": None},
             guess=False,
         )
+        file.file.seek(0)
         for table in df:
             table_data: List = table.values.tolist()  # type: ignore
             for row in table_data:
@@ -44,7 +44,7 @@ class FindCorrectParser:
                                     f"Found correct parser: {formatted_all_parsers[parser_key]}"
                                 )
                                 return formatted_all_parsers[parser_key]
-        raise CorrectParserNotFound(file.filename)
+        raise CorrectParserNotFound(file)
 
     def _format_string(self, string: str) -> str:
         text = string.lower()
