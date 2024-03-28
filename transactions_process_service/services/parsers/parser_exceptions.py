@@ -1,6 +1,6 @@
 
 class CorrectParserNotFound(Exception):
     
-    def __init__(self, message: str = "The Parser for this file type was not found") -> None:
-        self.message = message
+    def __init__(self, file) -> None:
+        self.message = f"The Parser for this file ({file}) type was not found"
         super().__init__(self.message)

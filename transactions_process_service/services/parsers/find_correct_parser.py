@@ -1,6 +1,7 @@
 import logging
 import re
 from typing import Any, List
+from fastapi import UploadFile
 import tabula
 from tabula.util import FileLikeObj
 from transactions_process_service.schemas.transaction import Transaction
@@ -13,9 +14,9 @@ class FindCorrectParser:
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
-    def find_parser(self, file_path: FileLikeObj) -> FileParser:
+    def find_parser(self, file: UploadFile) -> FileParser:
         df = tabula.io.read_pdf(
-            file_path,
+            file.file,
             multiple_tables=True,
             pages="1",
             pandas_options={"header": None},
@@ -43,7 +44,7 @@ class FindCorrectParser:
                                     f"Found correct parser: {formatted_all_parsers[parser_key]}"
                                 )
                                 return formatted_all_parsers[parser_key]
-        raise CorrectParserNotFound()
+        raise CorrectParserNotFound(file.filename)
 
     def _format_string(self, string: str) -> str:
         text = string.lower()

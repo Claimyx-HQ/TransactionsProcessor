@@ -3,6 +3,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Response, UploadFile, status
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.api.custom_exceptions import ParserMismatchException
+from transactions_process_service.services.parsers.parser_exceptions import CorrectParserNotFound
 from transactions_process_service.services.transaction_matcher import TransactionMatcher
 from transactions_process_service.services.parsers.file_parser import FileParser
 from transactions_process_service.services.parsers.find_correct_parser import FindCorrectParser
@@ -49,6 +50,9 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
     except ParserMismatchException as e:
         logger.exception(e)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except CorrectParserNotFound as e:
+        logger.exception(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.exception(e)
         raise HTTPException(
@@ -59,7 +63,7 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
 def verify_and_get_parser(bank_files: List[UploadFile], bank_detector: FindCorrectParser):
     logger = logging.getLogger(__name__)
     parser_types = [
-        type(bank_detector.find_parser(file.file)) for file in bank_files
+        type(bank_detector.find_parser(file)) for file in bank_files
     ]
     logger.info(f"Parser types: {parser_types}")
     set_parser_types = set(parser_types)
