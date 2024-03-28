@@ -1,144 +1,124 @@
-import time
-from typing import Any, List
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, Body, HTTPException, Response, status
-from fastapi.encoders import jsonable_encoder
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import FileResponse
+import logging
+from typing import List
+from fastapi import APIRouter, HTTPException, Response, UploadFile, status
+from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.api.custom_exceptions import ParserMismatchException
+from transactions_process_service.services.transaction_matcher import TransactionMatcher
+from transactions_process_service.services.parsers.file_parser import FileParser
+from transactions_process_service.services.parsers.find_correct_parser import FindCorrectParser
 from transactions_process_service.services.excel_creation.excel_controller import ExcelController
-from transactions_process_service.services.parsers.bank_parsers.forbright_bank_parser import (
-    ForbrightBankParser,
-)
-from transactions_process_service.services.parsers.find_correct_parser import (
-    FindCorrectParser,
-)
-from transactions_process_service.services.parsers.system_parsers.system_parser import (
-    PharmBillsParser,
-)
-
-from transactions_process_service.services.transaction_matcher import (
-    TransactionMathcher,
-)
+from transactions_process_service.services.parsers.system_parsers.system_parser import \
+    PharmBillsParser
 
 
 router = APIRouter()
-some_file_path = "tests/data/bankst.xls"
-
-
-@router.post(
-    "/process",
-    # response_model=List[BuyBoxData],
-)
+@router.post("/process", summary="Process transactions")
 async def process_transactions(system_file: UploadFile, bank_files: List[UploadFile]):
     try:
-        bank_name = "Bank"
-        system_name = "PharmBills System"
+        logger = logging.getLogger(__name__)
+        logger.info("In Process Transactions")
+        # Initialization
         bank_detector = FindCorrectParser()
-        transaction_matcher = TransactionMathcher()
+        transaction_matcher = TransactionMatcher()
         system_parser = PharmBillsParser()
         excel_controller = ExcelController()
+        bank_name = "Bank"
+        system_name = "PharmBills System"
 
-        start = time.time()
-        # Check if all files have the same parser
-        parser_types = []
-        for bank_file in bank_files:
-            parser = bank_detector.find_parser(bank_file.file)
-            if parser is None:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, 
-                    detail=f"Parser not found for one of the files: {bank_file.filename}"
-                )
-            parser_types.append(type(parser).__name__)
-        if len(set(parser_types)) > 1:
-            raise ParserMismatchException(parser_types)
-        
-        all_bank_transactions = []
-        bank_parser = bank_detector.find_parser(bank_files[0].file) # Because all files have the same parser
-        for bank_file in bank_files:
-            from_file_bank_transactions = bank_parser.parse_transactions(bank_file.file)
-            all_bank_transactions.extend(from_file_bank_transactions)
+        try:
+            parser = verify_and_get_parser(bank_files, bank_detector)
+            logger.info(f"Detected parser: {parser}")
+            bank_parser = parser()
+        except ParserMismatchException as e:
+            raise ParserMismatchException(message=e)
 
-        system_transactions = system_parser.parse_transactions(system_file.file)
-
-        end = time.time()
-        print(f"Time taken to parse transactions: {end - start}")
-        print(f"transactions: {all_bank_transactions} ")
-
-        start = time.time()
-
-        (
-            perfect_matches,
-            unmatched_bank_amounts,
-            unmatched_system_amounts,
-        ) = transaction_matcher.find_matched_unmatched(
-            [t.amount for t in all_bank_transactions],
-            [t.amount for t in system_transactions],
+        # Process transactions
+        all_bank_transactions, system_transactions = process_all_transactions(
+            bank_files, system_file, bank_parser, system_parser
+        )
+        logger.info(f"{len(all_bank_transactions)} bank_transactions")
+        logger.info(f"{len(system_transactions)} bank_transactions")
+        # Find matches
+        data = find_matches(
+            all_bank_transactions, system_transactions, transaction_matcher
         )
 
-        end = time.time()
-        print(f"Time taken to find matched unmatched: {end - start}")
+        # Create and return Excel file
+        return generate_excel_response(data, excel_controller, bank_name, system_name)
 
-        # remove all amounts zero or less in unmatched_system_amounts
-        unmatched_system_amounts = list(
-            filter(lambda x: x > 0, unmatched_system_amounts)
-        )
-
-        start = time.time()
-
-        (
-            matches,
-            unmatched_bank_amounts,
-            unmatched_system_amounts,
-        ) = transaction_matcher.find_reconciling_matches(
-            unmatched_bank_amounts, unmatched_system_amounts
-        )
-
-        end = time.time()
-        print(f"Time taken to find matches: {end - start}")
-
-        data = {
-            "transactions": {
-                "system": system_transactions,
-                "bank": all_bank_transactions,
-            },
-            "matches": {
-                "one_to_one": perfect_matches,
-                "multi_to_one": matches,
-                "unmatched_system": unmatched_system_amounts,
-                "unmatched_bank": unmatched_bank_amounts,
-            },
-        }
-
-        start = time.time()
-
-        output = excel_controller.create_transaction_excel(
-            data, None, bank_name, system_name
-        )
-
-        end = time.time()
-        print(f"Time taken to create excel: {end - start}")
-
-        if output is None:
-            return Response(
-                content="No matches found",
-                status_code=status.HTTP_404_NOT_FOUND,
-            )
-
-        headers = {
-            "Content-Disposition": f"attachment; filename=result.xlsx",
-            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        }
-
-        return Response(content=output.read(), headers=headers)
-    
     except ParserMismatchException as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        logger.exception(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
+        logger.exception(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
+
+def verify_and_get_parser(bank_files: List[UploadFile], bank_detector: FindCorrectParser):
+    logger = logging.getLogger(__name__)
+    parser_types = [
+        type(bank_detector.find_parser(file.file)) for file in bank_files
+    ]
+    logger.info(f"Parser types: {parser_types}")
+    set_parser_types = set(parser_types)
+    if len(set_parser_types) > 1:
+        raise ParserMismatchException(parser_types)
+    return parser_types[0]
+
+
+def process_all_transactions(bank_files: List[UploadFile], system_file: UploadFile, bank_parser: FileParser, system_parser: FileParser):
+    all_bank_transactions = [
+        transaction
+        for file in bank_files
+        for transaction in bank_parser.parse_transactions(file.file)
+    ]
+    system_transactions = system_parser.parse_transactions(system_file.file)
+    return all_bank_transactions, system_transactions
+
+
+def find_matches(all_bank_transactions: List[Transaction], system_transactions: List[Transaction], transaction_matcher: TransactionMatcher):
+    perfect_matches, unmatched_bank_amounts, unmatched_system_amounts = (
+        transaction_matcher.find_matched_unmatched(
+            [t.amount for t in all_bank_transactions],
+            [t.amount for t in system_transactions],
+        )
+    )
+    unmatched_system_amounts = [
+        amount for amount in unmatched_system_amounts if amount > 0
+    ]
+    matches, unmatched_bank_amounts, unmatched_system_amounts = (
+        transaction_matcher.find_reconciling_matches(
+            unmatched_bank_amounts, unmatched_system_amounts
+        )
+    )
+    return {
+        "transactions": {"system": system_transactions, "bank": all_bank_transactions},
+        "matches": {
+            "one_to_one": perfect_matches,
+            "multi_to_one": matches,
+            "unmatched_system": unmatched_system_amounts,
+            "unmatched_bank": unmatched_bank_amounts,
+        },
+    }
+
+
+def generate_excel_response(
+    data,
+    excel_controller: ExcelController,
+    bank_name="Bank",
+    system_name="PharmBills System",
+):
+    output = excel_controller.create_transaction_excel(
+        data, None, bank_name, system_name
+    )
+    if output is None:
+        return Response(
+            content="No matches found", status_code=status.HTTP_404_NOT_FOUND
+        )
+    headers = {
+        "Content-Disposition": "attachment; filename=result.xlsx",
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }
+    return Response(content=output.read(), headers=headers)

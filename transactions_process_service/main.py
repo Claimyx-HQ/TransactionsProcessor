@@ -7,14 +7,6 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .api.api import api_router
 
 
-logging.basicConfig(
-    filename="app.log",
-    filemode="w",
-    format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
-    level=logging.DEBUG,
-)
-logging.info("App started")
-
 
 app = FastAPI(
     title="Transactions Process Service",
@@ -28,6 +20,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+@app.on_event("startup")
+def startup_event():
+    logging.basicConfig(
+        filename="app.log",
+        filemode="w",
+        format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
+        level=logging.INFO,
+    )
+    logging.info("App started")
 
 app.include_router(api_router)
 
@@ -38,4 +39,4 @@ async def root():
 
 
 def start():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")

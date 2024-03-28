@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 
 
-class TransactionMathcher:
+class TransactionMatcher:
     # Return matching and unmatched transactions
     def find_matched_unmatched(
         self, bank_transactions: List[float], system_transactions: List[float]
