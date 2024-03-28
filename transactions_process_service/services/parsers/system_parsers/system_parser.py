@@ -19,7 +19,6 @@ class PharmBillsParser(FileParser):
         excel_df = pd.read_excel(
             file.file, sheet_name=0
         )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)
-        file.file.seek(0)
         important_columns = excel_df.iloc[:, [0, 1, 3]]
         if pd.api.types.is_numeric_dtype(important_columns):
             # If the column is already numeric, directly convert to array
@@ -43,4 +42,5 @@ class PharmBillsParser(FileParser):
             )
             # print(self.decoded_data)
         # self.logger.info(df)
+        file.file.seek(0)
         return self.decoded_data
