@@ -1,6 +1,7 @@
 import logging
 import math
 from typing import Dict, List, Union
+from fastapi import UploadFile
 import tabula
 import pandas as pd
 import numpy as np
@@ -15,14 +16,15 @@ class ForbrightBankParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file_path: FileLikeObj) -> List[Transaction]:
+    def parse_transactions(self, file: UploadFile) -> List[Transaction]:
         df = tabula.io.read_pdf(
-            file_path,
+            file.file,
             multiple_tables=True,
             pages="all",
             pandas_options={"header": None},
             guess=False,
         )
+        file.file.seek(0)
         bank_transactions: List[
             Transaction
         ] = []  # Use a Python list for accumulating transactions

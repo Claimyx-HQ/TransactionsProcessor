@@ -3,6 +3,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Response, UploadFile, status
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.api.custom_exceptions import ParserMismatchException
+from transactions_process_service.services.email_sender import send_error_email_with_uploadfiles
 from transactions_process_service.services.parsers.parser_exceptions import CorrectParserNotFound
 from transactions_process_service.services.transaction_matcher import TransactionMatcher
 from transactions_process_service.services.parsers.file_parser import FileParser
@@ -25,7 +26,8 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
         excel_controller = ExcelController()
         bank_name = "Bank"
         system_name = "PharmBills System"
-
+        all_files = bank_files + [system_file]
+        logger.info(f"Detected files: {all_files}")
         try:
             parser = verify_and_get_parser(bank_files, bank_detector)
             logger.info(f"Detected parser: {parser}")
@@ -49,12 +51,15 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
 
     except ParserMismatchException as e:
         logger.exception(e)
+
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except CorrectParserNotFound as e:
         logger.exception(e)
+        send_error_email_with_uploadfiles("Parser not found", str(e), all_files)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.exception(e)
+        send_error_email_with_uploadfiles("Unexpected error", str(e), all_files)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
@@ -69,6 +74,7 @@ def verify_and_get_parser(bank_files: List[UploadFile], bank_detector: FindCorre
     set_parser_types = set(parser_types)
     if len(set_parser_types) > 1:
         raise ParserMismatchException(parser_types)
+
     return parser_types[0]
 
 
@@ -76,9 +82,9 @@ def process_all_transactions(bank_files: List[UploadFile], system_file: UploadFi
     all_bank_transactions = [
         transaction
         for file in bank_files
-        for transaction in bank_parser.parse_transactions(file.file)
+        for transaction in bank_parser.parse_transactions(file)
     ]
-    system_transactions = system_parser.parse_transactions(system_file.file)
+    system_transactions = system_parser.parse_transactions(system_file)
     return all_bank_transactions, system_transactions
 
 

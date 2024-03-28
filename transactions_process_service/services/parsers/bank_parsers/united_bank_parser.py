@@ -4,6 +4,7 @@ from typing import Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
+from fastapi import UploadFile
 from ..file_parser import FileParser
 from transactions_process_service.schemas.transaction import Transaction
 from datetime import datetime
@@ -15,15 +16,16 @@ class UnitedBankParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file_path: str) -> List[Transaction]:
+    def parse_transactions(self, file: UploadFile) -> List[Transaction]:
         df = tabula.io.read_pdf(
-            file_path,
+            file.file,
             multiple_tables=True,
             pages="all",
             pandas_options={"header": None},
             guess=False,
             columns=[50, 100, 350, 435, 515],
         )
+        file.file.seek(0)
         bank_transactions: List[
             Transaction
         ] = []  # Use a Python list for accumulating transactions
