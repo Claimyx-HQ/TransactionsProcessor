@@ -13,16 +13,25 @@ class FindCorrectParser:
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
-    def find_parser(self, file: UploadFile) -> FileParser:
+    def find_parser(self, file: UploadFile | str) -> FileParser:
         try:
-            df = tabula.io.read_pdf(
-                file.file,
-                multiple_tables=True,
-                pages="1",
-                pandas_options={"header": None},
-                guess=False,
-            )
-            file.file.seek(0)
+            if type(file) is str:
+                df = tabula.io.read_pdf(
+                    file,
+                    multiple_tables=True,
+                    pages="1",
+                    pandas_options={"header": None},
+                    guess=False,
+                )
+            else:
+                df = tabula.io.read_pdf(
+                    file.file,
+                    multiple_tables=True,
+                    pages="1",
+                    pandas_options={"header": None},
+                    guess=False,
+                )
+                file.file.seek(0)
             for table in df:
                 table_data: List = table.values.tolist()  # type: ignore
                 for row in table_data:
@@ -50,8 +59,6 @@ class FindCorrectParser:
             raise e
         except Exception as e:
             raise Exception(f"In Find Correct Parser for file {file.filename} got this error: \n{str(e)}") from e
-        finally:
-            file.file.seek(0)
         
     def _format_string(self, string: str) -> str:
         text = string.lower()

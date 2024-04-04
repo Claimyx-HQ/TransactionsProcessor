@@ -4,6 +4,7 @@ __pycache__/
 /__pycache_
 output/
 data/
+tests/output_tests_data/
 *.log
 .config
 .env

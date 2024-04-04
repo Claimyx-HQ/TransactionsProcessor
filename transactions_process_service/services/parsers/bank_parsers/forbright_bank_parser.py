@@ -16,15 +16,24 @@ class ForbrightBankParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file: UploadFile) -> List[Transaction]:
-        df = tabula.io.read_pdf(
-            file.file,
-            multiple_tables=True,
-            pages="all",
-            pandas_options={"header": None},
-            guess=False,
-        )
-        file.file.seek(0)
+    def parse_transactions(self, file: UploadFile | str) -> List[Transaction]:
+        if type(file) is str:
+            df = tabula.io.read_pdf(
+                file,
+                multiple_tables=True,
+                pages="all",
+                pandas_options={"header": None},
+                guess=False,
+            )
+        else:
+            df = tabula.io.read_pdf(
+                file.file,
+                multiple_tables=True,
+                pages="all",
+                pandas_options={"header": None},
+                guess=False,
+            )
+            file.file.seek(0)
         bank_transactions: List[
             Transaction
         ] = []  # Use a Python list for accumulating transactions
