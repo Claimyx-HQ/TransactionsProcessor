@@ -40,7 +40,7 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
             bank_files, system_file, bank_parser, system_parser
         )
         logger.info(f"{len(all_bank_transactions)} bank_transactions")
-        logger.info(f"{len(system_transactions)} bank_transactions")
+        logger.info(f"{len(system_transactions)} system_transactions")
         # Find matches
         data = find_matches(
             all_bank_transactions, system_transactions, transaction_matcher
@@ -89,12 +89,16 @@ def process_all_transactions(bank_files: List[UploadFile], system_file: UploadFi
 
 
 def find_matches(all_bank_transactions: List[Transaction], system_transactions: List[Transaction], transaction_matcher: TransactionMatcher):
+    logger = logging.getLogger(__name__)
     perfect_matches, unmatched_bank_amounts, unmatched_system_amounts = (
         transaction_matcher.find_matched_unmatched(
             [t.amount for t in all_bank_transactions],
             [t.amount for t in system_transactions],
         )
     )
+    zero_and_negative_system_amounts = [
+        amount for amount in unmatched_system_amounts if amount <= 0
+    ]
     unmatched_system_amounts = [
         amount for amount in unmatched_system_amounts if amount > 0
     ]
@@ -103,6 +107,16 @@ def find_matches(all_bank_transactions: List[Transaction], system_transactions: 
             unmatched_bank_amounts, unmatched_system_amounts
         )
     )
+    unmatched_system_amounts.extend(zero_and_negative_system_amounts)
+    logger.info(f"""
+        "transactions": "system": {len(system_transactions)}, "bank": {len(all_bank_transactions)},
+        "matches": 
+            "one_to_one": {len(perfect_matches)},
+            "multi_to_one": {len(matches)},
+            "unmatched_system": {len(unmatched_system_amounts)},
+            "unmatched_bank": {len(unmatched_bank_amounts)},
+        ,
+    """)
     return {
         "transactions": {"system": system_transactions, "bank": all_bank_transactions},
         "matches": {
