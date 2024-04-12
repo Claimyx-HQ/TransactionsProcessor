@@ -46,6 +46,5 @@ class PharmBillsParser(FileParser):
             system_transactions = np.array(
                 [float(val) for val in numeric_values if float(val) > 0.0]
             )
-            # print(self.decoded_data)
         # self.logger.info(df)
         return self.decoded_data

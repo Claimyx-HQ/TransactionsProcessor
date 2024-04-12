@@ -45,9 +45,6 @@ class TransactionMatcher:
                 for i in range(system_amounts[amount]):
                     unmatched_system_amounts.append(amount)
 
-        print(f"matches: {matches}")
-        print(f"unmatched_bank_amounts: {unmatched_bank_amounts}")
-        print(f"unmatched_system_amounts: {unmatched_system_amounts}")
 
         return matches, unmatched_bank_amounts, unmatched_system_amounts
 

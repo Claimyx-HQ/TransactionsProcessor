@@ -1,0 +1,521 @@
+2024-04-11 18:05:04 - INFO - root - App started
+2024-04-11 18:05:04 - INFO - uvicorn.error - Application startup complete.
+2024-04-11 18:05:04 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-11 18:06:15 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-11 18:06:15 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x0000023883CC26B0>, <starlette.datastructures.UploadFile object at 0x0000023883CC24D0>]
+2024-04-11 18:06:29 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x00000238836ADCF0>
+2024-04-11 18:06:29 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-11 18:06:29 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-11 18:06:31 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-11 18:06:31 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-11 18:06:31 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-11 18:06:32 - ERROR - transactions_process_service.api.transactions - 'NoneType' object is not iterable
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 56, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([result_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Processing file: transactions_result.xlsx
+2024-04-11 18:06:32 - INFO - transactions_process_service.services.email_sender - Uploading to mail: transactions_result.xlsx
+2024-04-11 18:06:32 - INFO - uvicorn.access - 127.0.0.1:49947 - "POST /transactions/process HTTP/1.1" 500
+2024-04-11 18:06:32 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 56, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([result_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 408, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\applications.py", line 292, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 184, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 79, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 20, in __call__
+    raise e
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 273, in app
+    raw_response = await run_endpoint_function(
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 190, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 69, in process_transactions
+    send_email_with_files("Unexpected error", str(e), all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 47, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine
+2024-04-11 18:13:34 - INFO - root - App started
+2024-04-11 18:13:34 - INFO - uvicorn.error - Application startup complete.
+2024-04-11 18:13:34 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-11 18:13:51 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-11 18:13:51 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x00000222FF202650>, <starlette.datastructures.UploadFile object at 0x00000222FF202470>]
+2024-04-11 18:13:56 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x00000222FEBCDCF0>
+2024-04-11 18:13:56 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-11 18:13:56 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-11 18:13:57 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-11 18:13:57 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-11 18:13:57 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-11 18:13:58 - ERROR - transactions_process_service.api.transactions - can't set attribute 'content_type'
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 56, in process_transactions
+    result_excel.content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+AttributeError: can't set attribute 'content_type'
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-11 18:13:58 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:14:03 - INFO - uvicorn.access - 127.0.0.1:55599 - "POST /transactions/process HTTP/1.1" 500
+2024-04-11 18:38:06 - INFO - root - App started
+2024-04-11 18:38:06 - INFO - uvicorn.error - Application startup complete.
+2024-04-11 18:38:06 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-11 18:38:13 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-11 18:38:13 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x000002860ADF2650>, <starlette.datastructures.UploadFile object at 0x000002860ADF2470>]
+2024-04-11 18:38:18 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x000002860A7DDD20>
+2024-04-11 18:38:18 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-11 18:38:18 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-11 18:38:19 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-11 18:38:19 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-11 18:38:19 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-11 18:38:20 - ERROR - transactions_process_service.api.transactions - 'NoneType' object is not iterable
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 60, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([result_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Processing file: transactions_result.xlsx
+2024-04-11 18:38:20 - INFO - transactions_process_service.services.email_sender - Uploading to mail: transactions_result.xlsx
+2024-04-11 18:38:20 - INFO - uvicorn.access - 127.0.0.1:56044 - "POST /transactions/process HTTP/1.1" 500
+2024-04-11 18:38:20 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 60, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([result_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 408, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\applications.py", line 292, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 184, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 79, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 20, in __call__
+    raise e
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 273, in app
+    raw_response = await run_endpoint_function(
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 190, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 73, in process_transactions
+    send_email_with_files("Unexpected error", str(e), all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 47, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine
+2024-04-11 18:43:21 - INFO - root - App started
+2024-04-11 18:43:21 - INFO - uvicorn.error - Application startup complete.
+2024-04-11 18:43:21 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-11 18:43:28 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-11 18:43:28 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x000001995FAD2650>, <starlette.datastructures.UploadFile object at 0x000001995FAD2470>]
+2024-04-11 18:43:40 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x000001995F49DD20>
+2024-04-11 18:43:40 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-11 18:43:40 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-11 18:43:41 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-11 18:43:41 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-11 18:43:41 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Processing file: transactions_result.xlsx
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploading to mail: transactions_result.xlsx
+2024-04-11 18:43:41 - ERROR - transactions_process_service.api.transactions - expected bytes-like object, not coroutine
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 61, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 47, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Processing file: transactions_result.xlsx
+2024-04-11 18:43:41 - INFO - transactions_process_service.services.email_sender - Uploading to mail: transactions_result.xlsx
+2024-04-11 18:43:41 - INFO - uvicorn.access - 127.0.0.1:59769 - "POST /transactions/process HTTP/1.1" 500
+2024-04-11 18:43:41 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 61, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 47, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 408, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\applications.py", line 292, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 184, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 79, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 20, in __call__
+    raise e
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 273, in app
+    raw_response = await run_endpoint_function(
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 190, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 74, in process_transactions
+    send_email_with_files("Unexpected error", str(e), all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 47, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine
+2024-04-11 18:53:51 - INFO - root - App started
+2024-04-11 18:53:51 - INFO - uvicorn.error - Application startup complete.
+2024-04-11 18:53:51 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-11 18:54:01 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-11 18:54:01 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x00000252D1B72650>, <starlette.datastructures.UploadFile object at 0x00000252D1B72470>]
+2024-04-11 18:54:06 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x00000252D153DD20>
+2024-04-11 18:54:06 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-11 18:54:06 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-11 18:54:08 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-11 18:54:08 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-11 18:54:08 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Processing file: transactions_result.xlsx
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploading to mail: transactions_result.xlsx
+2024-04-11 18:54:08 - ERROR - transactions_process_service.api.transactions - expected bytes-like object, not coroutine
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 59, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 48, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Processing file: transactions_result.xlsx
+2024-04-11 18:54:08 - INFO - transactions_process_service.services.email_sender - Uploading to mail: transactions_result.xlsx
+2024-04-11 18:54:08 - INFO - uvicorn.access - 127.0.0.1:51468 - "POST /transactions/process HTTP/1.1" 500
+2024-04-11 18:54:08 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 59, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 48, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 534, in _input_type_check
+    m = memoryview(s)
+TypeError: memoryview: a bytes-like object is required, not 'coroutine'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 408, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\applications.py", line 292, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 184, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 79, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 20, in __call__
+    raise e
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 273, in app
+    raw_response = await run_endpoint_function(
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 190, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 72, in process_transactions
+    send_email_with_files("Unexpected error", str(e), all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 48, in send_email_with_files
+    part = MIMEApplication(file_content)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\mime\application.py", line 37, in __init__
+    _encoder(self)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\email\encoders.py", line 32, in encode_base64
+    encdata = str(_bencode(orig), 'ascii')
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 551, in encodebytes
+    _input_type_check(s)
+  File "C:\Users\hen10\AppData\Local\Programs\Python\Python310\lib\base64.py", line 537, in _input_type_check
+    raise TypeError(msg) from err
+TypeError: expected bytes-like object, not coroutine

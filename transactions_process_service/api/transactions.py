@@ -1,9 +1,11 @@
 import logging
 from typing import List
 from fastapi import APIRouter, HTTPException, Response, UploadFile, status
+from starlette.datastructures import UploadFile as StarletteUploadFile
+from starlette.datastructures import Headers
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.api.custom_exceptions import ParserMismatchException
-from transactions_process_service.services.email_sender import send_error_email_with_uploadfiles
+from transactions_process_service.services.email_sender import send_email_with_files
 from transactions_process_service.services.parsers.parser_exceptions import CorrectParserNotFound
 from transactions_process_service.services.transaction_matcher import TransactionMatcher
 from transactions_process_service.services.parsers.file_parser import FileParser
@@ -20,16 +22,15 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
         logger = logging.getLogger(__name__)
         logger.info("In Process Transactions")
         # Initialization
-        bank_detector = FindCorrectParser()
         transaction_matcher = TransactionMatcher()
         system_parser = PharmBillsParser()
         excel_controller = ExcelController()
         bank_name = "Bank"
         system_name = "PharmBills System"
-        all_files = bank_files + [system_file]
-        logger.info(f"Detected files: {all_files}")
+        all_files = bank_files.copy() + [system_file].copy()
+        logger.info(f"Detected {len(all_files)} files: {all_files}")
         try:
-            parser = verify_and_get_parser(bank_files, bank_detector)
+            parser = verify_and_get_parser(bank_files)
             logger.info(f"Detected parser: {parser}")
             bank_parser = parser()
         except ParserMismatchException as e:
@@ -47,7 +48,15 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
         )
 
         # Create and return Excel file
-        return generate_excel_response(data, excel_controller, bank_name, system_name)
+        generated_excel = excel_controller.create_transaction_excel(
+            data, None, bank_name, system_name
+        )
+        excel_name="transactions_result"
+        result_excel = UploadFile(file=generated_excel, size=len(generated_excel.getvalue()), filename=(excel_name+".xlsx"), headers=Headers({"content-type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}))
+        all_files.extend([result_excel])
+        send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files)
+        response = generate_excel_response(excel_output=generated_excel, excel_name=excel_name)
+        return response
 
     except ParserMismatchException as e:
         logger.exception(e)
@@ -55,18 +64,19 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except CorrectParserNotFound as e:
         logger.exception(e)
-        send_error_email_with_uploadfiles("Parser not found", str(e), all_files)
+        send_email_with_files("Parser not found", str(e), all_files)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.exception(e)
-        send_error_email_with_uploadfiles("Unexpected error", str(e), all_files)
+        send_email_with_files("Unexpected error", str(e), all_files)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
 
 
-def verify_and_get_parser(bank_files: List[UploadFile], bank_detector: FindCorrectParser):
+def verify_and_get_parser(bank_files: List[UploadFile]):
     logger = logging.getLogger(__name__)
+    bank_detector = FindCorrectParser()
     parser_types = [
         type(bank_detector.find_parser(file)) for file in bank_files
     ]
@@ -129,20 +139,16 @@ def find_matches(all_bank_transactions: List[Transaction], system_transactions: 
 
 
 def generate_excel_response(
-    data,
-    excel_controller: ExcelController,
-    bank_name="Bank",
-    system_name="PharmBills System",
+    excel_output=None,
+    excel_name="transactions_results",
 ):
-    output = excel_controller.create_transaction_excel(
-        data, None, bank_name, system_name
-    )
-    if output is None:
+    
+    if excel_output is None:
         return Response(
             content="No matches found", status_code=status.HTTP_404_NOT_FOUND
         )
     headers = {
-        "Content-Disposition": "attachment; filename=result.xlsx",
+        "Content-Disposition": f"attachment; filename={excel_name}.xlsx",
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     }
-    return Response(content=output.read(), headers=headers)
+    return Response(content=excel_output.read(), headers=headers)

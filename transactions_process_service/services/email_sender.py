@@ -1,6 +1,6 @@
 import os
 import logging
-from typing import List
+from typing import List, Union
 from smtplib import SMTP
 from fastapi import UploadFile
 from collections import defaultdict
@@ -9,7 +9,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
 
-def send_error_email_with_uploadfiles(subject, body, files: List[UploadFile]):
+def send_email_with_files(subject, body, files: List[Union[UploadFile|str]]):
     # Access environment variables
     logger = logging.getLogger(__name__)
     SMTP_SERVER = os.getenv("SMTP_SERVER")
@@ -27,21 +27,26 @@ def send_error_email_with_uploadfiles(subject, body, files: List[UploadFile]):
     filename_counts = defaultdict(int)
 
     for upload_file in files:
-        # Increment the count for this filename
-        filename_counts[upload_file.filename] += 1
-        # Determine the file's name for attachment
-        if filename_counts[upload_file.filename] > 1:
-            base_name, extension = os.path.splitext(upload_file.filename)
-            # Format filename with count if this is not the first occurrence
-            attachment_filename = f"{base_name}_{filename_counts[upload_file.filename]-1}{extension}"
+        filename = upload_file if type(upload_file) is str else upload_file.filename
+        logger.info(f"Processing file: {filename}")
+        filename_counts[filename] += 1
+        if filename_counts[filename] > 1:
+            base_name, extension = os.path.splitext(filename)
+            attachment_filename = f"{base_name}_{filename_counts[filename]-1}{extension}"
         else:
-            attachment_filename = upload_file.filename
+            attachment_filename = filename
 
         logger.info(f"Uploading to mail: {attachment_filename}")
-        file_content = upload_file.file.read()
-        part = MIMEApplication(file_content)
-        logger.info(f"Size of {attachment_filename}: {len(file_content)} bytes")
-        upload_file.file.seek(0)  # Reset file pointer after reading
+        if type(upload_file) is str:
+            with open(upload_file, 'rb') as f:
+                file_content = f.read()
+                part = MIMEApplication(file_content)
+                logger.info(f"Size of {attachment_filename}: {len(file_content)} bytes")
+        else:    
+            file_content = upload_file.file.read()
+            upload_file.file.seek(0)  # Reset file pointer after reading
+            part = MIMEApplication(file_content)
+            logger.info(f"Size of {attachment_filename}: {len(file_content)} bytes")
         part['Content-Disposition'] = f'attachment; filename="{attachment_filename}"'
         message.attach(part)
         logger.info(f"Uploaded to mail: {attachment_filename}")
