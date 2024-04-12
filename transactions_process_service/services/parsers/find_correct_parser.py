@@ -15,6 +15,13 @@ class FindCorrectParser:
 
     def find_parser(self, file: UploadFile | str) -> FileParser:
         try:
+            return self.search_by_bank_name(file)
+        except CorrectParserNotFound as e:
+            raise e
+        except Exception as e:
+            raise Exception(f"In Find Correct Parser for file {file.filename} got this error: \n{str(e)}") from e
+
+    def search_by_bank_name(self, file: UploadFile | str):
             if type(file) is str:
                 df = tabula.io.read_pdf(
                     file,
@@ -54,12 +61,6 @@ class FindCorrectParser:
                                         f"Found correct parser: {formatted_all_parsers[parser_key]}"
                                     )
                                     return formatted_all_parsers[parser_key]
-            raise CorrectParserNotFound(file)
-        except CorrectParserNotFound as e:
-            raise e
-        except Exception as e:
-            raise Exception(f"In Find Correct Parser for file {file.filename} got this error: \n{str(e)}") from e
-        
     def _format_string(self, string: str) -> str:
         text = string.lower()
         text = re.sub(
