@@ -16,22 +16,23 @@ class ForbrightBankParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file: BinaryIO | str) -> List[Transaction]:
-        
+    def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
+
         df = tabula.io.read_pdf(
             file,
             multiple_tables=True,
             pages="all",
             pandas_options={"header": None},
             guess=False,
+
         )
         try:
-            file.file.seek(0)
+            file.seek(0)
         except:
             pass
-        bank_transactions: List[
-            Transaction
-        ] = []  # Use a Python list for accumulating transactions
+        bank_transactions: List[Transaction] = (
+            []
+        )  # Use a Python list for accumulating transactions
         bank_transactions_amounts = []  # Likewise, for amounts
 
         for table in df:

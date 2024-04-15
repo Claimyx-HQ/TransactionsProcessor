@@ -17,24 +17,23 @@ class UnitedBankParser(FileParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-        columns=[50, 100, 350, 435, 515]
+        columns = [50, 100, 350, 435, 515]
         df = tabula.io.read_pdf(
-                file,
-                multiple_tables=True,
-                pages="all",
-                pandas_options={"header": None},
-                guess=False,
-                columns=columns,
-            )
+            file,
+            multiple_tables=True,
+            pages="all",
+            pandas_options={"header": None},
+            guess=False,
+            columns=columns,
+        )
         try:
-            file.file.seek(0)
+            file.seek(0)
         except:
             pass
-        bank_transactions: List[
-            Transaction
-        ] = []  # Use a Python list for accumulating transactions
+        bank_transactions: List[Transaction] = (
+            []
+        )  # Use a Python list for accumulating transactions
         bank_transactions_amounts = []  # Likewise, for amounts
-
 
         for table in df:
             table_data: List = table.values.tolist()  # type: ignore
@@ -66,5 +65,5 @@ class UnitedBankParser(FileParser):
         except ValueError:
             return False
 
-# Local Test
 
+# Local Test

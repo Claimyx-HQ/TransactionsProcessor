@@ -36,8 +36,9 @@ class FindCorrectParser:
             )
             try:
                 file_data.seek(0)
-            except:
-                pass
+                
+            except Exception as e:
+                self.logger.error(e)
             for table in df:
                 table_data: List = table.values.tolist()  # type: ignore
                 for row in table_data:

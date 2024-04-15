@@ -17,22 +17,22 @@ class ConnectOneBankParser(FileParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-        columns = [109,131.8,443,516.3]
+        columns = [109, 131.8, 443, 516.3]
         df = tabula.io.read_pdf(
-                file,
-                multiple_tables=True,
-                pages="all",
-                pandas_options={"header": None},
-                guess=False,
-                columns=columns,
-            )
+            file,
+            multiple_tables=True,
+            pages="all",
+            pandas_options={"header": None},
+            guess=False,
+            columns=columns,
+        )
         try:
-            file.file.seek(0)
+            file.seek(0)
         except:
             pass
-        bank_transactions: List[
-            Transaction
-        ] = []  # Use a Python list for accumulating transactions
+        bank_transactions: List[Transaction] = (
+            []
+        )  # Use a Python list for accumulating transactions
         bank_transactions_amounts = []  # Likewise, for amounts
 
         for table in df:
@@ -40,7 +40,7 @@ class ConnectOneBankParser(FileParser):
             for row in table_data:
                 self.logger.debug(f"row length: {len(row)} -- {row}")
                 if row[0] == "DEBITS":
-                    in_deposits = False 
+                    in_deposits = False
                 elif row[0] == "CREDITS":
                     in_deposits = True
                 valid_row, formatted_date = self._valid_date(row[1])
@@ -71,5 +71,5 @@ class ConnectOneBankParser(FileParser):
         except ValueError:
             return False, date
 
-# Local Test
 
+# Local Test

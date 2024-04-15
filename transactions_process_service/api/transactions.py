@@ -33,8 +33,8 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
             parser = verify_and_get_parser(bank_files)
             logger.info(f"Detected parser: {parser}")
             bank_parser = parser()
-        except ParserMismatchException as e:
-            raise ParserMismatchException(message=e)
+        except CorrectParserNotFound as e:
+            raise e
 
         # Process transactions
         all_bank_transactions, system_transactions = process_all_transactions(
@@ -58,10 +58,6 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
         response = generate_excel_response(excel_output=generated_excel, excel_name=excel_name)
         return response
 
-    except ParserMismatchException as e:
-        logger.exception(e)
-
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except CorrectParserNotFound as e:
         logger.exception(e)
         send_email_with_files("Parser not found", str(e), all_files)
@@ -77,14 +73,14 @@ async def process_transactions(system_file: UploadFile, bank_files: List[UploadF
 def verify_and_get_parser(bank_files: List[UploadFile]):
     logger = logging.getLogger(__name__)
     bank_detector = FindCorrectParser()
-    parser_types = [
-        type(bank_detector.find_parser(file)) for file in bank_files
-    ]
-    logger.info(f"Parser types: {parser_types}")
+    try:
+        parser_types = [
+            type(bank_detector.find_parser(file)) for file in bank_files
+        ]
+    except CorrectParserNotFound as e:
+        raise e
     set_parser_types = set(parser_types)
-    if len(set_parser_types) > 1:
-        raise ParserMismatchException(parser_types)
-
+    logger.info(f"Parser types: {set_parser_types}")
     return parser_types[0]
 
 

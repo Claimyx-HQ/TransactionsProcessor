@@ -17,22 +17,22 @@ class FlagstarBankParser(FileParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-        columns = [80,504,576]
+        columns = [80, 504, 576]
         df = tabula.io.read_pdf(
-                file,
-                multiple_tables=True,
-                pages="all",
-                pandas_options={"header": None},
-                guess=False,
-                columns=columns,
-            )
+            file,
+            multiple_tables=True,
+            pages="all",
+            pandas_options={"header": None},
+            guess=False,
+            columns=columns,
+        )
         try:
-            file.file.seek(0)
+            file.seek(0)
         except:
             pass
-        bank_transactions: List[
-            Transaction
-        ] = []  # Use a Python list for accumulating transactions
+        bank_transactions: List[Transaction] = (
+            []
+        )  # Use a Python list for accumulating transactions
         bank_transactions_amounts = []  # Likewise, for amounts
 
         for table in df:
@@ -40,12 +40,12 @@ class FlagstarBankParser(FileParser):
             for row in table_data:
                 self.logger.debug(f"row length: {len(row)} -- {row}")
                 if row[0] == "Deposits":
-                    in_deposits = True 
+                    in_deposits = True
                 elif row[0] == "Withdraw":
                     in_deposits = False
                 valid_row, formatted_date = self._valid_date(row[0])
                 if valid_row and in_deposits:
-                
+
                     amount = (
                         float(row[2].replace(",", "").replace("$", "").replace(" ", ""))
                         if isinstance(row[2], str)
@@ -72,5 +72,5 @@ class FlagstarBankParser(FileParser):
         except ValueError:
             return False, date
 
-# Local Test
 
+# Local Test

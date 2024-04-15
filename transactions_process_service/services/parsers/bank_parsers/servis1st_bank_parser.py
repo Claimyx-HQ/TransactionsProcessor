@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import Dict, List, Union
+from typing import BinaryIO, Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
@@ -16,23 +16,23 @@ class Servis1stBankParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file: UploadFile | str) -> List[Transaction]:
-        columns = [65,130,326,594]
+    def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
+        columns = [65, 130, 326, 594]
         df = tabula.io.read_pdf(
-                file,
-                multiple_tables=True,
-                pages="all",
-                pandas_options={"header": None},
-                guess=False,
-                columns=columns,
-            )
+            file,
+            multiple_tables=True,
+            pages="all",
+            pandas_options={"header": None},
+            guess=False,
+            columns=columns,
+        )
         try:
-            file.file.seek(0)
+            file.seek(0)
         except:
             pass
-        bank_transactions: List[
-            Transaction
-        ] = []  # Use a Python list for accumulating transactions
+        bank_transactions: List[Transaction] = (
+            []
+        )  # Use a Python list for accumulating transactions
         bank_transactions_amounts = []  # Likewise, for amounts
 
         for table in df:
@@ -42,9 +42,9 @@ class Servis1stBankParser(FileParser):
                 self.logger.debug(f"row length: {len(row)} -- {row}")
                 if isinstance(row[1], str):
                     if row[1] == "DEPOSITS":
-                        in_deposits = True 
+                        in_deposits = True
                         self.logger.debug(f"For row {row}, in_deposits = {in_deposits}")
-                    elif row[1].startswith("WITHDRAW") :
+                    elif row[1].startswith("WITHDRAW"):
                         in_deposits = False
                         self.logger.debug(f"For row {row}, in_deposits = {in_deposits}")
 
@@ -76,5 +76,5 @@ class Servis1stBankParser(FileParser):
         except ValueError:
             return False, date
 
-# Local Test
 
+# Local Test
