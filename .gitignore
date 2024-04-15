@@ -8,3 +8,4 @@ tests/output_tests_data/
 *.log
 .config
 .env
+logs/

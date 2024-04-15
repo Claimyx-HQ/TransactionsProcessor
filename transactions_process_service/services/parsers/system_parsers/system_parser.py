@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import Any, Dict, List, Union
+from typing import Any, BinaryIO, Dict, List, Union
 from starlette.datastructures import UploadFile
 import tabula
 import pandas as pd
@@ -15,16 +15,14 @@ class PharmBillsParser(FileParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file: UploadFile | str) -> List[Transaction]:
-        if type(file) is str:
-            excel_df = pd.read_excel(
-                file, sheet_name=0
-            )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)
-        else:
-            excel_df = pd.read_excel(
-                file.file, sheet_name=0
-            )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)
-            file.file.seek(0)
+    def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
+        excel_df = pd.read_excel(
+            file, sheet_name=0
+        )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)
+        try:
+            file.seek(0)
+        except:
+            pass
         important_columns = excel_df.iloc[:, [0, 1, 3]]
         if pd.api.types.is_numeric_dtype(important_columns):
             # If the column is already numeric, directly convert to array

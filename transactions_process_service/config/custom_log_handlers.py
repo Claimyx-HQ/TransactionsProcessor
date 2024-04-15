@@ -5,7 +5,7 @@ import os
 from transactions_process_service.services.email_sender import send_email_with_files
 
 class EmailingTimedRotatingFileHandler(TimedRotatingFileHandler):
-    def __init__(self, filename, when='midnight', interval=1, backupCount=30, encoding=None, delay=False, utc=False, atTime=None, absolute_path=None):
+    def __init__(self, filename, when='midnight', interval=1, backupCount=5, encoding=None, delay=False, utc=False, atTime=None, absolute_path=None):
         super().__init__(filename, when, interval, backupCount, encoding, delay, utc, atTime)
         self.absolute_path = absolute_path  # Store the absolute path
 

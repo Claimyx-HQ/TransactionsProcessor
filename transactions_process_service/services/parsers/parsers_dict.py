@@ -10,7 +10,7 @@ from transactions_process_service.services.parsers.bank_parsers.united_bank_pars
 
 all_parsers = {
     "united_bank": UnitedBankParser(),
-    "forbright_bank": ForbrightBankParser(),
-    "connect_one_bank": ConnectOneBankParser(),
-    "flagstar_bank": FlagstarBankParser(),
+    "forbright": ForbrightBankParser(),
+    "connect_one": ConnectOneBankParser(),
+    "flagstar": FlagstarBankParser(),
 }
