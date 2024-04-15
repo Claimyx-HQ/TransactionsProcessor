@@ -92,9 +92,9 @@ def process_all_transactions(bank_files: List[UploadFile], system_file: UploadFi
     all_bank_transactions = [
         transaction
         for file in bank_files
-        for transaction in bank_parser.parse_transactions(file)
+        for transaction in bank_parser.parse_transactions(file.file)
     ]
-    system_transactions = system_parser.parse_transactions(system_file)
+    system_transactions = system_parser.parse_transactions(system_file.file)
     return all_bank_transactions, system_transactions
 
 

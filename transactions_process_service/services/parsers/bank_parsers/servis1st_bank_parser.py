@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import BinaryIO, Dict, List, Union
+from typing import Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
@@ -10,14 +10,14 @@ from transactions_process_service.schemas.transaction import Transaction
 from datetime import datetime
 
 
-class ConnectOneBankParser(FileParser):
+class Servis1stBankParser(FileParser):
     def __init__(self) -> None:
         self.decoded_data = []
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-        columns = [109,131.8,443,516.3]
+    def parse_transactions(self, file: UploadFile | str) -> List[Transaction]:
+        columns = [65,130,326,594]
         df = tabula.io.read_pdf(
                 file,
                 multiple_tables=True,
@@ -37,12 +37,17 @@ class ConnectOneBankParser(FileParser):
 
         for table in df:
             table_data: List = table.values.tolist()  # type: ignore
+            in_deposits = False
             for row in table_data:
                 self.logger.debug(f"row length: {len(row)} -- {row}")
-                if row[0] == "DEBITS":
-                    in_deposits = False 
-                elif row[0] == "CREDITS":
-                    in_deposits = True
+                if isinstance(row[1], str):
+                    if row[1] == "DEPOSITS":
+                        in_deposits = True 
+                        self.logger.debug(f"For row {row}, in_deposits = {in_deposits}")
+                    elif row[1].startswith("WITHDRAW") :
+                        in_deposits = False
+                        self.logger.debug(f"For row {row}, in_deposits = {in_deposits}")
+
                 valid_row, formatted_date = self._valid_date(row[1])
                 if valid_row and in_deposits:
                     amount = (
@@ -65,7 +70,7 @@ class ConnectOneBankParser(FileParser):
         try:
             if isinstance(date, float):
                 return False, date
-            parsed_date = datetime.strptime(date, "%m-%d")
+            parsed_date = datetime.strptime(date, "%m/%d")
             formatted_date = parsed_date.strftime("%m/%d")
             return True, formatted_date
         except ValueError:

@@ -7,6 +7,9 @@ from transactions_process_service.services.parsers.bank_parsers.connect_one_bank
 from transactions_process_service.services.parsers.bank_parsers.flagstar_bank_parser import (
     FlagstarBankParser,
 )
+from transactions_process_service.services.parsers.bank_parsers.servis1st_bank_parser import (
+    Servis1stBankParser,
+)
 from transactions_process_service.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
@@ -114,3 +117,24 @@ def test_parse_connect_one_bank():
     parsed_transaction = transactions[0]
 
     _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_servis1st_bank():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/servis1st/servis1st_bank.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 3, 1, 0, 0),
+        description="FAC A771  NDC SWEEPPPD",
+        amount=3599.1,
+        uuid="e68dc147-0398-4ab7-9f0d-4e6d220044b0",
+    )
+    parser = Servis1stBankParser()
+
+    transactions = parser.parse_transactions(file_path)
+    # Assuming `transactions` is a list of transaction objects or dictionaries you want to log
+    formatted_transactions = " \n".join(str(t) for t in transactions)
+    logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
