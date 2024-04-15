@@ -6,7 +6,7 @@ authors = ["Sharon Fabin <i.sharon.fabin@gmail.com>", "Ido Brosh <idobroshm@gmai
 readme = "README.md"
 
 [tool.poetry.scripts]
-start = "transactions_process_service.main:start"
+start = "main:start"
 # start = "python -m uvicorn --app-dir=buybox_service main:app --reload"
 
 [tool.poetry.dependencies]

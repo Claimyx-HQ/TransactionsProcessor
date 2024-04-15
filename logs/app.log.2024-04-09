@@ -1,0 +1,285 @@
+App started
+Application startup complete.
+Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+127.0.0.1:63167 - "POST /transactions/process HTTP/1.1" 400
+App started
+Application startup complete.
+Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+In Process Transactions
+Detected 2 files: [<starlette.datastructures.UploadFile object at 0x0000022D4297A500>, <starlette.datastructures.UploadFile object at 0x0000022D4297A320>]
+The Parser for this file (Mifrat_500e_v2.pdf) type was not found
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 31, in process_transactions
+    parser = verify_and_get_parser(bank_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 70, in verify_and_get_parser
+    parser_types = [
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 71, in <listcomp>
+    type(bank_detector.find_parser(file)) for file in bank_files
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\parsers\find_correct_parser.py", line 59, in find_parser
+    raise e
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\parsers\find_correct_parser.py", line 57, in find_parser
+    raise CorrectParserNotFound(file)
+transactions_process_service.services.parsers.parser_exceptions.CorrectParserNotFound: The Parser for this file (Mifrat_500e_v2.pdf) type was not found
+Uploading to mail: Mifrat_500e_v2.pdf
+Size of Mifrat_500e_v2.pdf: 1319115 bytes
+Uploaded to mail: Mifrat_500e_v2.pdf
+Uploading to mail: ncs_excell_statement_blue.xls
+Size of ncs_excell_statement_blue.xls: 23552 bytes
+Uploaded to mail: ncs_excell_statement_blue.xls
+127.0.0.1:60768 - "POST /transactions/process HTTP/1.1" 400
+2024-04-09 14:32:56 - INFO - root - App started
+2024-04-09 14:33:30 - INFO - root - App started
+2024-04-09 14:34:22 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-09 14:34:22 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x000002A8F4BEA650>, <starlette.datastructures.UploadFile object at 0x000002A8F4BEA470>]
+2024-04-09 14:34:26 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x000002A8F45A9C30>
+2024-04-09 14:34:26 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-09 14:34:26 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-09 14:34:27 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-09 14:34:27 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-09 14:34:27 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-09 14:38:24 - INFO - root - App started
+2024-04-09 14:42:16 - INFO - root - App started
+2024-04-09 14:42:16 - INFO - uvicorn.error - Application startup complete.
+2024-04-09 14:42:16 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-09 14:46:05 - INFO - uvicorn.error - Shutting down
+2024-04-09 14:46:06 - INFO - uvicorn.error - Waiting for application shutdown.
+2024-04-09 14:46:06 - INFO - uvicorn.error - Application shutdown complete.
+2024-04-09 14:46:06 - INFO - uvicorn.error - Finished server process [1908]
+2024-04-09 14:49:30 - INFO - root - App started
+2024-04-09 14:49:30 - INFO - uvicorn.error - Application startup complete.
+2024-04-09 14:49:30 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-09 14:50:03 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-09 14:50:03 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x000001CE387C31C0>, <starlette.datastructures.UploadFile object at 0x000001CE387C2FE0>]
+2024-04-09 14:50:06 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x000001CE38191C90>
+2024-04-09 14:50:06 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-09 14:50:06 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-09 14:50:07 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-09 14:50:07 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-09 14:50:07 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-09 14:50:07 - ERROR - transactions_process_service.api.transactions - object of type 'UploadFile' has no len()
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 51, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and {len(system_file)} system file" , all_files.extend([generated_excel]))
+TypeError: object of type 'UploadFile' has no len()
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-09 14:50:07 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:50:11 - INFO - uvicorn.access - 127.0.0.1:59029 - "POST /transactions/process HTTP/1.1" 500
+2024-04-09 14:50:11 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-09 14:50:11 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x000001CE387C3520>, <starlette.datastructures.UploadFile object at 0x000001CE387C3310>]
+2024-04-09 14:50:11 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x000001CE38191C90>
+2024-04-09 14:50:11 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-09 14:50:11 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-09 14:50:12 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-09 14:50:12 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-09 14:50:12 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-09 14:50:12 - ERROR - transactions_process_service.api.transactions - object of type 'UploadFile' has no len()
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 51, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and {len(system_file)} system file" , all_files.extend([generated_excel]))
+TypeError: object of type 'UploadFile' has no len()
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-09 14:50:12 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:50:15 - INFO - uvicorn.access - 127.0.0.1:59030 - "POST /transactions/process HTTP/1.1" 500
+2024-04-09 14:52:06 - INFO - root - App started
+2024-04-09 14:52:06 - INFO - uvicorn.error - Application startup complete.
+2024-04-09 14:52:06 - INFO - uvicorn.error - Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2024-04-09 14:52:09 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-09 14:52:09 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x0000018F00FF25C0>, <starlette.datastructures.UploadFile object at 0x0000018F00FF2440>]
+2024-04-09 14:52:12 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x0000018F009E1C90>
+2024-04-09 14:52:12 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-09 14:52:12 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-09 14:52:13 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-09 14:52:13 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-09 14:52:13 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-09 14:52:13 - ERROR - transactions_process_service.api.transactions - 'NoneType' object is not iterable
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 51, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([generated_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-09 14:52:13 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:52:13 - INFO - uvicorn.access - 127.0.0.1:60585 - "POST /transactions/process HTTP/1.1" 500
+2024-04-09 14:52:13 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 51, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([generated_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 408, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\applications.py", line 292, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 184, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 79, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 20, in __call__
+    raise e
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 273, in app
+    raw_response = await run_endpoint_function(
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 190, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 64, in process_transactions
+    send_email_with_files("Unexpected error", str(e), all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 30, in send_email_with_files
+    filename = upload_file if type(upload_file) is str else upload_file.filename
+AttributeError: 'Response' object has no attribute 'filename'
+2024-04-09 14:52:19 - INFO - transactions_process_service.api.transactions - In Process Transactions
+2024-04-09 14:52:19 - INFO - transactions_process_service.api.transactions - Detected 2 files: [<starlette.datastructures.UploadFile object at 0x0000018F19975930>, <starlette.datastructures.UploadFile object at 0x0000018F19974BB0>]
+2024-04-09 14:52:19 - INFO - transactions_process_service.services.parsers.find_correct_parser - Found correct parser: <transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser object at 0x0000018F009E1C90>
+2024-04-09 14:52:19 - INFO - transactions_process_service.api.transactions - Parser types: [<class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>]
+2024-04-09 14:52:19 - INFO - transactions_process_service.api.transactions - Detected parser: <class 'transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser.ConnectOneBankParser'>
+2024-04-09 14:52:19 - INFO - transactions_process_service.api.transactions - 2 bank_transactions
+2024-04-09 14:52:19 - INFO - transactions_process_service.api.transactions - 98 system_transactions
+2024-04-09 14:52:19 - INFO - transactions_process_service.api.transactions - 
+        "transactions": "system": 98, "bank": 2,
+        "matches": 
+            "one_to_one": 0,
+            "multi_to_one": 0,
+            "unmatched_system": 98,
+            "unmatched_bank": 2,
+        ,
+    
+2024-04-09 14:52:20 - ERROR - transactions_process_service.api.transactions - 'NoneType' object is not iterable
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 51, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([generated_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Processing file: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Uploading to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Size of 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf: 64856 bytes
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: 4317-ACCORDIUS HEALTH AT HARRISONBURG LLC-20240229.pdf
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Processing file: ncs_excell_statement_blue.xls
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Uploading to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Size of ncs_excell_statement_blue.xls: 23552 bytes
+2024-04-09 14:52:20 - INFO - transactions_process_service.services.email_sender - Uploaded to mail: ncs_excell_statement_blue.xls
+2024-04-09 14:52:20 - INFO - uvicorn.access - 127.0.0.1:60702 - "POST /transactions/process HTTP/1.1" 500
+2024-04-09 14:52:20 - ERROR - uvicorn.error - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 51, in process_transactions
+    send_email_with_files("Success!",f"Excel file generated from {len(bank_files)} bank files and 1 system file" , all_files.extend([generated_excel]))
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 29, in send_email_with_files
+    for upload_file in files:
+TypeError: 'NoneType' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 408, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\applications.py", line 292, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 184, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 79, in __call__
+    raise exc
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 20, in __call__
+    raise e
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 273, in app
+    raw_response = await run_endpoint_function(
+  File "C:\Users\hen10\AppData\Local\pypoetry\Cache\virtualenvs\transactions-process-service-W1z9nTdG-py3.10\lib\site-packages\fastapi\routing.py", line 190, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\api\transactions.py", line 64, in process_transactions
+    send_email_with_files("Unexpected error", str(e), all_files)
+  File "C:\Users\hen10\Desktop\projects\TransactionsProcessService\transactions_process_service\services\email_sender.py", line 30, in send_email_with_files
+    filename = upload_file if type(upload_file) is str else upload_file.filename
+AttributeError: 'Response' object has no attribute 'filename'

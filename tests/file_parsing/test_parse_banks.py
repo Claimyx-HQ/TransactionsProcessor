@@ -18,6 +18,24 @@ from transactions_process_service.services.parsers.bank_parsers.forbright_bank_p
     ForbrightBankParser,
 )
 
+# conftest.py or your specific test file
+import pytest
+import pandas as pd
+
+
+@pytest.fixture(autouse=True)
+def pandas_display_settings():
+    pd.set_option("display.max_rows", None)  # Display all rows
+    pd.set_option("display.max_columns", None)  # Display all columns
+    pd.set_option("display.max_colwidth", None)  # Display full content of each column
+    yield
+
+
+def _check_the_test(first_transaction, parsed_transaction):
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+
 
 def test_parse_forbright_bank():
     file_path = "tests/data/forbright_bank.pdf"
@@ -32,9 +50,7 @@ def test_parse_forbright_bank():
     transactions = parser.parse_transactions(file_path)
     parsed_transaction = transactions[0]
 
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+    _check_the_test(first_transaction, parsed_transaction)
 
 
 def test_parse_united_bank():
@@ -54,17 +70,10 @@ def test_parse_united_bank():
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+    _check_the_test(first_transaction, parsed_transaction)
 
 
 def test_parse_flagstar_bank():
-    import pandas as pd
-
-    pd.set_option("display.max_rows", None)  # Display all rows
-    pd.set_option("display.max_columns", None)  # Display all columns
-    pd.set_option("display.max_colwidth", None)  # Display full content of each column
 
     # Be cautious with these settings for very large DataFrames
 
@@ -84,17 +93,10 @@ def test_parse_flagstar_bank():
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+    _check_the_test(first_transaction, parsed_transaction)
 
 
 def test_parse_connect_one_bank():
-    import pandas as pd
-
-    pd.set_option("display.max_rows", None)  # Display all rows
-    pd.set_option("display.max_columns", None)  # Display all columns
-    pd.set_option("display.max_colwidth", None)  # Display full content of each column
 
     # Be cautious with these settings for very large DataFrames
 
@@ -114,19 +116,10 @@ def test_parse_connect_one_bank():
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+    _check_the_test(first_transaction, parsed_transaction)
 
 
 def test_parse_servis1st_bank():
-    import pandas as pd
-
-    pd.set_option("display.max_rows", None)  # Display all rows
-    pd.set_option("display.max_columns", None)  # Display all columns
-    pd.set_option("display.max_colwidth", None)  # Display full content of each column
-
-    # Be cautious with these settings for very large DataFrames
 
     logger = logging.getLogger(__name__)
     file_path = "tests/data/servis1st/servis1st_bank.pdf"
@@ -143,7 +136,5 @@ def test_parse_servis1st_bank():
     formatted_transactions = " \n".join(str(t) for t in transactions)
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
 
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
