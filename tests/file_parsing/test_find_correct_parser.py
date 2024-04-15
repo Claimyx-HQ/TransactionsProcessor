@@ -3,8 +3,12 @@ from datetime import datetime
 
 import pytest
 from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser import ConnectOneBankParser
-from transactions_process_service.services.parsers.bank_parsers.flagstar_bank_parser import FlagstarBankParser
+from transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser import (
+    ConnectOneBankParser,
+)
+from transactions_process_service.services.parsers.bank_parsers.flagstar_bank_parser import (
+    FlagstarBankParser,
+)
 from transactions_process_service.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
@@ -17,6 +21,16 @@ from transactions_process_service.services.parsers.find_correct_parser import (
 from transactions_process_service.services.parsers.parser_exceptions import (
     CorrectParserNotFound,
 )
+
+
+def _check_the_test(
+    found_parser, correct_parser, first_transaction, parsed_transaction
+):
+    assert isinstance(found_parser, correct_parser)
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+
 
 
 def test_find_correct_parser_for_unknown_PDF():
@@ -46,10 +60,7 @@ def test_find_correct_parser_for_united_bank():
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert isinstance(found_parser, correct_parser)
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+    _check_the_test(found_parser, correct_parser, first_transaction, parsed_transaction)
 
 
 def test_find_correct_parser_for_forbright_bank():
@@ -69,11 +80,9 @@ def test_find_correct_parser_for_forbright_bank():
     formatted_transactions = " \n".join(str(t) for t in transactions)
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
+    _check_the_test(found_parser, correct_parser, first_transaction, parsed_transaction)
 
-    assert isinstance(found_parser, correct_parser)
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+
 
 def test_find_correct_parser_for_flagstar_bank():
     logger = logging.getLogger(__name__)
@@ -93,10 +102,8 @@ def test_find_correct_parser_for_flagstar_bank():
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert isinstance(found_parser, correct_parser)
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+    _check_the_test(found_parser, correct_parser, first_transaction, parsed_transaction)
+
 
 def test_find_correct_parser_for_connect_one_bank():
     logger = logging.getLogger(__name__)
@@ -116,7 +123,5 @@ def test_find_correct_parser_for_connect_one_bank():
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
-    assert isinstance(found_parser, correct_parser)
-    assert first_transaction.date == parsed_transaction.date
-    assert first_transaction.description == parsed_transaction.description
-    assert first_transaction.amount == parsed_transaction.amount
+    _check_the_test(found_parser, correct_parser, first_transaction, parsed_transaction)
+
