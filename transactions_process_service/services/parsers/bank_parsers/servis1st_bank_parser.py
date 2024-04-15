@@ -4,7 +4,7 @@ from typing import Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
-from fastapi import UploadFile
+from starlette.datastructures import UploadFile
 from ..file_parser import FileParser
 from transactions_process_service.schemas.transaction import Transaction
 from datetime import datetime
@@ -18,8 +18,7 @@ class Servis1stBankParser(FileParser):
 
     def parse_transactions(self, file: UploadFile | str) -> List[Transaction]:
         columns = [65,130,326,594]
-        if  type(file) is str:
-            df = tabula.io.read_pdf(
+        df = tabula.io.read_pdf(
                 file,
                 multiple_tables=True,
                 pages="all",
@@ -27,16 +26,10 @@ class Servis1stBankParser(FileParser):
                 guess=False,
                 columns=columns,
             )
-        else:
-            df = tabula.io.read_pdf(
-                file.file,
-                multiple_tables=True,
-                pages="all",
-                pandas_options={"header": None},
-                guess=False,
-                columns=columns,
-            )
+        try:
             file.file.seek(0)
+        except:
+            pass
         bank_transactions: List[
             Transaction
         ] = []  # Use a Python list for accumulating transactions

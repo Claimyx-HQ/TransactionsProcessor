@@ -2,7 +2,7 @@ import os
 import logging
 from typing import List
 from smtplib import SMTP
-from fastapi import UploadFile
+from starlette.datastructures import UploadFile
 from collections import defaultdict
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart

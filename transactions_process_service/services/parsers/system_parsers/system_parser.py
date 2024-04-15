@@ -1,7 +1,7 @@
 import logging
 import math
 from typing import Any, Dict, List, Union
-from fastapi import UploadFile
+from starlette.datastructures import UploadFile
 import tabula
 import pandas as pd
 import numpy as np
