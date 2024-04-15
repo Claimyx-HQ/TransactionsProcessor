@@ -1,7 +1,7 @@
 import logging
 import re
-from typing import Any, List
-from fastapi import UploadFile
+from typing import Any, BinaryIO, List
+from starlette.datastructures import UploadFile
 import tabula
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.services.parsers.file_parser import FileParser
@@ -13,16 +13,31 @@ class FindCorrectParser:
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
-    def find_parser(self, file: UploadFile) -> FileParser:
+    def find_parser(self, file: UploadFile | str) -> FileParser:
         try:
+            return self.search_by_bank_name(file)
+        except CorrectParserNotFound as e:
+            raise e
+        except Exception as e:
+            if isinstance(file, UploadFile):   
+                raise Exception(f"In Find Correct Parser for file {file.filename} got this error: \n{str(e)}") from e
+            else:
+                raise Exception(f"In Find Correct Parser for file {file} got this error: \n{str(e)}") from e
+
+    def search_by_bank_name(self, file: UploadFile | str):
+            file_name = file.filename if isinstance(file, UploadFile) else file
+            file_data = file.file if isinstance(file, UploadFile) else file
             df = tabula.io.read_pdf(
-                file.file,
+                file_data,
                 multiple_tables=True,
                 pages="1",
                 pandas_options={"header": None},
                 guess=False,
             )
-            file.file.seek(0)
+            try:
+                file_data.seek(0)
+            except:
+                pass
             for table in df:
                 table_data: List = table.values.tolist()  # type: ignore
                 for row in table_data:
@@ -45,14 +60,7 @@ class FindCorrectParser:
                                         f"Found correct parser: {formatted_all_parsers[parser_key]}"
                                     )
                                     return formatted_all_parsers[parser_key]
-            raise CorrectParserNotFound(file)
-        except CorrectParserNotFound as e:
-            raise e
-        except Exception as e:
-            raise Exception(f"In Find Correct Parser for file {file.filename} got this error: \n{str(e)}") from e
-        finally:
-            file.file.seek(0)
-        
+            raise CorrectParserNotFound(file_name)
     def _format_string(self, string: str) -> str:
         text = string.lower()
         text = re.sub(

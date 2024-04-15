@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Union
 
-from fastapi import UploadFile
+from starlette.datastructures import UploadFile
 
 from transactions_process_service.schemas.transaction import Transaction
 
