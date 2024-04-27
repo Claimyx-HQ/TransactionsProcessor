@@ -1,3 +1,4 @@
+import os
 import openpyxl
 import io
 import logging
@@ -28,6 +29,9 @@ class ExcelController:
             system_name=system_name,
         )
         ExcelMatchesAlocator.write_data(sorted_transactions, worksheet, green_fill, color_fills)
+        folder_path = os.path.dirname(workbook_name)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
         if workbook_name is None:
             workbook.save(output)
             output.seek(0)

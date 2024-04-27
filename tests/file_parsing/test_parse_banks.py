@@ -80,10 +80,10 @@ def test_parse_flagstar_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/flagstar/flagstar_bank.pdf"
     first_transaction = Transaction(
-        date=datetime(2024, 2, 1, 0, 0),
-        description="ACH DEPOSITck/ref no.1087988",
-        amount=15671.56,
-        uuid="4e73dbc8-297c-4270-acf4-ea41acfa41ee",
+        date=datetime(2024, 3, 4, 0, 0),
+        description='ACH DEPOSITck/ref no.4301137',
+        amount=3000.0,
+        uuid='957be6d2-2419-4443-90a2-213110210e9d', 
     )
     parser = FlagstarBankParser()
 
@@ -125,9 +125,9 @@ def test_parse_servis1st_bank():
     file_path = "tests/data/servis1st/servis1st_bank.pdf"
     first_transaction = Transaction(
         date=datetime(2024, 3, 1, 0, 0),
-        description="FAC A771  NDC SWEEPPPD",
-        amount=3599.1,
-        uuid="e68dc147-0398-4ab7-9f0d-4e6d220044b0",
+        description='From DDA 1110372735,To DDA 111',
+        amount=190000.0,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
     )
     parser = Servis1stBankParser()
 

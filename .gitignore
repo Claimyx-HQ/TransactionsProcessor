@@ -3,7 +3,7 @@ __pycache__/
 .mypy_cache/
 /__pycache_
 output/
-data/
+
 tests/output_tests_data/
 *.log
 .config

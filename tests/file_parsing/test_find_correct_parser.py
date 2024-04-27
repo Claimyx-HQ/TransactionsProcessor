@@ -43,7 +43,7 @@ def test_find_correct_parser_for_unknown_PDF():
 
 def test_find_correct_parser_for_united_bank():
     logger = logging.getLogger(__name__)
-    file_path = "tests/data/united_bank.pdf"
+    file_path = "tests/data/united/united_bank.pdf"
     correct_parser = UnitedBankParser
     first_transaction = Transaction(
         date=datetime(2024, 2, 2, 0, 0),
@@ -65,7 +65,7 @@ def test_find_correct_parser_for_united_bank():
 
 def test_find_correct_parser_for_forbright_bank():
     logger = logging.getLogger(__name__)
-    file_path = "tests/data/forbright_bank.pdf"
+    file_path = "tests/data/forbright/forbright_bank_3.pdf"
     correct_parser = ForbrightBankParser
     first_transaction = Transaction(
         date=datetime(2023, 10, 2, 0, 0),
@@ -89,10 +89,10 @@ def test_find_correct_parser_for_flagstar_bank():
     file_path = "tests/data/flagstar/flagstar_bank.pdf"
     correct_parser = FlagstarBankParser
     first_transaction = Transaction(
-        date=datetime(2024, 2, 1, 0, 0),
-        description="ACH DEPOSITck/ref no.1087988",
-        amount=15671.56,
-        uuid="4e73dbc8-297c-4270-acf4-ea41acfa41ee",
+        date=datetime(2024, 3, 4, 0, 0),
+        description='ACH DEPOSITck/ref no.4301137',
+        amount=3000.0,
+        uuid='957be6d2-2419-4443-90a2-213110210e9d', 
     )
 
     parser = FindCorrectParser()
