@@ -6,11 +6,12 @@ from typing import Union
 
 from transactions_process_service.schemas.transaction import Transaction
 from transactions_process_service.services.excel_creation.excel_helper_functions import (
-    ExcelHelpers
+    ExcelHelpers,
 )
 from transactions_process_service.services.excel_creation.excel_matches_functions import (
-    ExcelMatchesAlocator
+    ExcelMatchesAlocator,
 )
+
 
 class ExcelController:
     def create_transaction_excel(
@@ -28,14 +29,16 @@ class ExcelController:
             bank_name=bank_name,
             system_name=system_name,
         )
-        ExcelMatchesAlocator.write_data(sorted_transactions, worksheet, green_fill, color_fills)
-        folder_path = os.path.dirname(workbook_name)
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
+        ExcelMatchesAlocator.write_data(
+            sorted_transactions, worksheet, green_fill, color_fills
+        )
         if workbook_name is None:
             workbook.save(output)
             output.seek(0)
         else:
+            folder_path = os.path.dirname(workbook_name)
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
             workbook.save(workbook_name)
         return output
 

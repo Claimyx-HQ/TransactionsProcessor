@@ -27,4 +27,5 @@ COPY .env /app/.env
 EXPOSE 8000
 
 # Command to run your FastAPI application using Uvicorn
-CMD ["uvicorn", "transactions_process_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# CMD ["uvicorn", "transactions_process_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "start"]
