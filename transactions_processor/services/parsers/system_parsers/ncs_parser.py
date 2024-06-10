@@ -1,15 +1,14 @@
 import logging
 import math
 from typing import Any, BinaryIO, Dict, List, Union
-from starlette.datastructures import UploadFile
 import tabula
 import pandas as pd
 import numpy as np
-from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.parsers.file_parser import FileParser
+from transactions_processor.models.transaction import Transaction
+from transactions_processor.services.parsers.transactions_parser import TransactionsParser
 
 
-class PharmBillsParser(FileParser):
+class PharmBillsParser(TransactionsParser):
     def __init__(self) -> None:
         self.decoded_data = []
         self.formated_data = []

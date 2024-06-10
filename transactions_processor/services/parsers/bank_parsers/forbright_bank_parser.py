@@ -1,16 +1,15 @@
 import logging
 import math
 from typing import BinaryIO, Dict, List, Union
-from starlette.datastructures import UploadFile
 import tabula
 import pandas as pd
 import numpy as np
 from tabula.util import FileLikeObj
-from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.parsers.file_parser import FileParser
+from transactions_processor.models.transaction import Transaction
+from transactions_processor.services.parsers.transactions_parser import TransactionsParser
 
 
-class ForbrightBankParser(FileParser):
+class ForbrightBankParser(TransactionsParser):
     def __init__(self) -> None:
         self.decoded_data = []
         self.formated_data = []
@@ -18,14 +17,23 @@ class ForbrightBankParser(FileParser):
 
     def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
 
+        columns = [50, 150, 400]
         df = tabula.io.read_pdf(
             file,
             multiple_tables=True,
             pages="all",
             pandas_options={"header": None},
             guess=False,
-
+            columns=columns,
         )
+        # df = tabula.io.read_pdf(
+        #     file,
+        #     multiple_tables=True,
+        #     pages="all",
+        #     pandas_options={"header": None},
+        #     guess=False,
+        #
+        # )
         try:
             file.seek(0)
         except:
@@ -39,27 +47,29 @@ class ForbrightBankParser(FileParser):
             table_data: List = table.values.tolist()  # type: ignore
             found_start = False  # Initially, we haven't found the start marker
             for row in table_data:
-                if len(row) == 2 and row[1] == "Additions":
+                if len(row) == 4 and row[3] == "Additions":
                     found_start = True  # Start marker found
                 elif (
-                    found_start and len(row) == 2
+                    found_start and len(row) == 4
                 ):  # Process transactions after finding the start
                     try:
                         amount = (
-                            float(row[1].replace(",", ""))
-                            if isinstance(row[1], str)
-                            else float(row[1])
+                            float(row[3].replace(",", ""))
+                            if isinstance(row[3], str)
+                            else float(row[3])
                         )
+                        print(amount)
                         if math.isnan(amount) or amount <= 0.0:  # Skip if amount is NaN
                             continue
                         bank_transactions_amounts.append(
                             amount
                         )  # Append amount to list
-                        new_row = row[0].split(" ", 1) + [
-                            amount
-                        ]  # Prepare new transaction row, row[0] has the date and description i  the same index
+                        raw_data = [row[1], amount, row[2]]
+                        # new_row = row[0].split(" ", 1) + [
+                        #     amount
+                        # ]  # Prepare new transaction row, row[0] has the date and description i  the same index
                         bank_transactions.append(
-                            Transaction.from_raw_data(new_row)
+                            Transaction.from_raw_data(raw_data)
                         )  # Append new transaction row to list
                     except Exception as e:
                         self.logger.exception(e)

@@ -1,13 +1,11 @@
 from typing import List
-from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.transaction_matcher import (
-    TransactionMathcher,
-)
+
+from transactions_processor.services.transaction_matcher import TransactionMatcher
 
 
 # TODO: Handle duplicates
 def test_find_matches():
-    transaction_matcher = TransactionMathcher()
+    transaction_matcher = TransactionMatcher()
     bank_amounts: List[float] = [100, 200, 200, 300, 500]
     system_amounts: List[float] = [100, 200, 300, 300, 400]
     expected_matched = [100, 200, 300]
@@ -26,7 +24,7 @@ def test_find_matches():
 
 
 def test_find_reconciling_matches():
-    transaction_matcher = TransactionMathcher()
+    transaction_matcher = TransactionMatcher()
     bank_amounts: List[float] = [100, 200, 300, 300]
     system_amounts: List[float] = [50, 50, 120, 80, 200, 300]
     expected_matches = {

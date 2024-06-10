@@ -1,26 +1,15 @@
 from datetime import datetime
 import logging
-from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.parsers.bank_parsers.connect_one_bank_parser import (
-    ConnectOneBankParser,
-)
-from transactions_process_service.services.parsers.bank_parsers.flagstar_bank_parser import (
-    FlagstarBankParser,
-)
-from transactions_process_service.services.parsers.bank_parsers.servis1st_bank_parser import (
-    Servis1stBankParser,
-)
-from transactions_process_service.services.parsers.bank_parsers.united_bank_parser import (
-    UnitedBankParser,
-)
-
-from transactions_process_service.services.parsers.bank_parsers.forbright_bank_parser import (
-    ForbrightBankParser,
-)
 
 # conftest.py or your specific test file
 import pytest
 import pandas as pd
+from transactions_processor.models.transaction import Transaction
+from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parser import ConnectOneBankParser
+from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import FlagstarBankParser
+from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import ForbrightBankParser
+from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import Servis1stBankParser
+from transactions_processor.services.parsers.bank_parsers.united_bank_parser import UnitedBankParser
 
 
 @pytest.fixture(autouse=True)
@@ -48,6 +37,7 @@ def test_parse_forbright_bank():
     parser = ForbrightBankParser()
 
     transactions = parser.parse_transactions(file_path)
+    print(f'transactions: {transactions}')
     parsed_transaction = transactions[0]
 
     _check_the_test(first_transaction, parsed_transaction)

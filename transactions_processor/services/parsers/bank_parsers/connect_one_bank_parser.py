@@ -4,13 +4,13 @@ from typing import BinaryIO, Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
-from starlette.datastructures import UploadFile
-from ..file_parser import FileParser
-from transactions_process_service.schemas.transaction import Transaction
+from transactions_processor.models.transaction import Transaction
 from datetime import datetime
 
+from transactions_processor.services.parsers.transactions_parser import TransactionsParser
 
-class ConnectOneBankParser(FileParser):
+
+class ConnectOneBankParser(TransactionsParser):
     def __init__(self) -> None:
         self.decoded_data = []
         self.formated_data = []

@@ -1,12 +1,8 @@
+
 import logging
 from openpyxl.utils import get_column_letter
-from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.excel_creation.excel_helper_functions import (
-    ExcelHelpers,
-)
-from transactions_process_service.services.excel_creation.excel_sorting import (
-    ExcelSorting,
-)
+from transactions_processor.services.excel.excel_sorting import ExcelSorting
+from transactions_processor.services.excel.excel_utils import ExcelHelpers
 
 
 class ExcelMatchesAlocator:

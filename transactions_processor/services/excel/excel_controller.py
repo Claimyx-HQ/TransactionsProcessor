@@ -4,13 +4,8 @@ import io
 import logging
 from typing import Union
 
-from transactions_process_service.schemas.transaction import Transaction
-from transactions_process_service.services.excel_creation.excel_helper_functions import (
-    ExcelHelpers,
-)
-from transactions_process_service.services.excel_creation.excel_matches_functions import (
-    ExcelMatchesAlocator,
-)
+from transactions_processor.services.excel.excel_matches_functions import ExcelMatchesAlocator
+from transactions_processor.services.excel.excel_utils import ExcelHelpers
 
 
 class ExcelController:

@@ -1,28 +1,31 @@
 [tool.poetry]
-name = "transactions_process_service"
+name = "transactions_processor"
 version = "0.1.0"
 description = ""
 authors = ["Sharon Fabin <i.sharon.fabin@gmail.com>", "Ido Brosh <idobroshm@gmail.com>"]
+packages = [{ include = "transactions_processor"}]
 readme = "README.md"
 
 [tool.poetry.scripts]
-start = "main:start"
-# start = "python -m uvicorn --app-dir=buybox_service main:app --reload"
+start = "transactions_processor.main:lambda_handler"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.103.1"
-uvicorn = "^0.23.2"
 pytest = "^7.4.2"
-pydantic = "^2.3.0"
-pydantic-settings = "^2.0.3"
-python-multipart = "^0.0.9"
 numpy = "^1.26.4"
 tabula-py = "^2.9.0"
 openpyxl = "^3.1.2"
 xlrd = "^2.0.1"
 python-dotenv = "^1.0.1"
 jpype1 = "^1.5.0"
+aws-lambda-powertools = "^2.38.1"
+python-multipart = "^0.0.9"
+multipart = "^0.2.4"
+boto3 = "^1.34.118"
+requests-toolbelt = "^1.0.0"
+pydantic = "^2.7.3"
+pandas = "^2.2.2"
+pprintpp = "^0.4.0"
 
 [tool.pytest.ini_options]
 log_cli = true

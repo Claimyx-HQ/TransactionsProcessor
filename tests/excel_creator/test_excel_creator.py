@@ -1,7 +1,7 @@
 import os
 from typing import List
-from transactions_process_service.services.excel_creator import ExcelController
 from tests.mocks.excel_creator.mock_transactions_and_matches import mock_data
+from transactions_processor.services.excel.excel_controller import ExcelController
     
 
 def test_create_transaction_excel(): # TODO: Correct the mock data, create_transaction_excel() works with Transaction model and not dict 
