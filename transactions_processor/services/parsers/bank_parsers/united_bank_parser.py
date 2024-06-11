@@ -8,6 +8,7 @@ from transactions_processor.models.transaction import Transaction
 from datetime import datetime
 
 from transactions_processor.services.parsers.transactions_parser import TransactionsParser
+from transactions_processor.utils.date_utils import valid_date
 
 
 class UnitedBankParser(TransactionsParser):
@@ -38,7 +39,7 @@ class UnitedBankParser(TransactionsParser):
         for table in df:
             table_data: List = table.values.tolist()  # type: ignore
             for row in table_data:
-                valid_row = len(row) == 6 and self._valid_date(row[1])
+                valid_row = len(row) == 6 and valid_date(row[1])
                 if valid_row:
                     amount = (
                         float(row[4].replace(",", "").replace("$", "").replace(" ", ""))
@@ -55,15 +56,6 @@ class UnitedBankParser(TransactionsParser):
                     bank_transactions_amounts.append(amount)
                     # self.logger.debug(f"row {row}")
         return bank_transactions
-
-    def _valid_date(self, date: str | float) -> bool:
-        try:
-            if isinstance(date, float):
-                return False
-            datetime.strptime(date, "%m/%d/%Y")
-            return True
-        except ValueError:
-            return False
 
 
 # Local Test

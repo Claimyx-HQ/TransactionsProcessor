@@ -5,11 +5,19 @@ import logging
 import pytest
 import pandas as pd
 from transactions_processor.models.transaction import Transaction
+from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser import BankFeedsParser
 from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parser import ConnectOneBankParser
+from transactions_processor.services.parsers.bank_parsers.daca_bank_parser import DACABankParser
 from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import FlagstarBankParser
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import ForbrightBankParser
+from transactions_processor.services.parsers.bank_parsers.huntington_bank_parser import HuntingtonBankParser
+from transactions_processor.services.parsers.bank_parsers.metropolitan_bank_parser import MetropolitanBankParser
+from transactions_processor.services.parsers.bank_parsers.pnc_bank_parser import PNCBankParser
+from transactions_processor.services.parsers.bank_parsers.popular_bank_parser import PopularBankParser
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import Servis1stBankParser
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import UnitedBankParser
+from transactions_processor.services.parsers.bank_parsers.webster_bank_parser import WebsterBankParser
+from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import WellsFargoBankParser
 
 
 @pytest.fixture(autouse=True)
@@ -27,7 +35,7 @@ def _check_the_test(first_transaction, parsed_transaction):
 
 
 def test_parse_forbright_bank():
-    file_path = "tests/data/forbright_bank.pdf"
+    file_path = "tests/data/banks/forbright/forbright_bank.pdf"
     first_transaction = Transaction(
         date=datetime(2023, 10, 2, 0, 0),
         description="Preauthorized Credit",
@@ -37,7 +45,6 @@ def test_parse_forbright_bank():
     parser = ForbrightBankParser()
 
     transactions = parser.parse_transactions(file_path)
-    print(f'transactions: {transactions}')
     parsed_transaction = transactions[0]
 
     _check_the_test(first_transaction, parsed_transaction)
@@ -45,7 +52,7 @@ def test_parse_forbright_bank():
 
 def test_parse_united_bank():
     logger = logging.getLogger(__name__)
-    file_path = "tests/data/united_bank.pdf"
+    file_path = "tests/data/banks/united/united_bank.pdf"
     first_transaction = Transaction(
         date=datetime(2024, 2, 2, 0, 0),
         description="NOVITAS SOLUTION HCCLAIMPMT",
@@ -68,7 +75,7 @@ def test_parse_flagstar_bank():
     # Be cautious with these settings for very large DataFrames
 
     logger = logging.getLogger(__name__)
-    file_path = "tests/data/flagstar/flagstar_bank.pdf"
+    file_path = "tests/data/banks/flagstar/flagstar_bank.pdf"
     first_transaction = Transaction(
         date=datetime(2024, 3, 4, 0, 0),
         description='ACH DEPOSITck/ref no.4301137',
@@ -91,7 +98,7 @@ def test_parse_connect_one_bank():
     # Be cautious with these settings for very large DataFrames
 
     logger = logging.getLogger(__name__)
-    file_path = "tests/data/connect_one/connect_one_bank.pdf"
+    file_path = "tests/data/banks/connect_one/connect_one_bank.pdf"
     first_transaction = Transaction(
         date=datetime(2024, 2, 8, 0, 0),
         description="Maintenance Fee Rfnd",
@@ -112,7 +119,7 @@ def test_parse_connect_one_bank():
 def test_parse_servis1st_bank():
 
     logger = logging.getLogger(__name__)
-    file_path = "tests/data/servis1st/servis1st_bank.pdf"
+    file_path = "tests/data/banks/servis1st/servis1st_bank.pdf"
     first_transaction = Transaction(
         date=datetime(2024, 3, 1, 0, 0),
         description='From DDA 1110372735,To DDA 111',
@@ -128,3 +135,135 @@ def test_parse_servis1st_bank():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
 
+
+def test_parse_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bank_feeds/bank_feeds.csv"
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 28, 0, 0),
+        description='ZBA CREDIT TRANSFER FR 0310317929',
+        amount=688.09,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = BankFeedsParser()
+
+    transactions = parser.parse_transactions(file_path)
+    formatted_transactions = " \n".join(str(t) for t in transactions)
+    logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_webster_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/webster/WebsterBank.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 1, 0, 0),
+        description='FUND FROM DDA',
+        amount=9088.48,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = WebsterBankParser()
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_pnc_bank():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/pnc/pnc84.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 24, 0, 0),
+        description='CORPORATE ACH 517927880310164',
+        amount=1745.0,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = PNCBankParser()
+
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_daca_bank():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/daca/DACA.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 6, 0, 0),
+        description='AETNA AS01PREAUTHORIZED ACH',
+        amount=5614.46,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = DACABankParser()
+
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+def test_parse_popular_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/popular/Popular.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 1, 0, 0),
+        description='Preauthorized Credit',
+        amount=1399.24,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = PopularBankParser()
+
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_metropolitan_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/metropolitan/Metropolitan.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 1, 0, 0),
+        description='TRANSFER FROM 03-99021949',
+        amount=1255.62,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = MetropolitanBankParser()
+
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+#TODO: need to finish this bank
+def test_parse_wells_fargo_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/wells_fargo/WellsFargo.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 1, 0, 0),
+        description='TRANSFER FROM 03-99021949',
+        amount=1255.62,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = WellsFargoBankParser()
+    assert False
+
+    transactions = parser.parse_transactions(file_path)
+    # print
+    # parsed_transaction = transactions[0]
+    # _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_huntington_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/huntington/Huntington.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 2, 0, 0),
+        description='ECHO-AMERIHEALTH HCCLAIMPMT 240402 264320480 TRN*1*1131116478*1341858379\\',
+        amount=333678.01,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = HuntingtonBankParser()
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
