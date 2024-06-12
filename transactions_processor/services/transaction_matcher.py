@@ -56,16 +56,13 @@ class TransactionMatcher:
         def find_matches_n_sum(
             nums: List, target: float, max: int, index: int, path: List, matches: List
         ) -> Any:
-            print(f"nums: {nums}, target: {target}, max: {max}, index: {index}, path: {path}, matches: {matches}")
             copy_path = path.copy()
             if index == len(nums) or max == 0:
                 if target == 0:
                     matches.append(copy_path)
             else:
-                print(f'current: {nums[index]}, target: {target}')
                 find_matches_n_sum(nums, target, max, index + 1, copy_path, matches)
                 if nums[index] <= target:
-                    print('meow')
                     copy_path.append(nums[index])
                     find_matches_n_sum(
                         nums,

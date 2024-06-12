@@ -1,33 +1,30 @@
 import json
 from typing import List
+import uuid
 import boto3
 import concurrent.futures
 from transactions_processor.models.transaction import Transaction
 from transactions_processor.services.excel.excel_controller import ExcelController
-from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import ForbrightBankParser
-from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import Servis1stBankParser
-from transactions_processor.services.parsers.system_parsers.pss_parser import PharmBillsParser
 import logging
 import io
+from transactions_processor.services.parsers.bank_parsers.bank_parsers import bank_parsers
+from transactions_processor.services.parsers.system_parsers.system_parsers import system_parsers
 
 from transactions_processor.services.transaction_matcher import TransactionMatcher
+from transactions_processor.utils.aws_utils import upload_file_to_s3
 
 s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
-    # Extract the file keys from the event
-    system_parser = PharmBillsParser()
-    # bank_parser = ForbrightBankParser()
-    bank_parser = Servis1stBankParser()
-    transaction_matcher = TransactionMatcher()
-    excel_controller = ExcelController()
     bank_name = "Bank"
     system_name = "PharmBills System"
     body = json.loads(event['body'])
     system_transactions_data = body['system_file']
     bank_transactions_data = body['bank_files']
-    
     bucket_name = 'bankrectool-files'
+
+    transaction_matcher = TransactionMatcher()
+    excel_controller = ExcelController()
     
     # Create a thread pool executor
     generated_excel: io.BytesIO | None
@@ -37,12 +34,17 @@ def lambda_handler(event, context):
         bank_files_tasks = [executor.submit(retrieve_file, bucket_name, bank_file['key']) for bank_file in bank_transactions_data]
         concurrent.futures.wait(bank_files_tasks)
 
+        system_parser = system_parsers[system_transactions_data['type']]()
         system_transactions = system_parser.parse_transactions(system_file)
+        initialized_bank_parsers = {}
         all_bank_transactions = []
         for i in range(len(bank_files_tasks)):
             print('Parsing bank')
-            bank_file = bank_files_tasks[i].result()
             bank_type = bank_transactions_data[i]['type']
+            if bank_type not in initialized_bank_parsers:
+                initialized_bank_parsers[bank_type] = bank_parsers[bank_type]()
+            bank_parser = initialized_bank_parsers[bank_type]
+            bank_file = bank_files_tasks[i].result()
             bank_transactions = bank_parser.parse_transactions(bank_file)
             all_bank_transactions.extend(bank_transactions)
             print('Bank type:', bank_type)
@@ -55,10 +57,6 @@ def lambda_handler(event, context):
         generated_excel = excel_controller.create_transaction_excel(
             data, None, bank_name, system_name
         )
-
-
-        
-
     
     # Construct the response
     if generated_excel is None:
@@ -73,6 +71,14 @@ def lambda_handler(event, context):
         }
         return response
 
+
+    presigned_url = upload_file_to_s3(
+        s3, 
+        generated_excel, 
+        bucket_name, 
+        f'{uuid.uuid4()}.xlsx'
+    )
+
     response = {
         'statusCode': 200,
         'headers': {
@@ -82,7 +88,7 @@ def lambda_handler(event, context):
             # 'Content-Disposition': 'attachment; filename="transactions_result.xlsx"',
             # 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         },
-        'body': json.dumps({'message': 'Files processed successfully'})
+        'body': json.dumps({'presigned_url': presigned_url})
         # 'body': generated_excel.getvalue(),
         # 'isBase64Encoded': True
     }

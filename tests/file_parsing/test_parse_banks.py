@@ -6,12 +6,15 @@ import pytest
 import pandas as pd
 from transactions_processor.models.transaction import Transaction
 from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser import BankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import BHIBankParser
+from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import CIBCBankParser
 from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parser import ConnectOneBankParser
 from transactions_processor.services.parsers.bank_parsers.daca_bank_parser import DACABankParser
 from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import FlagstarBankParser
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import ForbrightBankParser
 from transactions_processor.services.parsers.bank_parsers.huntington_bank_parser import HuntingtonBankParser
 from transactions_processor.services.parsers.bank_parsers.metropolitan_bank_parser import MetropolitanBankParser
+from transactions_processor.services.parsers.bank_parsers.midwest_bank_parser import MidwestBankParser
 from transactions_processor.services.parsers.bank_parsers.pnc_bank_parser import PNCBankParser
 from transactions_processor.services.parsers.bank_parsers.popular_bank_parser import PopularBankParser
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import Servis1stBankParser
@@ -264,6 +267,53 @@ def test_parse_huntington_bank():
         uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
     )
     parser = HuntingtonBankParser()
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_cibc_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/cibc/CIBC.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 1, 0, 0),
+        description='Preauthorized Credit',
+        amount=5664.32,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = CIBCBankParser()
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+
+def test_parse_bhi_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bhi/BHI.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 1, 0, 0),
+        description='Preauthorized Credit',
+        amount=5664.32,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = BHIBankParser()
+    transactions = parser.parse_transactions(file_path)
+    assert False
+    # parsed_transaction = transactions[0]
+    # _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_midwest_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/midwest/Midwest.pdf"
+    first_transaction = Transaction(
+        date=datetime(2024, 4, 1, 0, 0),
+        description="' Preauthorized Credit",
+        amount=276.13,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = MidwestBankParser()
     transactions = parser.parse_transactions(file_path)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)

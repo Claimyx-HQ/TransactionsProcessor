@@ -58,7 +58,6 @@ class ForbrightBankParser(TransactionsParser):
                             if isinstance(row[3], str)
                             else float(row[3])
                         )
-                        print(amount)
                         if math.isnan(amount) or amount <= 0.0:  # Skip if amount is NaN
                             continue
                         bank_transactions_amounts.append(

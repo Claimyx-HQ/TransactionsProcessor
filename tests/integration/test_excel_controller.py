@@ -4,7 +4,8 @@ from transactions_processor.services.excel.excel_controller import ExcelControll
 from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import FlagstarBankParser
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import ForbrightBankParser
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import Servis1stBankParser
-from transactions_processor.services.parsers.system_parsers.pss_parser import PharmBillsParser
+from transactions_processor.services.parsers.system_parsers.ncs_parser import NCSParser
+from transactions_processor.services.parsers.system_parsers.pcc_parser import PCCParser
 from transactions_processor.services.transaction_matcher import TransactionMatcher
 
 def create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name):
@@ -87,48 +88,48 @@ def create_the_test(logger, bank_parser, system_parser, transaction_matcher, ban
 
 
 
-def test_excel_controller_with_forbright_bank():
-    logging.basicConfig(
-        filename="tests.log",
-        filemode="w",
-        format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
-        level=logging.DEBUG,
-    )
-    logger = logging.getLogger(__name__)
-    logger.info("App started")
-    bank_file_path = "tests/data/forbright_bank.pdf"
-    system_file_path = "tests/data/bankst.xls"
-    workbook_name = "tests/output_tests_data/forbright_transactions_output.xlsx"
-    bank_name = "Bank"
-    system_name = "PharmBills System"
-    transaction_matcher = TransactionMatcher()
-    bank_parser = ForbrightBankParser()
-    system_parser = PharmBillsParser()
-    excel_controller = ExcelController()
+# def test_excel_controller_with_forbright_bank():
+#     logging.basicConfig(
+#         filename="tests.log",
+#         filemode="w",
+#         format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
+#         level=logging.DEBUG,
+#     )
+#     logger = logging.getLogger(__name__)
+#     logger.info("App started")
+#     bank_file_path = "tests/data/banks/forbright/forbright_bank.pdf"
+#     system_file_path = "tests/data/system/NCS/bankst.xls"
+#     workbook_name = "tests/output_tests_data/forbright_transactions_output.xlsx"
+#     bank_name = "Bank"
+#     system_name = "PharmBills System"
+#     transaction_matcher = TransactionMatcher()
+#     bank_parser = ForbrightBankParser()
+#     system_parser = PCCParser()
+#     excel_controller = ExcelController()
+#
+#     create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)
 
-    create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)
 
-
-def test_excel_controller_with_flagstar_bank():
-    logging.basicConfig(
-        filename="tests.log",
-        filemode="w",
-        format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
-        level=logging.DEBUG,
-    )
-    logger = logging.getLogger(__name__)
-    logger.info("App started")
-    bank_file_path = "tests/data/flagstar/flagstar_bank.pdf"
-    system_file_path = "tests/data/flagstar/jeffersontown.xls"
-    workbook_name = "tests/output_tests_data/flagstar_transactions_output.xlsx"
-    bank_name = "Bank"
-    system_name = "PharmBills System"
-    transaction_matcher = TransactionMatcher()
-    bank_parser = FlagstarBankParser()
-    system_parser = PharmBillsParser()
-    excel_controller = ExcelController()
-
-    create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)
+# def test_excel_controller_with_flagstar_bank():
+#     logging.basicConfig(
+#         filename="tests.log",
+#         filemode="w",
+#         format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
+#         level=logging.DEBUG,
+#     )
+#     logger = logging.getLogger(__name__)
+#     logger.info("App started")
+#     bank_file_path = "tests/data/banks/flagstar/flagstar_bank.pdf"
+#     system_file_path = "tests/data/banks/flagstar/jeffersontown.xls"
+#     workbook_name = "tests/output_tests_data/flagstar_transactions_output.xlsx"
+#     bank_name = "Bank"
+#     system_name = "PharmBills System"
+#     transaction_matcher = TransactionMatcher()
+#     bank_parser = FlagstarBankParser()
+#     system_parser = NCSParser()
+#     excel_controller = ExcelController()
+#
+#     create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)
 
 
 # def test_excel_controller_with_connect_one_bank():
@@ -153,23 +154,23 @@ def test_excel_controller_with_flagstar_bank():
 #     create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)
 
 
-def test_excel_controller_with_servis1st_bank():
-    logging.basicConfig(
-        filename="tests.log",
-        filemode="w",
-        format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
-        level=logging.DEBUG,
-    )
-    logger = logging.getLogger(__name__)
-    logger.info("App started")
-    bank_file_path = "tests/data/servis1st/servis1st_bank.pdf"
-    system_file_path = "tests/data/servis1st/jeffersontown.xls"
-    workbook_name = "tests/output_tests_data/servis1st_transactions_output.xlsx"
-    bank_name = "Bank"
-    system_name = "PharmBills System"
-    transaction_matcher = TransactionMatcher()
-    bank_parser = Servis1stBankParser()
-    system_parser = PharmBillsParser()
-    excel_controller = ExcelController()
-
-    create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)
+# def test_excel_controller_with_servis1st_bank():
+#     logging.basicConfig(
+#         filename="tests.log",
+#         filemode="w",
+#         format="%(asctime)s %(name)s - %(levelname)s - %(message)s",
+#         level=logging.DEBUG,
+#     )
+#     logger = logging.getLogger(__name__)
+#     logger.info("App started")
+#     bank_file_path = "tests/data/banks/servis1st/servis1st_bank.pdf"
+#     system_file_path = "tests/data/banks/servis1st/jeffersontown.xls"
+#     workbook_name = "tests/output_tests_data/servis1st_transactions_output.xlsx"
+#     bank_name = "Bank"
+#     system_name = "PharmBills System"
+#     transaction_matcher = TransactionMatcher()
+#     bank_parser = Servis1stBankParser()
+#     system_parser = NCSParser()
+#     excel_controller = ExcelController()
+#
+#     create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)

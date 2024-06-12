@@ -8,7 +8,7 @@ from transactions_processor.models.transaction import Transaction
 from transactions_processor.services.parsers.transactions_parser import TransactionsParser
 
 
-class PharmBillsParser(TransactionsParser):
+class NCSParser(TransactionsParser):
     def __init__(self) -> None:
         self.decoded_data = []
         self.formated_data = []

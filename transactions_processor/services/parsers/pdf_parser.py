@@ -28,6 +28,7 @@ class PDFParser(TransactionsParser):
             guess=False,
             columns=self.column_positions,
         )
+        # file.seek(0)
         bank_transactions: List[Transaction] = []
 
         for table in df:
