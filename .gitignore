@@ -1,7 +1,13 @@
 __pycache__/
 .pytest_cache/
 .mypy_cache/
-/__pycache_
+__pycache_/
+.vscode/
+output/
+
+tests/output_tests_data/
+tests/sharon-tests
 *.log
 .config
 .env
+logs/

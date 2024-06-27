@@ -1,4 +1,4 @@
-## Buybox Service
+## Transactions Process Service
 
 This project uses **Poetry** to manage python packages
 
