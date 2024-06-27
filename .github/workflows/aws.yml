@@ -5,7 +5,7 @@ on:
     branches: ["dev", "main"]
     paths:
       - "TransactionsProcessor/**"
-      
+
 env:
   AWS_REGION: us-east-2
   AWS_ROLE_ARN: arn:aws:iam::992382552460:role/GitHubActionsRole
@@ -51,34 +51,3 @@ jobs:
         run: |
           aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
             --image-uri ${{ steps.build-image.outputs.image }}
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.AWS_ROLE_ARN }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG TransactionsProcessService
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
-
-    - name: Update Lambda Function
-      run: |
-        aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
-          --image-uri ${{ steps.build-image.outputs.image }}
