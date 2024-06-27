@@ -1,4 +1,4 @@
-## Transactions Process Service
+## Transactions Process Lambda
 
 This project uses **Poetry** to manage python packages
 
