@@ -7,28 +7,31 @@ on:
       - 'TransactionsProcessService/**'
 
 env:
-  AWS_REGION: us-east-2  # set this to your preferred AWS region
+  AWS_REGION: us-east-2
+  AWS_ROLE_ARN: arn:aws:iam::992382552460:role/GitHubActionsRole
   ECR_REPOSITORY: bankrectool-transaction-processor
   LAMBDA_FUNCTION_NAME: BankRecTool-ProcessTransactions
+  
+
 permissions:
+  id-token: write
   contents: read
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: production
-
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Configure AWS credentials
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.AWS_ROLE_ARN }}
         aws-region: ${{ env.AWS_REGION }}
-        
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
