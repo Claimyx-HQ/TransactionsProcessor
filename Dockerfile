@@ -22,7 +22,7 @@ RUN poetry config virtualenvs.create false && \
 COPY . ./
 
 # Copy the .env file to the container
-COPY .env ./
+#COPY .env ./
 
 # Set the CMD to specify the Lambda handler
 CMD ["transactions_processor.main.lambda_handler"]
