@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 import numpy as np
 
 
@@ -45,11 +45,13 @@ class TransactionMatcher:
                 for i in range(system_amounts[amount]):
                     unmatched_system_amounts.append(amount)
 
-
         return matches, unmatched_bank_amounts, unmatched_system_amounts
 
     def find_reconciling_matches(
-        self, bank_transactions: List[float], system_transactions: List[float]
+        self,
+        bank_transactions: List[float],
+        system_transactions: List[float],
+        update_progress: Callable[[float], None] | None = None,
     ) -> Tuple[Dict[float, List[float]], List[float], List[float]]:
         logger = logging.getLogger(__name__)
 
@@ -77,7 +79,7 @@ class TransactionMatcher:
         validated_matches: Dict[float, List[float]] = {}
         matches: Dict[float, List[List[float]]] = {}
 
-        for bank_transaction in bank_transactions:
+        for i, bank_transaction in enumerate(bank_transactions):
             max_possibilties = 3 if bank_transaction <= 5000 else 5
             possible_mathces = []
             find_matches_n_sum(
@@ -90,6 +92,8 @@ class TransactionMatcher:
             )
             if possible_mathces:
                 matches[bank_transaction] = possible_mathces
+            if update_progress:
+                update_progress((i + 1) / len(bank_transactions) * 100)
         while len(matches) > 0:
             unused_amounts = {}
 

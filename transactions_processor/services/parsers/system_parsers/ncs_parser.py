@@ -1,3 +1,4 @@
+from io import BytesIO
 import logging
 import math
 from typing import Any, BinaryIO, Dict, List, Union
@@ -5,7 +6,9 @@ import tabula
 import pandas as pd
 import numpy as np
 from transactions_processor.models.transaction import Transaction
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
 
 
 class NCSParser(TransactionsParser):
@@ -15,9 +18,20 @@ class NCSParser(TransactionsParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-        excel_df = pd.read_excel(
-            file, sheet_name=0
-        )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)
+        excel_df = None
+        print("trying as excel")
+        try:
+            excel_df = pd.read_excel(file, sheet_name=0)
+        except Exception as e:
+            print("trying as csv")
+            file.seek(0)
+            try:
+                excel_df = pd.read_csv(file)
+            except Exception as csv_e:
+                raise ValueError(f"Failed to parse file as Excel or CSV: {e}, {csv_e}")
+        # excel_df = pd.read_excel(
+        #     file, sheet_name=0
+        # )  # Assuming that always the first sheet is the table, if not then use pd.read_excel(self.file_path, sheet_name=<"Sheet Name">)
         try:
             file.seek(0)
         except:
