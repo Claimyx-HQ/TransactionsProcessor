@@ -1,4 +1,4 @@
-name: Update Transaction Processor Lambda
+name: Update Transactions Processor Lambda
 
 on:
   push:
