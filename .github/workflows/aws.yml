@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "dev" ]
     paths:
-      - 'TransactionsProcessService/**'
+      - 'TransactionsProcessor/**'
 
 env:
   AWS_REGION: us-east-2
