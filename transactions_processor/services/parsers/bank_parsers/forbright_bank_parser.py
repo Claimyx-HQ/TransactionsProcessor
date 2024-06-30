@@ -1,76 +1,38 @@
 import logging
 import math
-from typing import BinaryIO, Dict, List, Union
+from typing import Any, BinaryIO, Callable, Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
-from tabula.util import FileLikeObj
 from transactions_processor.models.transaction import Transaction
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
+from datetime import datetime
+
+from transactions_processor.services.parsers.pdf_parser import PDFParser
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
+from transactions_processor.utils.date_utils import valid_date, valid_date_split
+from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 
-class ForbrightBankParser(TransactionsParser):
+class ForbrightBankParser(PDFParser):
     def __init__(self) -> None:
-        self.decoded_data = []
-        self.formated_data = []
-        self.logger = logging.getLogger(__name__)
+        super().__init__([50, 150, 400])
+        self.valid_table = False
 
-    def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-
-        columns = [50, 150, 400]
-        df = tabula.io.read_pdf(
-            file,
-            multiple_tables=True,
-            pages="all",
-            pandas_options={"header": None},
-            guess=False,
-            columns=columns,
-        )
-        # df = tabula.io.read_pdf(
-        #     file,
-        #     multiple_tables=True,
-        #     pages="all",
-        #     pandas_options={"header": None},
-        #     guess=False,
-        #
-        # )
-        try:
-            file.seek(0)
-        except:
-            pass
-        bank_transactions: List[Transaction] = (
-            []
-        )  # Use a Python list for accumulating transactions
-        bank_transactions_amounts = []  # Likewise, for amounts
-
-        for table in df:
-            table_data: List = table.values.tolist()  # type: ignore
-            found_start = False  # Initially, we haven't found the start marker
-            for row in table_data:
-                if len(row) == 4 and row[3] == "Additions":
-                    found_start = True  # Start marker found
-                elif (
-                    found_start and len(row) == 4
-                ):  # Process transactions after finding the start
-                    try:
-                        amount = (
-                            float(row[3].replace(",", ""))
-                            if isinstance(row[3], str)
-                            else float(row[3])
-                        )
-                        if math.isnan(amount) or amount <= 0.0:  # Skip if amount is NaN
-                            continue
-                        bank_transactions_amounts.append(
-                            amount
-                        )  # Append amount to list
-                        raw_data = [row[1], amount, row[2]]
-                        # new_row = row[0].split(" ", 1) + [
-                        #     amount
-                        # ]  # Prepare new transaction row, row[0] has the date and description i  the same index
-                        bank_transactions.append(
-                            Transaction.from_raw_data(raw_data)
-                        )  # Append new transaction row to list
-                    except Exception as e:
-                        self.logger.exception(e)
-                        continue
-        return bank_transactions
+    def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
+        if len(row) >= 2 and row[1] == "CREDITS":
+            self.valid_table = True
+        elif len(row) >= 2 and row[1] == "DAILY BALANCES":
+            self.valid_table = False
+        valid_row = valid_date(row[1], "%m-%d")
+        if valid_row and self.valid_table:
+            date_str = row[1]
+            amount_str = row[3]
+            description_str = row[2]
+            amount = parse_amount(amount_str)
+            if not valid_amount(amount):
+                return None
+            transaction = Transaction.from_raw_data([date_str, description_str, amount])
+            return transaction
+        return None

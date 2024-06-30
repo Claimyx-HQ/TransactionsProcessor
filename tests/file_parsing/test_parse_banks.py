@@ -70,12 +70,12 @@ def _check_the_test(first_transaction, parsed_transaction):
 
 
 def test_parse_forbright_bank():
-    file_path = "tests/data/banks/forbright/forbright_bank.pdf"
+    file_path = "tests/data/banks/forbright/forbright_bank_4.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2023, 10, 2, 0, 0),
-        description="Preauthorized Credit",
-        amount=3766.0,
+        date=datetime(2024, 3, 4, 0, 0),
+        description="' Cash Mgmt Trsfr Cr",
+        amount=7903.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
     )
     parser = ForbrightBankParser()
