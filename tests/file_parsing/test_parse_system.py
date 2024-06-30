@@ -7,6 +7,7 @@ from transactions_processor.services.parsers.system_parsers.pcc_parser import PC
 
 def test_parse_ncs_file():
     file_path = "tests/data/system/NCS/bankst.xls"
+    file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2023, 10, 1, 0, 0),
         description="gnss wire",
@@ -15,16 +16,19 @@ def test_parse_ncs_file():
     )
     parser = NCSParser()
 
-    transactions = parser.parse_transactions(file_path)
+    transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
 
+    file.close()
+
 
 def test_parse_pcc():
     file_path = "tests/data/system/PCC/PCC.pdf"
+    file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2024, 4, 1, 0, 0),
         description="Credit Card 04/01/202",
@@ -33,9 +37,11 @@ def test_parse_pcc():
     )
     parser = PCCParser()
 
-    transactions = parser.parse_transactions(file_path)
+    transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
+
+    file.close()
