@@ -8,7 +8,10 @@ import re
 from transactions_processor.models.transaction import Transaction
 from datetime import datetime
 
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
+from transactions_processor.utils.math_utils import parse_amount
 
 
 class PCCParser(TransactionsParser):
@@ -45,12 +48,7 @@ class PCCParser(TransactionsParser):
                     amount_string = row[6]
                     date = row[0]
                     description = row[4]
-                    amount = (
-                        # float(amount_string.replace(",", "").replace("$", "").replace(" ", "").replace('(', '').replace(')',''))
-                        float(re.sub(r'[^\d.]', '', amount_string))
-                        if isinstance(amount_string, str)
-                        else float(amount_string)
-                    )
+                    amount = parse_amount(amount_string)
                     if math.isnan(amount) or amount <= 0.0:  # Skip if amount is NaN
                         continue
                     bank_transactions.append(
