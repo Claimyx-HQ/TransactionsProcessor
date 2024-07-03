@@ -1,14 +1,31 @@
 import logging
 
 from transactions_processor.services.excel.excel_controller import ExcelController
-from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import FlagstarBankParser
-from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import ForbrightBankParser
-from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import Servis1stBankParser
+from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import (
+    FlagstarBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import (
+    ForbrightBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
+    Servis1stBankParser,
+)
 from transactions_processor.services.parsers.system_parsers.ncs_parser import NCSParser
 from transactions_processor.services.parsers.system_parsers.pcc_parser import PCCParser
-from transactions_processor.services.transaction_matcher import TransactionMatcher
 
-def create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name):
+
+def create_the_test(
+    logger,
+    bank_parser,
+    system_parser,
+    transaction_matcher,
+    bank_file_path,
+    system_file_path,
+    excel_controller,
+    workbook_name,
+    bank_name,
+    system_name,
+):
     bank_transactions = bank_parser.parse_transactions(bank_file_path)
     system_transactions = system_parser.parse_transactions(system_file_path)
 
@@ -63,6 +80,8 @@ def create_the_test(logger, bank_parser, system_parser, transaction_matcher, ban
     logger.info("Test finished")
 
     assert True
+
+
 # def test_excel_controller_with_united_bank():
 #     logging.basicConfig(
 #         filename="tests.log",
@@ -83,9 +102,6 @@ def create_the_test(logger, bank_parser, system_parser, transaction_matcher, ban
 #     excel_controller = ExcelController()
 
 #     create_the_test(logger, bank_parser, system_parser, transaction_matcher, bank_file_path, system_file_path, excel_controller, workbook_name, bank_name, system_name)
-
-    
-
 
 
 # def test_excel_controller_with_forbright_bank():

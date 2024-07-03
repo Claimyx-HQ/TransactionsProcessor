@@ -1,9 +1,11 @@
 import logging
 from typing import Any, Callable, Dict, List, Tuple
 import numpy as np
+from transactions_processor.services.transactions_matcher import TransactionsMatcher
+import time
 
 
-class TransactionMatcher:
+class DefaultTransactionsMatcher(TransactionsMatcher):
     # Return matching and unmatched transactions
     def find_matched_unmatched(
         self, bank_transactions: List[float], system_transactions: List[float]
@@ -94,73 +96,67 @@ class TransactionMatcher:
                 matches[bank_transaction] = possible_mathces
             if update_progress:
                 update_progress((i + 1) / len(bank_transactions) * 100)
-        while len(matches) > 0:
-            unused_amounts = {}
+        unused_amounts = {}
 
-            # Count possible amounts from system transactions to be used for reconciliation
-            for amount in system_transactions:
-                unused_amounts[amount] = unused_amounts.get(amount, 0) + 1
+        # Count possible amounts from system transactions to be used for reconciliation
+        for amount in system_transactions:
+            unused_amounts[amount] = unused_amounts.get(amount, 0) + 1
 
-            multiple_matched_amounts = []
-            for amount in matches.keys():
-                # If single match found, process immediately because of better chance to be correct
-                if len(matches[amount]) == 1:
-                    # Check if the transaction reconcilation is possible with the current unused amounts
-                    new_possible_unused_amounts = (
-                        self._validate_transactions_possibility(
-                            matches[amount][0], unused_amounts
-                        )
-                    )
-                    # Update the unused amounts and remove the matched transactions
-                    if new_possible_unused_amounts:
-                        unused_amounts = new_possible_unused_amounts
-                        system_transactions = self._remove_sub_array(
-                            system_transactions, matches[amount][0]
-                        )
-                        bank_transactions.remove(amount)
-                        validated_matches[amount] = matches[amount][0]
-
-                # If multiple matches found, process later
-                else:
-                    multiple_matched_amounts.append(amount)
-
-            # Process the multiple matched amounts
-            # TODO: need to implement logic to select the best possible combination of transactions
-            for amount in multiple_matched_amounts:
-                for possible_match in matches[amount]:
-                    new_possible_unused_amounts = (
-                        self._validate_transactions_possibility(
-                            possible_match, unused_amounts
-                        )
-                    )
-                    if new_possible_unused_amounts:
-                        unused_amounts = new_possible_unused_amounts
-                        system_transactions = self._remove_sub_array(
-                            system_transactions, possible_match
-                        )
-                        bank_transactions.remove(amount)
-                        validated_matches[amount] = possible_match
-                        break
-
-            logger.info(f"validated_matches: {validated_matches}")
-            matches = {}
-
-            # Try to find more matches with the remaining transactions
-            for bank_transaction in bank_transactions:
-                max_possibilties = 3 if bank_transaction <= 5000 else 5
-                possible_mathces = []
-                find_matches_n_sum(
-                    system_transactions,
-                    bank_transaction,
-                    max_possibilties,
-                    0,
-                    [],
-                    possible_mathces,
+        multiple_matched_amounts = []
+        for amount in matches.keys():
+            # If single match found, process immediately because of better chance to be correct
+            if len(matches[amount]) == 1:
+                # Check if the transaction reconcilation is possible with the current unused amounts
+                new_possible_unused_amounts = self._validate_transactions_possibility(
+                    matches[amount][0], unused_amounts
                 )
-                if possible_mathces:
-                    matches[bank_transaction] = possible_mathces
+                # Update the unused amounts and remove the matched transactions
+                if new_possible_unused_amounts:
+                    unused_amounts = new_possible_unused_amounts
+                    system_transactions = self._remove_sub_array(
+                        system_transactions, matches[amount][0]
+                    )
+                    bank_transactions.remove(amount)
+                    validated_matches[amount] = matches[amount][0]
 
-            logger.info(f"new matches: {matches}")
+            # If multiple matches found, process later
+            else:
+                multiple_matched_amounts.append(amount)
+
+        # Process the multiple matched amounts
+        # TODO: need to implement logic to select the best possible combination of transactions
+        for amount in multiple_matched_amounts:
+            for possible_match in matches[amount]:
+                new_possible_unused_amounts = self._validate_transactions_possibility(
+                    possible_match, unused_amounts
+                )
+                if new_possible_unused_amounts:
+                    unused_amounts = new_possible_unused_amounts
+                    system_transactions = self._remove_sub_array(
+                        system_transactions, possible_match
+                    )
+                    bank_transactions.remove(amount)
+                    validated_matches[amount] = possible_match
+                    break
+
+        logger.info(f"validated_matches: {validated_matches}")
+
+        # Try to find more matches with the remaining transactions
+        # for bank_transaction in bank_transactions:
+        #     max_possibilties = 3 if bank_transaction <= 5000 else 5
+        #     possible_mathces = []
+        #     find_matches_n_sum(
+        #         system_transactions,
+        #         bank_transaction,
+        #         max_possibilties,
+        #         0,
+        #         [],
+        #         possible_mathces,
+        #     )
+        #     if possible_mathces:
+        #         matches[bank_transaction] = possible_mathces
+        #
+        # logger.info(f"new matches: {matches}")
 
         return validated_matches, bank_transactions, system_transactions
 

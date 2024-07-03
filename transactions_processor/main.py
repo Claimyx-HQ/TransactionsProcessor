@@ -6,9 +6,15 @@ import boto3
 from botocore.config import Config
 import concurrent.futures
 from transactions_processor.models.transaction import Transaction
+from transactions_processor.services.default_transactions_matcher import (
+    DefaultTransactionsMatcher,
+)
 from transactions_processor.services.excel.excel_controller import ExcelController
 import logging
 import io
+from transactions_processor.services.parallel_transactions_matcher import (
+    ParallelTransactionsMatcher,
+)
 from transactions_processor.services.parsers.bank_parsers.bank_parsers import (
     bank_parsers,
 )
@@ -16,12 +22,13 @@ from transactions_processor.services.parsers.system_parsers.system_parsers impor
     system_parsers,
 )
 
-from transactions_processor.services.transaction_matcher import TransactionMatcher
+from transactions_processor.services.transactions_matcher import TransactionsMatcher
 from transactions_processor.utils.aws_utils import (
     generate_error_code,
     notify_client,
     upload_file_to_s3,
 )
+import multiprocessing
 
 s3 = boto3.client("s3", config=Config(signature_version="s3v4"))
 
@@ -41,11 +48,11 @@ def lambda_handler(event, context):
         if not client_id:
             raise Exception("Client ID is required")
 
-        transaction_matcher = TransactionMatcher()
+        transaction_matcher = ParallelTransactionsMatcher()
         excel_controller = ExcelController()
 
         # Create a thread pool executor
-        generated_excel: io.BytesIO | None
+        bank_files = []
         with concurrent.futures.ThreadPoolExecutor() as executor:
             update_progress(client_id, "Processing", 0)
             system_file = retrieve_file(bucket_name, system_transactions_data["key"])
@@ -55,30 +62,30 @@ def lambda_handler(event, context):
                 for bank_file in bank_transactions_data
             ]
             concurrent.futures.wait(bank_files_tasks)
+            bank_files = [task.result() for task in bank_files_tasks]
 
-            system_parser = system_parsers[system_transactions_data["type"]]()
-            system_transactions = system_parser.parse_transactions(system_file)
-            initialized_bank_parsers = {}
-            all_bank_transactions = []
-            for i in range(len(bank_files_tasks)):
-                bank_type = bank_transactions_data[i]["type"]
-                if bank_type not in initialized_bank_parsers:
-                    initialized_bank_parsers[bank_type] = bank_parsers[bank_type]()
-                bank_parser = initialized_bank_parsers[bank_type]
-                bank_file = bank_files_tasks[i].result()
-                bank_transactions = bank_parser.parse_transactions(bank_file)
-                all_bank_transactions.extend(bank_transactions)
+        system_parser = system_parsers[system_transactions_data["type"]]()
+        system_transactions = system_parser.parse_transactions(system_file)
+        initialized_bank_parsers = {}
+        all_bank_transactions = []
+        for i in range(len(bank_files_tasks)):
+            bank_type = bank_transactions_data[i]["type"]
+            if bank_type not in initialized_bank_parsers:
+                initialized_bank_parsers[bank_type] = bank_parsers[bank_type]()
+            bank_parser = initialized_bank_parsers[bank_type]
+            bank_transactions = bank_parser.parse_transactions(bank_files[i])
+            all_bank_transactions.extend(bank_transactions)
 
-            data = find_matches(
-                client_id,
-                all_bank_transactions,
-                system_transactions,
-                transaction_matcher,
-            )
+        data = find_matches(
+            client_id,
+            all_bank_transactions,
+            system_transactions,
+            transaction_matcher,
+        )
 
-            generated_excel = excel_controller.create_transaction_excel(
-                data, None, bank_name, system_name
-            )
+        generated_excel = excel_controller.create_transaction_excel(
+            data, None, bank_name, system_name
+        )
 
         # Construct the response
         if generated_excel is None:
@@ -172,7 +179,7 @@ def find_matches(
     client_id: str,
     all_bank_transactions: List[Transaction],
     system_transactions: List[Transaction],
-    transaction_matcher: TransactionMatcher,
+    transaction_matcher: TransactionsMatcher,
 ):
     logger = logging.getLogger(__name__)
     update_progress(client_id, "Matching", 0)
@@ -224,6 +231,22 @@ def find_matches(
             "unmatched_bank": unmatched_bank_amounts,
         },
     }
+
+
+def update_progress_thread(
+    self, total_transactions: int, progress_queue: multiprocessing.Queue
+):
+    while not self.stop_progress_thread.is_set():
+        try:
+            # This will block until an item is available
+            progress_increment = progress_queue.get(timeout=1)
+            with self.progress_lock:
+                self.progress += progress_increment
+                progress_percentage = (self.progress / total_transactions) * 100
+            self.update_client_progress(progress_percentage)
+        except Exception as e:
+            # If no progress update in 1 second, just continue
+            continue
 
 
 def update_progress(client_id, type, progress):
