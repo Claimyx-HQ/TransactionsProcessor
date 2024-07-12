@@ -20,20 +20,36 @@ class ExcelHelpers:
         logger.debug(
             f" writing transaction {transaction} in excel's row {row_index} and from column index {column_start_index}"
         )
-        worksheet[f"{get_column_letter(column_start_index)}{row_index}"].value = transaction.uuid
-        worksheet[f"{get_column_letter(column_start_index+1)}{row_index}"].value = transaction.date.strftime("%m-%d-%Y")
-        worksheet[f"{get_column_letter(column_start_index+2)}{row_index}"].value = transaction.description
-        worksheet[f"{get_column_letter(column_start_index+3)}{row_index}"].value = transaction.amount
+        worksheet[f"{get_column_letter(column_start_index)}{row_index}"].value = (
+            transaction.uuid
+        )
+        worksheet[f"{get_column_letter(column_start_index+1)}{row_index}"].value = (
+            transaction.date.strftime("%m-%d-%Y")
+        )
+        worksheet[f"{get_column_letter(column_start_index+2)}{row_index}"].value = (
+            transaction.description
+        )
+        worksheet[f"{get_column_letter(column_start_index+3)}{row_index}"].value = (
+            transaction.amount
+        )
         if format is not None:
-            worksheet[f"{get_column_letter(column_start_index)}{row_index}"].fill = format
-            worksheet[f"{get_column_letter(column_start_index+1)}{row_index}"].fill = format
-            worksheet[f"{get_column_letter(column_start_index+2)}{row_index}"].fill = format
-            worksheet[f"{get_column_letter(column_start_index+3)}{row_index}"].fill = format
+            worksheet[f"{get_column_letter(column_start_index)}{row_index}"].fill = (
+                format
+            )
+            worksheet[f"{get_column_letter(column_start_index+1)}{row_index}"].fill = (
+                format
+            )
+            worksheet[f"{get_column_letter(column_start_index+2)}{row_index}"].fill = (
+                format
+            )
+            worksheet[f"{get_column_letter(column_start_index+3)}{row_index}"].fill = (
+                format
+            )
         worksheet[f"E{row_index}"].fill = PatternFill("solid", fgColor="000000")
 
     @staticmethod
     def _setup_excel(
-         worksheet: Worksheet, bank_name="Bank", system_name="PharmBills System"
+        worksheet: Worksheet, bank_name="Bank", system_name="PharmBills System"
     ):
         ExcelHelpers._setup_headers(
             worksheet=worksheet,
@@ -64,13 +80,15 @@ class ExcelHelpers:
             "orange": "FFB347",
         }
         color_fills = {
-            index: PatternFill("solid",fgColor=code, fill_type="solid")
+            index: PatternFill("solid", fgColor=code, fill_type="solid")
             for index, (name, code) in enumerate(color_formats.items())
         }
         return green_fill, color_fills
-    
+
     @staticmethod
-    def _setup_headers(worksheet: Worksheet, bank_name="Bank", system_name="PharmBills System"):
+    def _setup_headers(
+        worksheet: Worksheet, bank_name="Bank", system_name="PharmBills System"
+    ):
         header_font = Font(bold=True)
         header_alignment = Alignment(horizontal="center", vertical="center")
         merged_header_fill = PatternFill("solid", fgColor="DDEBF7")
@@ -99,29 +117,35 @@ class ExcelHelpers:
             cell = f"{get_column_letter(i)}2"
             worksheet[cell].value = header
             worksheet[cell].font = Font(bold=True)
-            worksheet[cell].alignment = Alignment(horizontal="center", vertical="center")
+            worksheet[cell].alignment = Alignment(
+                horizontal="center", vertical="center"
+            )
 
             # Repeat for bank headers, offset by 5 columns due to separation
             bank_cell = f"{get_column_letter(i + 5)}2"
             worksheet[bank_cell].value = header
             worksheet[bank_cell].font = Font(bold=True)
-            worksheet[bank_cell].alignment = Alignment(horizontal="center", vertical="center")
+            worksheet[bank_cell].alignment = Alignment(
+                horizontal="center", vertical="center"
+            )
 
         # Freeze panes
         # worksheet[f"E1"].fill = PatternFill("solid", fgColor="000000")
         # worksheet[f"E2"].fill = PatternFill("solid", fgColor="000000")
         worksheet.freeze_panes = "A3"
-    
+
     @staticmethod
     def _create_title_row(worksheet, title, column_start_index, row_index):
         start_cell = f"{get_column_letter(column_start_index)}{row_index}"
         stop_cell = f"{get_column_letter(column_start_index + 3)}{row_index}"
         worksheet.merge_cells(f"{start_cell}:{stop_cell}")
         worksheet[start_cell].value = title
-        worksheet[start_cell].font = Font(bold=True, color="FFFFFF")
-        worksheet[start_cell].alignment = Alignment(horizontal="center", vertical="center")
-        worksheet[start_cell].fill = PatternFill("solid", fgColor="000000")
-        worksheet[f"E{row_index}"].fill = PatternFill("solid", fgColor="000000")
+        worksheet[start_cell].font = Font(bold=True, color="000000")
+        worksheet[start_cell].alignment = Alignment(
+            horizontal="center", vertical="center"
+        )
+        worksheet[start_cell].fill = PatternFill("solid", fgColor="FFFFFF")
+        worksheet[f"E{row_index}"].fill = PatternFill("solid", fgColor="FFFFFF")
         row_index += 1
 
         headers = ["UID", "Date", "Description", "Amount"]
@@ -129,9 +153,9 @@ class ExcelHelpers:
             cell = f"{get_column_letter(i+column_start_index-1)}{row_index}"
             worksheet[cell].value = header
             worksheet[cell].font = Font(bold=True)
-            worksheet[cell].alignment = Alignment(horizontal="center", vertical="center")
+            worksheet[cell].alignment = Alignment(
+                horizontal="center", vertical="center"
+            )
 
         row_index += 1
         return row_index
-
-    
