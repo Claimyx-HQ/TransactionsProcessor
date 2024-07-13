@@ -5,6 +5,7 @@ import uuid
 import boto3
 from botocore.config import Config
 import concurrent.futures
+from transactions_processor.exceptions.file_exceptions import UnreadableFileException
 from transactions_processor.models.transaction import Transaction
 from transactions_processor.services.default_transactions_matcher import (
     DefaultTransactionsMatcher,
