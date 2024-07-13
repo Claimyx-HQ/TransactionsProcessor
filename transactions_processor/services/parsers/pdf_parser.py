@@ -8,32 +8,36 @@ import numpy as np
 from transactions_processor.models.transaction import Transaction
 from datetime import datetime
 
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
+from transactions_processor.services.converters.scanned_pdf_converter import (
+    ScannedPDFConverter,
+)
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
 
 
 class PDFParser(TransactionsParser):
-    def __init__(self, column_positions: List[int]) -> None:
+    def __init__(self, column_positions: List[float]) -> None:
         self.logger = logging.getLogger(__name__)
         self.column_positions = column_positions
+        self.pdf_converter = ScannedPDFConverter()
         self._enable = True
 
     # field_indexes is a dictionary that maps the field names to their respective indexes
     # parse_row is a function that takes a row and returns a Transaction object
     def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-        df = tabula.io.read_pdf(
-            file,
-            multiple_tables=True,
-            pages="all",
-            pandas_options={"header": None},
-            guess=False,
-            columns=self.column_positions,
-        )
-        # file.seek(0)
+        tables = self._parse_pdf(file)
+        if len(tables) == 0:
+            print("No tables found in PDF, converting to text and trying again.")
+            file.seek(0)
+            converted_pdf = self.pdf_converter.convert_scanned_pdf(file)
+            tables = self._parse_pdf(converted_pdf)
+
         bank_transactions: List[Transaction] = []
 
-        for table in df:
+        for table in tables:
             table_data: List = table.values.tolist()  # type: ignore
-            for i, row  in enumerate(table_data):
+            for i, row in enumerate(table_data):
                 # Signal to stop processing if enable is set to False
                 if not self._enable:
                     return bank_transactions
@@ -42,7 +46,17 @@ class PDFParser(TransactionsParser):
                     bank_transactions.append(transaction)
         return bank_transactions
 
+    def _parse_pdf(self, file: BinaryIO) -> List[Transaction]:
+        tables = tabula.io.read_pdf(
+            file,
+            multiple_tables=True,
+            pages="all",
+            pandas_options={"header": None},
+            guess=False,
+            columns=self.column_positions,
+        )
+        return tables
+
     @abstractmethod
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
         pass
-

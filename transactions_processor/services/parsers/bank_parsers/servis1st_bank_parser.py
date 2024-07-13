@@ -1,79 +1,39 @@
 import logging
 import math
-from typing import BinaryIO, Dict, List, Union
+from typing import Any, BinaryIO, Callable, Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
 from transactions_processor.models.transaction import Transaction
 from datetime import datetime
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
+
+from transactions_processor.services.parsers.pdf_parser import PDFParser
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
+from transactions_processor.utils.date_utils import valid_date, valid_date_split
+from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 
-class Servis1stBankParser(TransactionsParser):
+class Servis1stBankParser(PDFParser):
     def __init__(self) -> None:
-        self.decoded_data = []
-        self.formated_data = []
-        self.logger = logging.getLogger(__name__)
+        super().__init__([65, 130, 326, 594])
+        self.valid_table = True
 
-    def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
-        columns = [65, 130, 326, 594]
-        df = tabula.io.read_pdf(
-            file,
-            multiple_tables=True,
-            pages="all",
-            pandas_options={"header": None},
-            guess=False,
-            columns=columns,
-        )
-        try:
-            file.seek(0)
-        except:
-            pass
-        bank_transactions: List[Transaction] = (
-            []
-        )  # Use a Python list for accumulating transactions
-        bank_transactions_amounts = []  # Likewise, for amounts
+    def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
 
-        for table in df:
-            table_data: List = table.values.tolist()  # type: ignore
-            in_deposits = False
-            for row in table_data:
-                self.logger.debug(f"row length: {len(row)} -- {row}")
-                if isinstance(row[1], str):
-                    if row[1] == "DEPOSITS":
-                        in_deposits = True
-                        self.logger.debug(f"For row {row}, in_deposits = {in_deposits}")
-                    elif row[1].startswith("WITHDRAW"):
-                        in_deposits = False
-                        self.logger.debug(f"For row {row}, in_deposits = {in_deposits}")
-
-                valid_row, formatted_date = self._valid_date(row[1])
-                if valid_row and in_deposits:
-                    amount = (
-                        float(row[3].replace(",", "").replace("$", "").replace(" ", ""))
-                        if isinstance(row[3], str)
-                        else float(row[3])
-                    )
-                    if math.isnan(amount) or amount <= 0.0:  # Skip if amount is NaN
-                        continue
-                    description = row[2]
-                    date = formatted_date
-                    bank_transactions.append(
-                        Transaction.from_raw_data([date, description, amount])
-                    )
-                    bank_transactions_amounts.append(amount)
-                    # self.logger.debug(f"row {row}")
-        return bank_transactions
-
-    def _valid_date(self, date: str | float) -> bool:
-        try:
-            if isinstance(date, float):
-                return False, date
-            parsed_date = datetime.strptime(date, "%m/%d")
-            formatted_date = parsed_date.strftime("%m/%d")
-            return True, formatted_date
-        except ValueError:
-            return False, date
-
-
-# Local Test
+        if isinstance(row[1], str):
+            if row[1].startswith("WITHDRAW"):
+                self.valid_table = False
+                return None
+        valid_row = valid_date(row[1], "%m/%d")
+        if valid_row and self.valid_table:
+            date_str = row[1]
+            amount_str = row[3]
+            description_str = row[2]
+            amount = parse_amount(amount_str)
+            if not valid_amount(amount):
+                return None
+            transaction = Transaction.from_raw_data([date_str, description_str, amount])
+            return transaction
+        return None
