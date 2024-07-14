@@ -1,5 +1,14 @@
 FROM public.ecr.aws/lambda/python:3.10
 
+# Install Tesseract and its dependencies
+RUN yum update -y && \
+    yum install -y amazon-linux-extras && \
+    amazon-linux-extras enable epel && \
+    yum install -y epel-release && \
+    yum install -y tesseract tesseract-langpack-eng && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+
 COPY --from=openjdk:8-jre-slim /usr/local/openjdk-8 /usr/local/openjdk-8
 ENV JAVA_HOME /usr/local/openjdk-8
 # RUN update-alternatives --install /usr/bin/java java /usr/local/openjdk-8/bin/java 1
