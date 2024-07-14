@@ -1,13 +1,10 @@
 FROM public.ecr.aws/lambda/python:3.10
 
-# Install Tesseract and its dependencies
-RUN yum update -y && \
-    yum install -y amazon-linux-extras && \
-    amazon-linux-extras enable epel && \
-    yum install -y epel-release && \
-    yum install -y tesseract tesseract-langpack-eng && \
-    yum clean all && \
-    rm -rf /var/cache/yum
+# Copy Tesseract binary and necessary files directly from a Tesseract image
+COPY --from=tesseractshadow/tesseract4re:latest /usr/bin/tesseract /usr/bin/
+COPY --from=tesseractshadow/tesseract4re:latest /usr/lib/x86_64-linux-gnu/libtesseract.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=tesseractshadow/tesseract4re:latest /usr/lib/x86_64-linux-gnu/liblept.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=tesseractshadow/tesseract4re:latest /usr/share/tesseract-ocr/4.00/tessdata/eng.traineddata /usr/share/tesseract-ocr/4.00/tessdata/
 
 COPY --from=openjdk:8-jre-slim /usr/local/openjdk-8 /usr/local/openjdk-8
 ENV JAVA_HOME /usr/local/openjdk-8
