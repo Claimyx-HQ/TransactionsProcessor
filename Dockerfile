@@ -1,10 +1,52 @@
 FROM public.ecr.aws/lambda/python:3.10
 
-# Copy Tesseract binary and necessary files directly from a Tesseract image
-COPY --from=tesseractshadow/tesseract4re:latest /usr/bin/tesseract /usr/bin/
-COPY --from=tesseractshadow/tesseract4re:latest /usr/lib/x86_64-linux-gnu/libtesseract.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=tesseractshadow/tesseract4re:latest /usr/lib/x86_64-linux-gnu/liblept.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=tesseractshadow/tesseract4re:latest /usr/share/tesseract-ocr/4.00/tessdata/eng.traineddata /usr/share/tesseract-ocr/4.00/tessdata/
+# Install Tesseract and its dependencies
+RUN yum update -y && \
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    yum install -y \
+        git \
+        libtool \
+        gcc-c++ \
+        zlib \
+        zlib-devel \
+        libjpeg \
+        libjpeg-devel \
+        libwebp \
+        libwebp-devel \
+        libtiff \
+        libtiff-devel \
+        libpng \
+        libpng-devel \
+        tesseract \
+        tesseract-langpack-eng && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+
+# Copy necessary libraries
+RUN cp /usr/lib64/libjpeg.so.62 /usr/local/lib/ && \
+    cp /usr/lib64/libwebp.so.4 /usr/local/lib/ && \
+    cp /usr/lib64/libtiff.so.5 /usr/local/lib/ && \
+    cp /usr/lib64/libpng15.so.15 /usr/local/lib/
+
+# Set Tesseract environment variables
+ENV TESSDATA_PREFIX=/usr/share/tesseract/tessdata
+ENV LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
+
+# Verify Tesseract installation
+RUN echo "Verifying Tesseract installation:" && \
+    if [ -f /usr/bin/tesseract ]; then \
+        echo "Tesseract binary found at /usr/bin/tesseract"; \
+        /usr/bin/tesseract --version; \
+    else \
+        echo "Tesseract binary not found"; \
+        exit 1; \
+    fi
+
+# List relevant libraries
+RUN echo "Listing relevant libraries:" && \
+    ls -l /usr/lib64/libtesseract* /usr/lib64/liblept* /usr/lib64/libgif* \
+          /usr/lib64/libwebp* /usr/lib64/libtiff* /usr/lib64/libpng* \
+          /usr/lib64/libjpeg*
 
 COPY --from=openjdk:8-jre-slim /usr/local/openjdk-8 /usr/local/openjdk-8
 ENV JAVA_HOME /usr/local/openjdk-8
