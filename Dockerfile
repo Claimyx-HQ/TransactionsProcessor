@@ -1,52 +1,76 @@
+# Build stage
+FROM amazonlinux:2 as builder
+
+# Install build dependencies
+RUN yum update -y && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y \
+        wget \
+        tar \
+        gzip \
+        libpng-devel \
+        libjpeg-devel \
+        libtiff-devel \
+        zlib-devel \
+        libwebp-devel \
+        gcc-c++ \
+        autoconf \
+        automake \
+        libtool \
+        pkgconfig \
+        make
+
+# Build Leptonica
+RUN wget http://www.leptonica.org/source/leptonica-1.82.0.tar.gz && \
+    tar -xzvf leptonica-1.82.0.tar.gz && \
+    cd leptonica-1.82.0 && \
+    ./configure && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf leptonica-1.82.0*
+
+# Build Tesseract
+RUN wget https://github.com/tesseract-ocr/tesseract/archive/4.1.1.tar.gz && \
+    tar -xzvf 4.1.1.tar.gz && \
+    cd tesseract-4.1.1 && \
+    ./autogen.sh && \
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig LIBLEPT_HEADERSDIR=/usr/local/include ./configure --prefix=/usr/local --disable-openmp && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf 4.1.1.tar.gz tesseract-4.1.1
+
+# Download English language data
+RUN mkdir -p /usr/local/share/tessdata && \
+    wget https://github.com/tesseract-ocr/tessdata/raw/main/eng.traineddata -O /usr/local/share/tessdata/eng.traineddata
+
+# Final stage
 FROM public.ecr.aws/lambda/python:3.10
 
-# Install Tesseract and its dependencies
+# Copy Tesseract and its dependencies from builder
+COPY --from=builder /usr/local/bin/tesseract /usr/local/bin/
+COPY --from=builder /usr/local/lib/libtesseract.so* /usr/local/lib/
+COPY --from=builder /usr/local/lib/liblept.so* /usr/local/lib/
+COPY --from=builder /usr/local/share/tessdata/eng.traineddata /usr/local/share/tessdata/
+
+# Install runtime dependencies
 RUN yum update -y && \
-    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
     yum install -y \
-        git \
-        libtool \
-        gcc-c++ \
-        zlib \
-        zlib-devel \
-        libjpeg \
-        libjpeg-devel \
-        libwebp \
-        libwebp-devel \
-        libtiff \
-        libtiff-devel \
         libpng \
-        libpng-devel \
-        tesseract \
-        tesseract-langpack-eng && \
+        libjpeg \
+        libtiff \
+        libwebp && \
     yum clean all && \
     rm -rf /var/cache/yum
 
-# Copy necessary libraries
-RUN cp /usr/lib64/libjpeg.so.62 /usr/local/lib/ && \
-    cp /usr/lib64/libwebp.so.4 /usr/local/lib/ && \
-    cp /usr/lib64/libtiff.so.5 /usr/local/lib/ && \
-    cp /usr/lib64/libpng15.so.15 /usr/local/lib/
-
 # Set Tesseract environment variables
-ENV TESSDATA_PREFIX=/usr/share/tesseract/tessdata
-ENV LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
+ENV TESSDATA_PREFIX=/usr/local/share/tessdata
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # Verify Tesseract installation
 RUN echo "Verifying Tesseract installation:" && \
-    if [ -f /usr/bin/tesseract ]; then \
-        echo "Tesseract binary found at /usr/bin/tesseract"; \
-        /usr/bin/tesseract --version; \
-    else \
-        echo "Tesseract binary not found"; \
-        exit 1; \
-    fi
-
-# List relevant libraries
-RUN echo "Listing relevant libraries:" && \
-    ls -l /usr/lib64/libtesseract* /usr/lib64/liblept* /usr/lib64/libgif* \
-          /usr/lib64/libwebp* /usr/lib64/libtiff* /usr/lib64/libpng* \
-          /usr/lib64/libjpeg*
+    tesseract --version
 
 COPY --from=openjdk:8-jre-slim /usr/local/openjdk-8 /usr/local/openjdk-8
 ENV JAVA_HOME /usr/local/openjdk-8
