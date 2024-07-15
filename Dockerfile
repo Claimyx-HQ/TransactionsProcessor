@@ -60,7 +60,8 @@ RUN yum update -y && \
         libpng \
         libjpeg \
         libtiff \
-        libwebp && \
+        libwebp \
+        ghostscript && \
     yum clean all && \
     rm -rf /var/cache/yum
 
