@@ -14,13 +14,15 @@ from transactions_processor.services.parsers.transactions_parser import (
 from transactions_processor.utils.math_utils import parse_amount
 
 
-class PCCParser(TransactionsParser):
+class PCCPDFParser(TransactionsParser):
     def __init__(self) -> None:
         self.decoded_data = []
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file: BinaryIO) -> List[Transaction]:
+    def parse_transactions(
+        self, file: BinaryIO, file_key: str | None = None
+    ) -> List[Transaction]:
         columns = [70, 150, 250, 400, 500, 600, 670, 850]
         # columns = [34, 120, 210, 300, 400, 490, 580, 670]
         df = tabula.io.read_pdf(

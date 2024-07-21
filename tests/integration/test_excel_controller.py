@@ -10,8 +10,6 @@ from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser 
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
-from transactions_processor.services.parsers.system_parsers.ncs_parser import NCSParser
-from transactions_processor.services.parsers.system_parsers.pcc_parser import PCCParser
 
 
 def create_the_test(
