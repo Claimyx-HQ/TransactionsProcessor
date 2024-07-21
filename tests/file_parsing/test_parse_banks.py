@@ -90,6 +90,7 @@ def test_parse_forbright_bank():
 def test_parse_united_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/united/united_bank.pdf"
+    file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2024, 2, 2, 0, 0),
         description="NOVITAS SOLUTION HCCLAIMPMT",
@@ -98,13 +99,14 @@ def test_parse_united_bank():
     )
     parser = UnitedBankParser()
 
-    transactions = parser.parse_transactions(file_path)
+    transactions = parser.parse_transactions(file)
     # Assuming `transactions` is a list of transaction objects or dictionaries you want to log
     formatted_transactions = " \n".join(str(t) for t in transactions)
     logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
     parsed_transaction = transactions[0]
 
     _check_the_test(first_transaction, parsed_transaction)
+    file.close()
 
 
 def test_parse_flagstar_bank():

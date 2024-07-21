@@ -2,8 +2,6 @@ import json
 import requests
 from typing import List
 import uuid
-import boto3
-from botocore.config import Config
 import concurrent.futures
 from transactions_processor.exceptions.file_exceptions import UnreadableFileException
 from transactions_processor.models.transaction import Transaction
@@ -27,11 +25,10 @@ from transactions_processor.services.transactions_matcher import TransactionsMat
 from transactions_processor.utils.aws_utils import (
     generate_error_code,
     notify_client,
+    retrieve_file,
     upload_file_to_s3,
 )
 import multiprocessing
-
-s3 = boto3.client("s3", config=Config(signature_version="s3v4"))
 
 
 def lambda_handler(event, context):
@@ -65,6 +62,7 @@ def lambda_handler(event, context):
             concurrent.futures.wait(bank_files_tasks)
             bank_files = [task.result() for task in bank_files_tasks]
 
+        # TODO: This also needs to run in parallel
         system_parser = system_parsers[system_transactions_data["type"]]()
         system_transactions = system_parser.parse_transactions(system_file)
         initialized_bank_parsers = {}
@@ -102,7 +100,7 @@ def lambda_handler(event, context):
             return response
 
         presigned_url = upload_file_to_s3(
-            s3, generated_excel, bucket_name, f"{uuid.uuid4()}.xlsx"
+            generated_excel, bucket_name, f"{uuid.uuid4()}.xlsx"
         )
 
         response = {
@@ -146,27 +144,6 @@ def lambda_handler(event, context):
             },
         }
         return response
-
-
-def retrieve_file(bucket_name, key):
-    # Download the file from S3
-    file_obj = s3.get_object(Bucket=bucket_name, Key=key)
-    file_content = file_obj["Body"].read()
-    file = io.BytesIO(file_content)
-    return file
-
-
-def download_and_process_file(bucket_name, key):
-    # Download the file from S3
-    file_obj = s3.get_object(Bucket=bucket_name, Key=key)
-    file_content = file_obj["Body"].read()
-
-    # Process the file content (replace with your own logic)
-    processed_content = process_file(file_content)
-
-    # Save the processed file back to S3 (optional)
-    processed_key = f"processed/{key}"
-    s3.put_object(Bucket=bucket_name, Key=processed_key, Body=processed_content)
 
 
 def process_file(file_content):
