@@ -1,3 +1,4 @@
+from typing import Dict
 from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser import (
     BankFeedsParser,
 )
@@ -43,8 +44,11 @@ from transactions_processor.services.parsers.bank_parsers.webster_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import (
     WellsFargoBankParser,
 )
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
 
-bank_parsers = {
+bank_parsers: Dict[str, type[TransactionsParser]] = {
     "bank_feed": BankFeedsParser,
     "cibc": CIBCBankParser,
     "connect_one": ConnectOneBankParser,

@@ -21,6 +21,9 @@ from transactions_processor.services.parsers.system_parsers.system_parsers impor
     system_parsers,
 )
 
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
 from transactions_processor.services.transactions_matcher import TransactionsMatcher
 from transactions_processor.utils.aws_utils import (
     generate_error_code,
@@ -60,19 +63,33 @@ def lambda_handler(event, context):
                 for bank_file in bank_transactions_data
             ]
             concurrent.futures.wait(bank_files_tasks)
-            bank_files = [task.result() for task in bank_files_tasks]
+            for i in range(len(bank_files_tasks)):
+                bank_files.append(
+                    {
+                        "key": bank_transactions_data[i]["key"],
+                        "file": bank_files_tasks[i].result(),
+                        "type": bank_transactions_data[i]["type"],
+                    }
+                )
+            # bank_files = [
+            #     {"key": bank_file["key"], "file": task.result()}
+            #     for bank_file, task in zip(bank_transactions_data, bank_files_tasks)
+            # ]
+            # bank_files = [task.result() for task in bank_files_tasks]
 
         # TODO: This also needs to run in parallel
         system_parser = system_parsers[system_transactions_data["type"]]()
         system_transactions = system_parser.parse_transactions(system_file)
         initialized_bank_parsers = {}
         all_bank_transactions = []
-        for i in range(len(bank_files_tasks)):
-            bank_type = bank_transactions_data[i]["type"]
+        for i in range(len(bank_files)):
+            bank_type = bank_files[i]["type"]
+            bank_file_key = bank_files[i]["key"]
+            bank_file = bank_files[i]["file"]
             if bank_type not in initialized_bank_parsers:
                 initialized_bank_parsers[bank_type] = bank_parsers[bank_type]()
-            bank_parser = initialized_bank_parsers[bank_type]
-            bank_transactions = bank_parser.parse_transactions(bank_files[i])
+            bank_parser: TransactionsParser = initialized_bank_parsers[bank_type]
+            bank_transactions = bank_parser.parse_transactions(bank_file, bank_file_key)
             all_bank_transactions.extend(bank_transactions)
 
         data = find_matches(
