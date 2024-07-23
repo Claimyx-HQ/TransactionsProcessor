@@ -51,7 +51,7 @@ class PCCPDFParser(TransactionsParser):
                     date = row[0]
                     description = row[4]
                     amount = parse_amount(amount_string)
-                    if math.isnan(amount) or amount <= 0.0:  # Skip if amount is NaN
+                    if math.isnan(amount):  # Skip if amount is NaN
                         continue
                     bank_transactions.append(
                         Transaction.from_raw_data([date, description, amount])
