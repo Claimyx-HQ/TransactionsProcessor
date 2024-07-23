@@ -31,7 +31,9 @@ class PCCParser(TransactionsParser):
     def parse_transactions(
         self, file: BinaryIO, file_key: str | None = None
     ) -> List[Transaction]:
-        if file.name.endswith(".pdf"):
+        if not file_key:
+            raise ValueError("unknown file type")
+        if file_key.endswith(".pdf"):
             return self.pdf_parser().parse_transactions(file, file_key)
         else:
             return self.csv_parser().parse_transactions(file, file_key)
