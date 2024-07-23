@@ -79,7 +79,9 @@ def lambda_handler(event, context):
 
         # TODO: This also needs to run in parallel
         system_parser = system_parsers[system_transactions_data["type"]]()
-        system_transactions = system_parser.parse_transactions(system_file)
+        system_transactions = system_parser.parse_transactions(
+            system_file, system_transactions_data["key"]
+        )
         initialized_bank_parsers = {}
         all_bank_transactions = []
         for i in range(len(bank_files)):
