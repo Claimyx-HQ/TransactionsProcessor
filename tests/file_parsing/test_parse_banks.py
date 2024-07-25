@@ -49,6 +49,7 @@ from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser 
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.valley_bank_parser import ValleyBankParser
 from transactions_processor.services.parsers.bank_parsers.webster_bank_parser import (
     WebsterBankParser,
 )
@@ -407,6 +408,22 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_valley_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/valley/valley_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="ACH CREDIT",
+        amount=3088.0,
+        uuid="c8049255-7a0c-4618-8798-6c749e1e0030",
+    )
+    parser = ValleyBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
