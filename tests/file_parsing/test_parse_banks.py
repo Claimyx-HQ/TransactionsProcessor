@@ -11,6 +11,7 @@ from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser impo
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.cfg_bank_parser import CfgBankParser
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
     CIBCBankParser,
 )
@@ -407,6 +408,22 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_cfg_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/cfg/CFG_bank_1.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 1, 0, 0),
+        description="Wire Credit WYTHE VA OPCO LLC Wires",
+        amount=174842.39,
+        uuid="b1ab9a34-7ed2-44b3-b328-f2dd12fe86d8",
+    )
+    parser = CfgBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
