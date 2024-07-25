@@ -29,6 +29,7 @@ from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser 
 from transactions_processor.services.parsers.bank_parsers.huntington_bank_parser import (
     HuntingtonBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.key_bank_parser import KeyBankParser
 from transactions_processor.services.parsers.bank_parsers.metropolitan_bank_parser import (
     MetropolitanBankParser,
 )
@@ -373,6 +374,22 @@ def test_parse_midwest_bank():
         uuid="4f9d028b-10db-4a1b-be79-09b75b482e77",
     )
     parser = MidwestBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_key_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/key/key_bank_1.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 1, 0, 0),
+        description="Key Capture Deposit",
+        amount=46079.17,
+        uuid="70b4046c-f1f9-4d17-83a7-eea2f14fa4a5",
+    )
+    parser = KeyBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
