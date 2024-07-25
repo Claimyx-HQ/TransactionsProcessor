@@ -5,6 +5,7 @@ import logging
 import pytest
 import pandas as pd
 from transactions_processor.models.transaction import Transaction
+from transactions_processor.services.parsers.bank_parsers.amalgamated_bank_parser import AmalgamatedBankParser
 from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser import (
     BankFeedsParser,
 )
@@ -407,6 +408,22 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_amalgamated_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/amalgamated/amalgamated_bank_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 1, 0, 0),
+        description="BANKCARD/MTOT DEP 518993320356520",
+        amount=444.14,
+        uuid="cc0629b4-375d-4314-a813-6945228194b4",
+    )
+    parser = AmalgamatedBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
