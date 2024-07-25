@@ -27,8 +27,6 @@ class CitizensBankParser(PDFParser):
             self.valid_table = False
         if 'Deposits' in str(date_str) :
             self.valid_table = True
-        print(row)
-        print(valid_row, self.valid_table)
         if valid_row and self.valid_table:
             amount = parse_amount(amount_str)
             if not valid_amount(amount):
