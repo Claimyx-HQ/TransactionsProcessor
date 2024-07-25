@@ -408,7 +408,6 @@ def test_parse_citizens_bank():
     )
     parser = CitizensBankParser()
     transactions = parser.parse_transactions(file)
-    print(transactions)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
