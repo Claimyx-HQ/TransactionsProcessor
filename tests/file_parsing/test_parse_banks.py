@@ -46,6 +46,7 @@ from transactions_processor.services.parsers.bank_parsers.popular_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_parser import TheBerkshireBankParser
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
@@ -407,6 +408,23 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_the_berkshire_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/the_berkshire/the_berkshire_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 6, 0, 0),
+        description="FAC 3207 NDC SWEEP 1541194122 05/06/24 TRACE #-211274453204553",
+        amount=32421.42,
+        uuid="e04d0f6c-61df-4ba7-bd27-dff82084ba7d",
+    )
+
+    parser = TheBerkshireBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
