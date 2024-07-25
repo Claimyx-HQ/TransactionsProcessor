@@ -49,6 +49,7 @@ from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser 
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.vista_bank_parser import VistaBankParser
 from transactions_processor.services.parsers.bank_parsers.webster_bank_parser import (
     WebsterBankParser,
 )
@@ -407,6 +408,23 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_vista_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/vista/vista_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 7, 0, 0),
+        description="HEALTH HUMAN SVC/HCCLAIMPMT",
+        amount=26063.85,
+        uuid="7302f8aa-fcf2-4f34-b37a-b10d3495c05e",
+    )
+    parser = VistaBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
