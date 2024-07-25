@@ -44,6 +44,7 @@ from transactions_processor.services.parsers.bank_parsers.pnc_bank_parser import
 from transactions_processor.services.parsers.bank_parsers.popular_bank_parser import (
     PopularBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.regions_bank_parser import RegionsBankParser
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
@@ -424,6 +425,23 @@ def test_parse_cfg_bank():
         uuid="b1ab9a34-7ed2-44b3-b328-f2dd12fe86d8",
     )
     parser = CfgBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_regions_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/regions/regions_bank_1.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 3, 1, 0, 0),
+        description="NDC SweepFac C893  Silver Stream",
+        amount=8557.0,
+        uuid="94769be0-2915-434f-b211-ae074c1cc1f4",
+    )
+    parser = RegionsBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
