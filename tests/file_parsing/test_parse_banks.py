@@ -14,6 +14,7 @@ from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
     CIBCBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import CitizensBankParser
 from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parser import (
     ConnectOneBankParser,
 )
@@ -391,6 +392,23 @@ def test_parse_key_bank():
     )
     parser = KeyBankParser()
     transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_citizens_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/citizens/citizens_bank_2.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 3, 1, 0, 0),
+        description="Square Inc 240301P2 240301 L21564304743",
+        amount=384.85,
+        uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
+    )
+    parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    print(transactions)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
