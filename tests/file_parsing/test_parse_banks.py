@@ -46,6 +46,7 @@ from transactions_processor.services.parsers.bank_parsers.popular_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.simmons_bank_parser import SimmonsBankParser
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
@@ -407,6 +408,22 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_simmons_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/simmons/simmons_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="HCCLAIMPMT HNB - ECHO",
+        amount=2004.04,
+        uuid="0b874abc-4858-4f49-bc5b-a10ff331a806",
+    )
+    parser = SimmonsBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
