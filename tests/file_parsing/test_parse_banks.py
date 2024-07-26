@@ -37,6 +37,7 @@ from transactions_processor.services.parsers.bank_parsers.metropolitan_bank_pars
 from transactions_processor.services.parsers.bank_parsers.midwest_bank_parser import (
     MidwestBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.old_national_bank_parser import OldNationalBankParser
 from transactions_processor.services.parsers.bank_parsers.pnc_bank_parser import (
     PNCBankParser,
 )
@@ -407,6 +408,22 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_old_national_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/old_national/old_national_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 4, 0, 0),
+        description="WISCONSIN PHYSIC HCCLAIMPMT",
+        amount=16484.1,
+        uuid="30f474dc-c364-4e2b-aa9f-936abcde00b5",
+    )
+    parser = OldNationalBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
