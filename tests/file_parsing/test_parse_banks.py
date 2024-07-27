@@ -430,7 +430,6 @@ def test_parse_cfg_bank():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
-
 def test_parse_regions_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/regions/regions_bank_1.pdf"
