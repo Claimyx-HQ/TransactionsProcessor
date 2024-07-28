@@ -29,6 +29,7 @@ from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import (
     ForbrightBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.hancock_whitney_bank_parser import HancockWhitneyBankParser
 from transactions_processor.services.parsers.bank_parsers.huntington_bank_parser import (
     HuntingtonBankParser,
 )
@@ -620,6 +621,22 @@ def test_parse_regions_bank():
         uuid="94769be0-2915-434f-b211-ae074c1cc1f4",
     )
     parser = RegionsBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_hancock_whitney_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/hancock_whitney/hancock_whitney_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 13, 0, 0),
+        description="PAYABLES CURO HEALTH SERV",
+        amount=549.44,
+        uuid="e3b15eb9-48b2-4728-9ec3-ed1bc99a8b44",
+    )
+    parser = HancockWhitneyBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
