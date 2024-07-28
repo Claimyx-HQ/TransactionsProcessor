@@ -33,6 +33,7 @@ from transactions_processor.services.parsers.bank_parsers.huntington_bank_parser
     HuntingtonBankParser,
 )
 from transactions_processor.services.parsers.bank_parsers.key_bank_parser import KeyBankParser
+from transactions_processor.services.parsers.bank_parsers.legend_bank_parser import LegendBankParser
 from transactions_processor.services.parsers.bank_parsers.metropolitan_bank_parser import (
     MetropolitanBankParser,
 )
@@ -423,6 +424,22 @@ def test_parse_citizens_bank():
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
     )
     parser = CitizensBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_legend_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/legend/legend_bank_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 18, 0, 0),
+        description="Tomball Rehab & Settlement 000021168080014",
+        amount=813.06,
+        uuid="92de6227-cec5-4227-93c7-a210c6c0b29f",
+    )
+    parser = LegendBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
