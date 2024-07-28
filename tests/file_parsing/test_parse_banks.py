@@ -53,6 +53,7 @@ from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_par
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.valley_bank_parser import ValleyBankParser
 from transactions_processor.services.parsers.bank_parsers.webster_bank_parser import (
     WebsterBankParser,
 )
@@ -417,6 +418,22 @@ def test_parse_citizens_bank():
     file.close()
 
 
+def test_parse_valley_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/valley/valley_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="ACH CREDIT",
+        amount=3088.0,
+        uuid="c8049255-7a0c-4618-8798-6c749e1e0030",
+    )
+    parser = ValleyBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
 def test_parse_amalgamated_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/amalgamated/amalgamated_bank_after_ocr.pdf"
@@ -428,7 +445,10 @@ def test_parse_amalgamated_bank():
         uuid="cc0629b4-375d-4314-a813-6945228194b4",
     )
     parser = AmalgamatedBankParser()
-
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
     
 def test_parse_the_berkshire_bank():
     logger = logging.getLogger(__name__)
