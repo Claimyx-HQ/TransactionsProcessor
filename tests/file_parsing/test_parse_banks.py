@@ -494,7 +494,7 @@ def test_parse_simmons_bank():
     file.close()
 
     
-    def test_parse_state_bank():
+def test_parse_state_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/state/state_bank.pdf"
     file = open(file_path, "rb")
