@@ -58,7 +58,7 @@ class PDFParser(TransactionsParser):
             guess=False,
             columns=self.column_positions,
         )
-        return tables
+        return tables # type: ignore
 
     @abstractmethod
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
