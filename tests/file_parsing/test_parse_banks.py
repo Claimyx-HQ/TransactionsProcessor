@@ -660,7 +660,7 @@ def test_parse_first_united_bank():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
-def test_parse_first_united_bank():
+def test_parse_first_financial_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/first_financial/first_financial_bank.pdf"
     file = open(file_path, "rb")
