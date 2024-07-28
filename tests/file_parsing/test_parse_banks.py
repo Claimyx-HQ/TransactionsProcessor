@@ -23,6 +23,7 @@ from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parse
 from transactions_processor.services.parsers.bank_parsers.daca_bank_parser import (
     DACABankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.first_financial_bank_parser import FirstFinancialBankParser
 from transactions_processor.services.parsers.bank_parsers.first_united_bank_parser import FirstUnitedBankParser
 from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import (
     FlagstarBankParser,
@@ -658,3 +659,20 @@ def test_parse_first_united_bank():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+
+def test_parse_first_united_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/first_financial/first_financial_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="MTOT DEP BANKCARD CCD",
+        amount=9.0,
+        uuid="5bfbb910-1c51-4ab8-9015-b6637d09c52b",
+    )
+    parser = FirstFinancialBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
