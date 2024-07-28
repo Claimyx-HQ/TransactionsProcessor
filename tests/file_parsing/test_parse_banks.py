@@ -23,6 +23,7 @@ from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parse
 from transactions_processor.services.parsers.bank_parsers.daca_bank_parser import (
     DACABankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.first_united_bank_parser import FirstUnitedBankParser
 from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser import (
     FlagstarBankParser,
 )
@@ -637,6 +638,22 @@ def test_parse_hancock_whitney_bank():
         uuid="e3b15eb9-48b2-4728-9ec3-ed1bc99a8b44",
     )
     parser = HancockWhitneyBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_first_united_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/first_united/first_united_bank_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="MTOT DEP BANKCARD",
+        amount=200.0,
+        uuid="0f7a185e-c2d8-44c7-9d9a-9db2c434c595",
+    )
+    parser = FirstUnitedBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
