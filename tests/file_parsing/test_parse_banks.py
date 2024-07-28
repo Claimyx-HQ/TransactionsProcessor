@@ -12,6 +12,7 @@ from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser impo
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.capital_one_bank_parser import CapitalOneBankParser
 from transactions_processor.services.parsers.bank_parsers.cfg_bank_parser import CfgBankParser
 from transactions_processor.services.parsers.bank_parsers.chase_bank_parser import ChaseBankParser
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
@@ -690,6 +691,23 @@ def test_parse_chase_bank():
     )
     parser = ChaseBankParser()
     transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_capital_one_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/capital_one/capital_one_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="Fedwire Credit Via: Vista Bank/111314575 B/O: Prairie House Living Center Plainview TX",
+        amount=22686.89,
+        uuid="9f70b74d-4e4e-4f67-b558-cb0f219d1a82",
+    )
+    parser = CapitalOneBankParser()
+    transactions = parser.parse_transactions(file)
+    print(transactions)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
