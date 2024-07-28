@@ -49,6 +49,7 @@ from transactions_processor.services.parsers.bank_parsers.regions_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.state_bank_parser import StateBankParser
 from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_parser import TheBerkshireBankParser
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
@@ -424,6 +425,22 @@ def test_parse_citizens_bank():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+
+    def test_parse_state_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/state/state_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="CLARKSVILLE NURS SETTLEMENT",
+        amount=1160.5,
+        uuid="ce5d4279-318c-4dbf-8b5b-b48996e02208",
+    )
+    parser = StateBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
 
 
 def test_parse_vista_bank():
