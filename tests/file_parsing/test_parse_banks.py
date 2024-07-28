@@ -12,6 +12,7 @@ from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser impo
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.cfg_bank_parser import CfgBankParser
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
     CIBCBankParser,
 )
@@ -44,9 +45,11 @@ from transactions_processor.services.parsers.bank_parsers.pnc_bank_parser import
 from transactions_processor.services.parsers.bank_parsers.popular_bank_parser import (
     PopularBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.regions_bank_parser import RegionsBankParser
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_parser import TheBerkshireBankParser
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
@@ -413,6 +416,7 @@ def test_parse_citizens_bank():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+
 def test_parse_amalgamated_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/amalgamated/amalgamated_bank_after_ocr.pdf"
@@ -424,6 +428,52 @@ def test_parse_amalgamated_bank():
         uuid="cc0629b4-375d-4314-a813-6945228194b4",
     )
     parser = AmalgamatedBankParser()
+
+    
+def test_parse_the_berkshire_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/the_berkshire/the_berkshire_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 6, 0, 0),
+        description="FAC 3207 NDC SWEEP 1541194122 05/06/24 TRACE #-211274453204553",
+        amount=32421.42,
+        uuid="e04d0f6c-61df-4ba7-bd27-dff82084ba7d",
+    )
+
+    parser = TheBerkshireBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_cfg_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/cfg/CFG_bank_1.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 1, 0, 0),
+        description="Wire Credit WYTHE VA OPCO LLC Wires",
+        amount=174842.39,
+        uuid="b1ab9a34-7ed2-44b3-b328-f2dd12fe86d8",
+    )
+    parser = CfgBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_regions_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/regions/regions_bank_1.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 3, 1, 0, 0),
+        description="NDC SweepFac C893  Silver Stream",
+        amount=8557.0,
+        uuid="94769be0-2915-434f-b211-ae074c1cc1f4",
+    )
+    parser = RegionsBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
