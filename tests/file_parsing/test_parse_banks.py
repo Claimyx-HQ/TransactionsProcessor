@@ -9,6 +9,7 @@ from transactions_processor.services.parsers.bank_parsers.amalgamated_bank_parse
 from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser import (
     BankFeedsParser,
 )
+from transactions_processor.services.parsers.bank_parsers.bank_of_texas_parser import BankOfTexasParser
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
 )
@@ -706,6 +707,22 @@ def test_parse_cadence_bank():
         uuid="91703299-d763-4381-866b-bc456eb85354",
     )
     parser = CadenceBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_bank_of_texas():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bank_of_texas/bank_of_texas.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 4, 0, 0),
+        description="36TREAS 310MISC PAY  *****1378360012",
+        amount=28276.82,
+        uuid="8ed0c310-74b6-42b6-b6d6-2fed37aa6b5e",
+    )
+    parser = BankOfTexasParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
