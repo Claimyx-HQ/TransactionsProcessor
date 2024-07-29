@@ -11,6 +11,7 @@ from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser impo
 )
 from transactions_processor.services.parsers.bank_parsers.bank_of_america_merrill_lynch_parser import BankOfAmericaMerrillLynchParser
 from transactions_processor.services.parsers.bank_parsers.bank_of_texas_parser import BankOfTexasParser
+from transactions_processor.services.parsers.bank_parsers.bankwell_bank_parser import BankWellBankParser
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
 )
@@ -740,6 +741,22 @@ def test_parse_bank_of_america_merrill_lynch():
         uuid="9c81c62b-4f0f-41c8-9194-298b078e4e4b",
     )
     parser = BankOfAmericaMerrillLynchParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_bankwell_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bankwell/bankwell_after_ocr.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="NDC SWEEP FAC 774",
+        amount=703.6,
+        uuid="250044e3-158a-4a45-9d18-ae7b82c8cad9",
+    )
+    parser = BankWellBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
