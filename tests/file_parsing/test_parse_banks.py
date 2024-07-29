@@ -9,6 +9,7 @@ from transactions_processor.services.parsers.bank_parsers.amalgamated_bank_parse
 from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser import (
     BankFeedsParser,
 )
+from transactions_processor.services.parsers.bank_parsers.bank_of_america_merrill_lynch_parser import BankOfAmericaMerrillLynchParser
 from transactions_processor.services.parsers.bank_parsers.bank_of_texas_parser import BankOfTexasParser
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
@@ -723,6 +724,22 @@ def test_parse_bank_of_texas():
         uuid="8ed0c310-74b6-42b6-b6d6-2fed37aa6b5e",
     )
     parser = BankOfTexasParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_bank_of_america_merrill_lynch():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bank_of_america_merrill_lynch/bank_of_america_merrill_lynch.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="Greenville SNF L DES:Settlement ID:000021025511178550",
+        amount=1272.86,
+        uuid="9c81c62b-4f0f-41c8-9194-298b078e4e4b",
+    )
+    parser = BankOfAmericaMerrillLynchParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
