@@ -63,6 +63,7 @@ from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser 
 from transactions_processor.services.parsers.bank_parsers.simmons_bank_parser import SimmonsBankParser
 from transactions_processor.services.parsers.bank_parsers.state_bank_parser import StateBankParser
 from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_parser import TheBerkshireBankParser
+from transactions_processor.services.parsers.bank_parsers.truist_bank_parser import TruistBankParser
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
@@ -757,6 +758,22 @@ def test_parse_bankwell_bank():
         uuid="250044e3-158a-4a45-9d18-ae7b82c8cad9",
     )
     parser = BankWellBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_truist_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/truist/truist_bank_1.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="HCCLAIMPMT HMP HAINES CITY REHABILITA TRN*1*133638778240530*1611103898\\",
+        amount=537.76,
+        uuid="abe3a010-db97-4243-976d-36ae6b52df75",
+    )
+    parser = TruistBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
