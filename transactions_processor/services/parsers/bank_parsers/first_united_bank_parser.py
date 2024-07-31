@@ -1,15 +1,7 @@
-import logging
-import math
-from typing import Any, BinaryIO, Callable, Dict, List, Union
-import tabula
-import pandas as pd
-import numpy as np
+from typing import Any, List, Optional
 from transactions_processor.models.transaction import Transaction
-from datetime import datetime
-
 from transactions_processor.services.parsers.pdf_parser import PDFParser
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
-from transactions_processor.utils.date_utils import valid_date, valid_date_split
+from transactions_processor.utils.date_utils import valid_date
 from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 
@@ -18,24 +10,25 @@ class FirstUnitedBankParser(PDFParser):
         super().__init__([108, 310, 440])
         self.valid_table = False
 
-    def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        title = str(str(row[0]) + str(row[1]) ).lower()
-        for title_type in ['DEBITS','DAILY BALANCE', 'SUMMARY']:
-            if title_type.lower() in title:
-                self.valid_table = False
-        for title_type in ['CREDIT','DEPOSIT','ADDITIONS']:
-            if title_type.lower() in title:
-                self.valid_table = True
+    def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
+        date_str = str(row[0])
+        description_str = str(row[1])
+        amount_str = str(row[2])
+        title = (date_str + description_str).lower()
         
-        date_str = row[0] 
-        valid_row = valid_date(date_str, "%m/%d")
-        amount_str = row[2] 
-        description_str = row[1] 
-        if valid_row and self.valid_table and amount_str:
-            amount = parse_amount(amount_str) 
-            if not valid_amount(amount):
+        if any(keyword in title for keyword in ['debits', 'daily balance', 'summary']):
+            self.valid_table = False
+        elif any(keyword in title for keyword in ['credit', 'deposit', 'additions']):
+            self.valid_table = True
+
+        if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:
+            try:
+                amount = parse_amount(amount_str)
+                if not valid_amount(amount):
+                    return None
+            except ValueError:
                 return None
-            transaction = Transaction.from_raw_data([date_str, description_str, amount])
-            return transaction
-   
+
+            return Transaction.from_raw_data([date_str, description_str, amount])
+
         return None
