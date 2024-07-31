@@ -62,6 +62,7 @@ from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser 
 )
 from transactions_processor.services.parsers.bank_parsers.simmons_bank_parser import SimmonsBankParser
 from transactions_processor.services.parsers.bank_parsers.state_bank_parser import StateBankParser
+from transactions_processor.services.parsers.bank_parsers.sunflower_bank_parser import SunflowerBankParser
 from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_parser import TheBerkshireBankParser
 from transactions_processor.services.parsers.bank_parsers.truist_bank_parser import TruistBankParser
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
@@ -774,6 +775,22 @@ def test_parse_truist_bank():
         uuid="abe3a010-db97-4243-976d-36ae6b52df75",
     )
     parser = TruistBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_sunflower_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/sunflower/sunflower_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 6, 3, 0, 0),
+        description="INCOMING WIRE 76165890 PPG FUN D II LLC 062006505",
+        amount=8000.0,
+        uuid="7f3630c7-3a81-4065-9020-37700efb0417",
+    )
+    parser = SunflowerBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
