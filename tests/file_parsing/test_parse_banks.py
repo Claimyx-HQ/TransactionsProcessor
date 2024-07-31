@@ -85,12 +85,7 @@ from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parse
 )
 
 
-@pytest.fixture(autouse=True)
-def pandas_display_settings():
-    pd.set_option("display.max_rows", None)  # Display all rows
-    pd.set_option("display.max_columns", None)  # Display all columns
-    pd.set_option("display.max_colwidth", None)  # Display full content of each column
-    yield
+
 
 
 def _check_the_test(first_transaction, parsed_transaction):
