@@ -1,15 +1,7 @@
-import logging
-import math
-from typing import Any, BinaryIO, Callable, Dict, List, Union
-import tabula
-import pandas as pd
-import numpy as np
+from typing import Any, List, Optional
 from transactions_processor.models.transaction import Transaction
-from datetime import datetime
-
 from transactions_processor.services.parsers.pdf_parser import PDFParser
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
-from transactions_processor.utils.date_utils import valid_date, valid_date_split
+from transactions_processor.utils.date_utils import valid_date
 from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 
@@ -18,19 +10,24 @@ class CitizensBankParser(PDFParser):
         super().__init__([100, 158, 430])
         self.valid_table = True
 
-    def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        date_str = row[0]
-        valid_row = valid_date(date_str, "%m/%d")
-        amount_str = row[1]
-        description_str = row[2]
-        if date_str == 'Other Debits' or date_str == 'Daily Balance' :
+    def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
+        date_str, amount_str, description_str = map(str, row[:3])
+        date_str_lower = date_str.lower()
+
+        if any(keyword in date_str_lower for keyword in ['other debits', 'daily balance']):
             self.valid_table = False
-        if 'Deposits' in str(date_str) :
+            return None
+        if 'deposits' in date_str_lower:
             self.valid_table = True
-        if valid_row and self.valid_table:
-            amount = parse_amount(amount_str)
-            if not valid_amount(amount):
+
+        if valid_date(date_str, "%m/%d") and self.valid_table:
+            try:
+                amount = parse_amount(amount_str)
+                if not valid_amount(amount):
+                    return None
+            except ValueError:
                 return None
-            transaction = Transaction.from_raw_data([date_str, description_str, amount])
-            return transaction
+
+            return Transaction.from_raw_data([date_str, description_str, amount])
+
         return None
