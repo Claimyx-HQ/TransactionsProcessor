@@ -1,15 +1,7 @@
-import logging
-import math
-from typing import Any, BinaryIO, Callable, Dict, List, Union
-import tabula
-import pandas as pd
-import numpy as np
+from typing import Any, List
 from transactions_processor.models.transaction import Transaction
-from datetime import datetime
-
 from transactions_processor.services.parsers.pdf_parser import PDFParser
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
-from transactions_processor.utils.date_utils import valid_date, valid_date_split
+from transactions_processor.utils.date_utils import valid_date
 from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 
@@ -20,20 +12,17 @@ class OldNationalBankParser(PDFParser):
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
         date_str = str(row[1]).replace(' ', '')
-        valid_row = valid_date(date_str, "%m/%d")
-        amount_str = row[4]
         description_str = row[3]
-        title = (str(date_str) + str(description_str) ) 
-        for title_type in ['FEE', 'DEBITS','DAILY BALANCE', 'SUMMARY', 'WITHDRAWALS']:
-            if title_type.lower() in title.lower():
-                self.valid_table = False
-        for title_type in ['CREDIT', 'DEPOSIT','ADDITIONS']:
-            if title_type.lower() in title.lower():
-                self.valid_table = True
-        if valid_row and self.valid_table and amount_str:
+        title = (str(date_str) + str(description_str)).lower()
+        amount_str = row[4]
+
+        if any(title_type in title for title_type in ['fee', 'debits', 'daily balance', 'summary', 'withdrawals']):
+            self.valid_table = False
+        elif any(title_type in title for title_type in ['credit', 'deposit', 'additions']):
+            self.valid_table = True
+
+        if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:
             amount = parse_amount(amount_str)
-            if not valid_amount(amount):
-                return None
-            transaction = Transaction.from_raw_data([date_str, description_str, amount])
-            return transaction
+            if valid_amount(amount):
+                return Transaction.from_raw_data([date_str, description_str, amount])
         return None
