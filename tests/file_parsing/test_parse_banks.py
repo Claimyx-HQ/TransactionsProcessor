@@ -69,6 +69,7 @@ from transactions_processor.services.parsers.bank_parsers.united_bank_parser imp
     UnitedBankParser,
 )
 
+from transactions_processor.services.parsers.bank_parsers.us_bank_parser import USBankParser
 from transactions_processor.services.parsers.bank_parsers.vista_bank_parser import VistaBankParser
 
 
@@ -794,4 +795,22 @@ def test_parse_sunflower_bank():
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_us_bank():
+    # Missing Example so no actual test yes TODO: Add Example
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/us/us_bank.pdf"
+    file = open(file_path, "rb")
+    # first_transaction = Transaction(
+    #     date=datetime(2024, 6, 3, 0, 0),
+    #     description="INCOMING WIRE 76165890 PPG FUN D II LLC 062006505",
+    #     amount=8000.0,
+    #     uuid="7f3630c7-3a81-4065-9020-37700efb0417",
+    # ) # Wrong validation
+    parser = USBankParser()
+    transactions = parser.parse_transactions(file)
+    # parsed_transaction = transactions[0]
+    # _check_the_test(first_transaction, parsed_transaction)
+    assert transactions == []
     file.close()
