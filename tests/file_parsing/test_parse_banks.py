@@ -25,6 +25,7 @@ from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parser import (
     ConnectOneBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.customers_bank_parser import CustomersBankParser
 from transactions_processor.services.parsers.bank_parsers.daca_bank_parser import (
     DACABankParser,
 )
@@ -791,6 +792,22 @@ def test_parse_sunflower_bank():
         uuid="7f3630c7-3a81-4065-9020-37700efb0417",
     )
     parser = SunflowerBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_customers_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/customers/customers_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 5, 1, 0, 0),
+        description="AUTOMATIC TRANSFER",
+        amount=90.0,
+        uuid="2e28281e-29c1-4ba5-a737-d665a4dab7db",
+    )
+    parser = CustomersBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
