@@ -1,18 +1,9 @@
-import logging
-import math
-from typing import Any, BinaryIO, Callable, Dict, List, Union
-import tabula
-import pandas as pd
-import numpy as np
+from typing import Any, List, Optional
 from transactions_processor.models.transaction import Transaction
-from datetime import datetime
-
 from transactions_processor.services.parsers.pdf_parser import PDFParser
-from transactions_processor.services.parsers.transactions_parser import (
-    TransactionsParser,
-)
-from transactions_processor.utils.date_utils import valid_date, valid_date_split
+from transactions_processor.utils.date_utils import valid_date
 from transactions_processor.utils.math_utils import parse_amount, valid_amount
+from datetime import datetime
 
 
 class FlagstarBankParser(PDFParser):
@@ -20,23 +11,26 @@ class FlagstarBankParser(PDFParser):
         super().__init__([80, 504, 576])
         self.valid_table = False
 
-    def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        if row[0] == "Deposits":
+    def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
+        date_str = str(row[0])
+        description_str = str(row[1])
+        amount_str = str(row[2])
+        
+        if date_str == "Deposits":
             self.valid_table = True
-        elif row[0] == "Withdraw":
+        elif date_str == "Withdraw":
             self.valid_table = False
             return None
-        valid_row = valid_date(row[0], "%b %d")
-        if valid_row and self.valid_table:
-            date_str = row[0]
-            formatted_date = datetime.strptime(date_str, "%b %d").strftime("%m/%d")
-            amount_str = row[2]
-            description_str = row[1]
-            amount = parse_amount(amount_str)
-            if not valid_amount(amount):
+        
+        if valid_date(date_str, "%b %d") and self.valid_table:
+            try:
+                formatted_date = datetime.strptime(date_str, "%b %d").strftime("%m/%d")
+                amount = parse_amount(amount_str)
+                if not valid_amount(amount):
+                    return None
+            except ValueError:
                 return None
-            transaction = Transaction.from_raw_data(
-                [formatted_date, description_str, amount]
-            )
-            return transaction
+
+            return Transaction.from_raw_data([formatted_date, description_str, amount])
+        
         return None

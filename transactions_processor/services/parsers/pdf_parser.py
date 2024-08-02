@@ -44,7 +44,10 @@ class PDFParser(TransactionsParser):
                 # Signal to stop processing if enable is set to False
                 if not self._enable:
                     return bank_transactions
-                transaction = self._parse_row(row, i)
+                try:
+                    transaction = self._parse_row(row, i)
+                except:
+                    transaction = None
                 if transaction:
                     bank_transactions.append(transaction)
         return bank_transactions
@@ -58,7 +61,7 @@ class PDFParser(TransactionsParser):
             guess=False,
             columns=self.column_positions,
         )
-        return tables
+        return tables # type: ignore
 
     @abstractmethod
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:

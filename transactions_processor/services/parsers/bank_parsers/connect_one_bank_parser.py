@@ -1,17 +1,7 @@
-import logging
-import math
-from typing import Any, BinaryIO, Callable, Dict, List, Union
-import tabula
-import pandas as pd
-import numpy as np
+from typing import Any, List, Optional
 from transactions_processor.models.transaction import Transaction
-from datetime import datetime
-
 from transactions_processor.services.parsers.pdf_parser import PDFParser
-from transactions_processor.services.parsers.transactions_parser import (
-    TransactionsParser,
-)
-from transactions_processor.utils.date_utils import valid_date, valid_date_split
+from transactions_processor.utils.date_utils import valid_date
 from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 
@@ -20,19 +10,25 @@ class ConnectOneBankParser(PDFParser):
         super().__init__([109, 131.8, 443, 516.3])
         self.valid_table = True
 
-    def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        if row[0] == "DEBITS":
+    def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
+        row_type = str(row[0]).upper()
+        if row_type == "DEBITS":
             self.valid_table = False
-        elif row[0] == "CREDITS":
+        elif row_type == "CREDITS":
             self.valid_table = True
-        valid_row = valid_date(row[1], "%m-%d")
-        if valid_row and self.valid_table:
-            date_str = row[1]
-            amount_str = row[3]
-            description_str = row[2]
-            amount = parse_amount(amount_str)
-            if not valid_amount(amount):
+
+        date_str = str(row[1])
+        if valid_date(date_str, "%m-%d") and self.valid_table:
+            amount_str = str(row[3])
+            description_str = str(row[2])
+            
+            try:
+                amount = parse_amount(amount_str)
+                if not valid_amount(amount):
+                    return None
+            except ValueError:
                 return None
-            transaction = Transaction.from_raw_data([date_str, description_str, amount])
-            return transaction
+
+            return Transaction.from_raw_data([date_str, description_str, amount])
+
         return None
