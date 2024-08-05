@@ -8,19 +8,21 @@ from transactions_processor.models.transaction import Transaction
 from datetime import datetime
 
 from transactions_processor.services.parsers.pdf_parser import PDFParser
-from transactions_processor.services.parsers.transactions_parser import TransactionsParser
+from transactions_processor.services.parsers.transactions_parser import (
+    TransactionsParser,
+)
 from transactions_processor.utils.date_utils import valid_date, valid_date_split
 from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 
 class DACABankParser(PDFParser):
     def __init__(self) -> None:
-        super().__init__([80 , 400, 460, 520])
+        super().__init__([80, 400, 460, 520])
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        valid_row = valid_date_split(row[0], ' ')
+        valid_row = valid_date_split(row[0], " ")
         if valid_row:
-            date_str = row[0].split(' ')[0]
+            date_str = row[0].split(" ")[0]
             amount_str = row[3]
             description_str = row[1]
             amount = parse_amount(amount_str)

@@ -11,10 +11,10 @@ class HuntingtonBankParser(PDFParser):
         self.valid_table = True
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        if isinstance(row[1], str) and '(-)' in row[1]:
+        if isinstance(row[1], str) and "(-)" in row[1]:
             self._enable = False
             return None
-        if valid_date(row[0], '%m/%d') and self.valid_table:
+        if valid_date(row[0], "%m/%d") and self.valid_table:
             date_str, amount_str, description_str = row[0], row[1], row[2]
             amount = parse_amount(amount_str)
             if not valid_amount(amount):

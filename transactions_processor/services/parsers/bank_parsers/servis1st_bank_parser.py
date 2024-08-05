@@ -14,7 +14,7 @@ class Servis1stBankParser(PDFParser):
         if isinstance(row[1], str) and row[1].startswith("WITHDRAW"):
             self.valid_table = False
             return None
-        
+
         if valid_date(row[1], "%m/%d") and self.valid_table:
             date_str, description_str, amount_str = row[1], row[2], row[3]
             amount = parse_amount(amount_str)

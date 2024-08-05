@@ -30,5 +30,5 @@ class ForbrightBankParser(PDFParser):
                 return None
 
             return Transaction.from_raw_data([date_str, description_str, amount])
-        
+
         return None

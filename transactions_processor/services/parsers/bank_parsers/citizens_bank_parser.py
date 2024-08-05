@@ -14,10 +14,12 @@ class CitizensBankParser(PDFParser):
         date_str, amount_str, description_str = map(str, row[:3])
         date_str_lower = date_str.lower()
 
-        if any(keyword in date_str_lower for keyword in ['other debits', 'daily balance']):
+        if any(
+            keyword in date_str_lower for keyword in ["other debits", "daily balance"]
+        ):
             self.valid_table = False
             return None
-        if 'deposits' in date_str_lower:
+        if "deposits" in date_str_lower:
             self.valid_table = True
 
         if valid_date(date_str, "%m/%d") and self.valid_table:

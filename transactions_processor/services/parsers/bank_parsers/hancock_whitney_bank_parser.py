@@ -11,17 +11,27 @@ class HancockWhitneyBankParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        title = ''.join(map(str, row[1:7])).upper()
-        if any(title_type in title for title_type in ['DEBITS', 'DAILY BALANCE', 'SUMMARY']):
+        title = "".join(map(str, row[1:7])).upper()
+        if any(
+            title_type in title for title_type in ["DEBITS", "DAILY BALANCE", "SUMMARY"]
+        ):
             self.valid_table = False
-        if any(title_type in title for title_type in ['CREDIT', 'DEPOSIT', 'ADDITIONS']):
+        if any(
+            title_type in title for title_type in ["CREDIT", "DEPOSIT", "ADDITIONS"]
+        ):
             self.valid_table = True
-        
+
         for date_idx, amount_idx, description_idx in [(1, 2, 3), (4, 5, 6)]:
-            date_str, amount_str, description_str = row[date_idx], row[amount_idx], row[description_idx]
+            date_str, amount_str, description_str = (
+                row[date_idx],
+                row[amount_idx],
+                row[description_idx],
+            )
             if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:
                 amount = parse_amount(amount_str)
                 if valid_amount(amount):
-                    return Transaction.from_raw_data([date_str, description_str, amount])
-        
+                    return Transaction.from_raw_data(
+                        [date_str, description_str, amount]
+                    )
+
         return None

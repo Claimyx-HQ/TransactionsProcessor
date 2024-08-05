@@ -12,8 +12,13 @@ class KeyBankParser(PDFParser):
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
         if valid_date(row[1], "%m-%d") and self.valid_table:
-            title_str, date_str, description_str, amount_str = row[0], row[1], row[3], row[4]
-            if title_str == 'Withdrawals':
+            title_str, date_str, description_str, amount_str = (
+                row[0],
+                row[1],
+                row[3],
+                row[4],
+            )
+            if title_str == "Withdrawals":
                 self.valid_table = False
                 return None
             amount = parse_amount(amount_str)

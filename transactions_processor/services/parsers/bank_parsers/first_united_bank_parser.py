@@ -15,10 +15,10 @@ class FirstUnitedBankParser(PDFParser):
         description_str = str(row[1])
         amount_str = str(row[2])
         title = (date_str + description_str).lower()
-        
-        if any(keyword in title for keyword in ['debits', 'daily balance', 'summary']):
+
+        if any(keyword in title for keyword in ["debits", "daily balance", "summary"]):
             self.valid_table = False
-        elif any(keyword in title for keyword in ['credit', 'deposit', 'additions']):
+        elif any(keyword in title for keyword in ["credit", "deposit", "additions"]):
             self.valid_table = True
 
         if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:

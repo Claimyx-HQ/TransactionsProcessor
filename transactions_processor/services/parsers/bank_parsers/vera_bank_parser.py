@@ -15,13 +15,13 @@ class VeraBankParser(PDFParser):
         date_str, description_str, amount_str = str(row[1]), str(row[2]), str(row[3])
         title = (date_str + description_str).lower()
 
-        if any(title_type in title for title_type in ['debit', 'balance', 'summary']):
+        if any(title_type in title for title_type in ["debit", "balance", "summary"]):
             self.valid_table = False
-        if 'credits' in title:
+        if "credits" in title:
             self.valid_table = True
 
         if valid_date(date_str, "%b %d") and self.valid_table and amount_str:
-            date_str = datetime.strptime(date_str, '%b %d').strftime('%m/%d')
+            date_str = datetime.strptime(date_str, "%b %d").strftime("%m/%d")
             amount = parse_amount(amount_str)
             if valid_amount(amount):
                 return Transaction.from_raw_data([date_str, description_str, amount])

@@ -11,14 +11,25 @@ class OldNationalBankParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        date_str = str(row[1]).replace(' ', '')
+        date_str = str(row[1]).replace(" ", "")
         description_str = row[3]
         title = (str(date_str) + str(description_str)).lower()
         amount_str = row[4]
 
-        if any(title_type in title for title_type in ['fee', 'debits', 'daily balance', 'summary', 'withdrawals']):
+        if any(
+            title_type in title
+            for title_type in [
+                "fee",
+                "debits",
+                "daily balance",
+                "summary",
+                "withdrawals",
+            ]
+        ):
             self.valid_table = False
-        elif any(title_type in title for title_type in ['credit', 'deposit', 'additions']):
+        elif any(
+            title_type in title for title_type in ["credit", "deposit", "additions"]
+        ):
             self.valid_table = True
 
         if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:

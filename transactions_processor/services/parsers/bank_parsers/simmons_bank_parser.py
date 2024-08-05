@@ -11,16 +11,17 @@ class SimmonsBankParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Union[Transaction, None]:
-        date_str = str(row[0]).replace(' ', '')
+        date_str = str(row[0]).replace(" ", "")
         description_str = str(row[1])
         amount_str = str(row[2])
 
         title = (date_str + description_str).lower()
         if any(
-            title_type in title for title_type in [ 'debits', 'daily balance','withdrawals']
+            title_type in title
+            for title_type in ["debits", "daily balance", "withdrawals"]
         ):
             self.valid_table = False
-        if any(title_type in title for title_type in ['credit', 'additions']):
+        if any(title_type in title for title_type in ["credit", "additions"]):
             self.valid_table = True
         if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:
             amount = parse_amount(amount_str)

@@ -13,9 +13,12 @@ class RegionsBankParser(PDFParser):
     def _parse_row(self, row: List[Any], table_index: int) -> Union[Transaction, None]:
         date_str, description_str, amount_str = row[0], row[1], row[2]
         title = str(description_str).upper()
-        if any(title_type in title for title_type in ['WITHDRAWALS', 'DAILY BALANCE SUMMARY', 'SUMMARY']):
+        if any(
+            title_type in title
+            for title_type in ["WITHDRAWALS", "DAILY BALANCE SUMMARY", "SUMMARY"]
+        ):
             self.valid_table = False
-        elif 'DEPOSITS & CREDITS' in title:
+        elif "DEPOSITS & CREDITS" in title:
             self.valid_table = True
         if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:
             amount = parse_amount(amount_str)

@@ -12,26 +12,26 @@ class CIBCBankParser(PDFParser):
 
     def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
         second_col_str = str(row[1]).lower()
-        
-        if 'credits' in second_col_str:
+
+        if "credits" in second_col_str:
             self.valid_table = True
-        elif 'daily' in second_col_str:
+        elif "daily" in second_col_str:
             self.valid_table = False
             return None
 
-        if self.valid_table and valid_date(second_col_str, '%m/%d'):
+        if self.valid_table and valid_date(second_col_str, "%m/%d"):
             date_str = second_col_str
             description_str = str(row[2])
             amount_str = str(row[3])
-            
+
             try:
                 amount = parse_amount(amount_str)
             except ValueError:
                 return None
-            
+
             if not valid_amount(amount):
                 return None
 
             return Transaction.from_raw_data([date_str, description_str, amount])
-        
+
         return None

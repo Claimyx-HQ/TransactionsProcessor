@@ -12,10 +12,13 @@ class TruistBankParser(PDFParser):
 
     def _parse_row(self, row: List[Any], table_index: int) -> Union[Transaction, None]:
         title = (str(row[0]) + str(row[1])).lower()
-        
-        if any(title_type.lower() in title for title_type in ['debits', 'summary', 'withdrawal']):
+
+        if any(
+            title_type.lower() in title
+            for title_type in ["debits", "summary", "withdrawal"]
+        ):
             self.valid_table = False
-        if any(title_type.lower() in title for title_type in ['credit']):
+        if any(title_type.lower() in title for title_type in ["credit"]):
             self.valid_table = True
 
         date_str, description_str, amount_str = row[0], row[1], row[2]

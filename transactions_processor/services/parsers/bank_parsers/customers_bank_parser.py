@@ -11,10 +11,20 @@ class CustomersBankParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
-        title = ' '.join(str(cell) for cell in row[:3]).lower()
-        if any(keyword in title for keyword in ['withdrawal', 'debits', 'daily', 'balance', 'summary', 'fee']):
+        title = " ".join(str(cell) for cell in row[:3]).lower()
+        if any(
+            keyword in title
+            for keyword in [
+                "withdrawal",
+                "debits",
+                "daily",
+                "balance",
+                "summary",
+                "fee",
+            ]
+        ):
             self.valid_table = False
-        elif 'credits' in title:
+        elif "credits" in title:
             self.valid_table = True
 
         date_str = str(row[1])

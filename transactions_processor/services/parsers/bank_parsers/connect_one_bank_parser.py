@@ -21,7 +21,7 @@ class ConnectOneBankParser(PDFParser):
         if valid_date(date_str, "%m-%d") and self.valid_table:
             amount_str = str(row[3])
             description_str = str(row[2])
-            
+
             try:
                 amount = parse_amount(amount_str)
                 if not valid_amount(amount):

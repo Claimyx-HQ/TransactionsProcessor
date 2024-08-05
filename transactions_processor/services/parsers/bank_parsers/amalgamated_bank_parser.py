@@ -4,9 +4,10 @@ from transactions_processor.services.parsers.pdf_parser import PDFParser
 from transactions_processor.utils.date_utils import valid_date
 from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
+
 class AmalgamatedBankParser(PDFParser):
-    INVALID_TITLE_TYPES = {'non-check debits', 'daily balance summary', 'summary'}
-    VALID_TITLE_TYPE = 'credits'
+    INVALID_TITLE_TYPES = {"non-check debits", "daily balance summary", "summary"}
+    VALID_TITLE_TYPE = "credits"
 
     def __init__(self) -> None:
         super().__init__([74, 410, 490, 565])
@@ -31,5 +32,3 @@ class AmalgamatedBankParser(PDFParser):
                 return Transaction.from_raw_data([date_str, description_str, amount])
 
         return None
-
-

@@ -11,14 +11,14 @@ class BankOfAmericaMerrillLynchParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
-        title = ''.join(map(str, row[:4])).replace('_', '').lower()
-        if any(word in title for word in ['debits', 'daily', 'balance', 'summary']):
+        title = "".join(map(str, row[:4])).replace("_", "").lower()
+        if any(word in title for word in ["debits", "daily", "balance", "summary"]):
             self.valid_table = False
-        elif any(word in title for word in ['credit', 'deposit', 'additions']):
+        elif any(word in title for word in ["credit", "deposit", "additions"]):
             self.valid_table = True
 
         date_str, amount_str, description_str = row[0], row[2], row[3]
-        
+
         if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:
             amount = parse_amount(amount_str)
             if valid_amount(amount):

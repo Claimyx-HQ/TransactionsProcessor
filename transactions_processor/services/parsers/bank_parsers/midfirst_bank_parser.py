@@ -10,7 +10,7 @@ class MidFirstBankParser(PDFParser):
         super().__init__([75, 206, 281, 371, 441])
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        date_str = str(row[0]).replace(' ', '')
+        date_str = str(row[0]).replace(" ", "")
         if valid_date(date_str, "%m-%d"):
             amount_str = str(row[2])
             subtraction_amount = str(row[3])
@@ -18,5 +18,7 @@ class MidFirstBankParser(PDFParser):
             if amount_str != "nan" and subtraction_amount == "nan":
                 amount = parse_amount(amount_str)
                 if valid_amount(amount):
-                    return Transaction.from_raw_data([date_str, description_str, amount])
+                    return Transaction.from_raw_data(
+                        [date_str, description_str, amount]
+                    )
         return None

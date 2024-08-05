@@ -13,7 +13,7 @@ class MetropolitanBankParser(PDFParser):
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
         if valid_date(row[0]) and self.valid_table:
             date_str, description_str, amount_str = row[0], row[1], row[3]
-            if description_str == 'Ending Balance':
+            if description_str == "Ending Balance":
                 self.valid_table = False
                 return None
             amount = parse_amount(amount_str)

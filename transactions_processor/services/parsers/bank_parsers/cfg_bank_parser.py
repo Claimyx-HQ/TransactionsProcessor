@@ -14,11 +14,14 @@ class CfgBankParser(PDFParser):
         date_str = str(row[0])
         description_str = str(row[1])
         amount_str = str(row[2])
-        
+
         title = (date_str + description_str).lower()
-        if any(title_type in title for title_type in ['electronic debits', 'daily balance', 'other debits']):
+        if any(
+            title_type in title
+            for title_type in ["electronic debits", "daily balance", "other debits"]
+        ):
             self.valid_table = False
-        elif 'deposits' in date_str.lower():
+        elif "deposits" in date_str.lower():
             self.valid_table = True
 
         if valid_date(date_str, "%m/%d/%Y") and self.valid_table:
@@ -26,7 +29,7 @@ class CfgBankParser(PDFParser):
                 amount = parse_amount(amount_str)
             except ValueError:
                 return None
-            
+
             if not valid_amount(amount):
                 return None
 

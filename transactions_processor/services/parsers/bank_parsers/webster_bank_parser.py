@@ -13,7 +13,7 @@ class WebsterBankParser(PDFParser):
     def _parse_row(self, row: List[Any], table_index: int) -> Union[Transaction, None]:
         if len(row) == 7 and valid_date(row[1]) and self.valid_table:
             date_str, description_str, amount_str = row[1], row[2], row[5]
-            if description_str == 'Ending Balance':
+            if description_str == "Ending Balance":
                 self.valid_table = False
                 return None
 

@@ -11,8 +11,8 @@ class MidwestBankParser(PDFParser):
         self.valid_table = True
 
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
-        if valid_date(row[1], '%m-%d') and self.valid_table:
-            if row[2] == 'Ending totals':
+        if valid_date(row[1], "%m-%d") and self.valid_table:
+            if row[2] == "Ending totals":
                 self.valid_table = False
                 return None
             date_str, description_str, amount_str = row[1], row[2], row[3]

@@ -10,10 +10,10 @@ class BankWellBankParser(PDFParser):
         super().__init__([87, 320, 410, 485, 570])
 
     def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
-        date_str = str(row[0]).replace(' ', '')
+        date_str = str(row[0]).replace(" ", "")
         if not valid_date(date_str, "%m/%d/%Y"):
             return None
-        
+
         description_str = str(row[1])
         amount_str = str(row[3])
         subtraction_amount = str(row[2])
@@ -24,7 +24,9 @@ class BankWellBankParser(PDFParser):
             except ValueError:
                 return None
 
-        if amount_str != "nan" and (subtraction_amount == 0 or subtraction_amount == "nan"):
+        if amount_str != "nan" and (
+            subtraction_amount == 0 or subtraction_amount == "nan"
+        ):
             try:
                 amount = parse_amount(amount_str)
             except ValueError:

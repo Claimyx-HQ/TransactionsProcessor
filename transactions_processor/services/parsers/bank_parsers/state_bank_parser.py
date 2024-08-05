@@ -14,9 +14,12 @@ class StateBankParser(PDFParser):
         date_str, description_str, amount_str = str(row[0]), str(row[1]), str(row[2])
         title = (date_str + description_str).lower()
 
-        if any(title_type in title for title_type in ['fee', 'debits', 'daily balance summary', 'summary']):
+        if any(
+            title_type in title
+            for title_type in ["fee", "debits", "daily balance summary", "summary"]
+        ):
             self.valid_table = False
-        elif 'credit' in title:
+        elif "credit" in title:
             self.valid_table = True
 
         if valid_date(date_str, "%m/%d/%y") and self.valid_table and amount_str:

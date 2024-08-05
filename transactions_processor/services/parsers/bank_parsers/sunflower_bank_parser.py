@@ -13,9 +13,19 @@ class SunflowerBankParser(PDFParser):
     def _parse_row(self, row: List[Any], table_index: int) -> Union[Transaction, None]:
         title = (str(row[0]) + str(row[1])).lower()
         self.valid_table = not any(
-            title_type.lower() in title for title_type in ['debits', 'daily', 'balance', 'summary', 'electronic transactions']
+            title_type.lower() in title
+            for title_type in [
+                "debits",
+                "daily",
+                "balance",
+                "summary",
+                "electronic transactions",
+            ]
         )
-        if any(title_type.lower() in title for title_type in ['credit', 'deposit', 'additions']):
+        if any(
+            title_type.lower() in title
+            for title_type in ["credit", "deposit", "additions"]
+        ):
             self.valid_table = True
 
         date_str, description_str, amount_str = row[0], row[1], row[2]

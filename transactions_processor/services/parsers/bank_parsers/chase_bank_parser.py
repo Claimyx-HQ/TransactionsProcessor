@@ -16,18 +16,17 @@ class ChaseBankParser(PDFParser):
         amount_str = str(row[2])
 
         title = (date_str + description_str).lower()
-        if any(word in title for word in ['debits', 'daily', 'balance', 'summary']):
+        if any(word in title for word in ["debits", "daily", "balance", "summary"]):
             self.valid_table = False
-        elif any(word in title for word in ['credit', 'deposit', 'additions']):
+        elif any(word in title for word in ["credit", "deposit", "additions"]):
             self.valid_table = True
-        
-        
+
         if valid_date(date_str, "%m/%d") and self.valid_table and amount_str:
             try:
                 amount = parse_amount(amount_str)
             except ValueError:
                 return None
-            
+
             if not valid_amount(amount):
                 return None
 
