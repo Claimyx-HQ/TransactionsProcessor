@@ -78,7 +78,7 @@ def lambda_handler(event, context):
             # bank_files = [task.result() for task in bank_files_tasks]
 
         # TODO: This also needs to run in parallel
-        system_parser = system_parsers[system_transactions_data["type"]]()
+        system_parser: TransactionsParser = system_parsers[system_transactions_data["type"]]()
         system_transactions = system_parser.parse_transactions(
             system_file, system_transactions_data["key"]
         )
