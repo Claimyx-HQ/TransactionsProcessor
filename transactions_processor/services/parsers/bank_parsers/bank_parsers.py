@@ -17,6 +17,9 @@ from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import
 from transactions_processor.services.parsers.bank_parsers.cadence_bank_parser import (
     CadenceBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.capital_one_bank_parser import (
+    CapitalOneBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.cfg_bank_parser import (
     CfgBankParser,
 )
@@ -98,6 +101,9 @@ from transactions_processor.services.parsers.bank_parsers.sunflower_bank_parser 
 from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_parser import (
     TheBerkshireBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.tomball_baylor_bank_parser import (
+    TomballBaylorBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.truist_bank_parser import (
     TruistBankParser,
 )
@@ -130,6 +136,7 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "bhi": BHIBankParser,
     "bankwell": BankWellBankParser,
     "cadence": CadenceBankParser,
+    "capital_one": CapitalOneBankParser,
     "cfg": CfgBankParser,
     "chase": ChaseBankParser,
     "cibc": CIBCBankParser,
@@ -157,6 +164,7 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "state": StateBankParser,
     "sunflower": SunflowerBankParser,
     "the_berkshire": TheBerkshireBankParser,
+    "tomball_baylor": TomballBaylorBankParser,
     "truist": TruistBankParser,
     "united": UnitedBankParser,
     "valley": ValleyBankParser,
