@@ -17,7 +17,8 @@ class NCSParser(TransactionsParser):
         self.formated_data = []
         self.logger = logging.getLogger(__name__)
 
-    def parse_transactions(self, file: BinaryIO, file_key: str | None = None
+    def parse_transactions(
+        self, file: BinaryIO, file_extension: str | None, file_key: str | None = None
     ) -> List[Transaction]:
         excel_df = None
         print("trying as excel")

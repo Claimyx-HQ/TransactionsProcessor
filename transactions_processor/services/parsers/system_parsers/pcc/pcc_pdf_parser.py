@@ -21,7 +21,7 @@ class PCCPDFParser(TransactionsParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(
-        self, file: BinaryIO, file_key: str | None = None
+        self, file: BinaryIO, file_extension: str | None, file_key: str | None = None
     ) -> List[Transaction]:
         columns = [70, 150, 250, 400, 500, 600, 670, 850]
         # columns = [34, 120, 210, 300, 400, 490, 580, 670]
