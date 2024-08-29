@@ -7,6 +7,7 @@ mock_data = {
                 "description": "gnss wire",
                 "amount": 666,
                 "batch_number": 3785,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "2a44a663",
@@ -14,6 +15,7 @@ mock_data = {
                 "description": "gnss wire",
                 "amount": 169,
                 "batch_number": 5921,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "5fc2e9e9",
@@ -21,6 +23,7 @@ mock_data = {
                 "description": "gen wire",
                 "amount": 69,
                 "batch_number": 1472,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "123acb14",
@@ -28,6 +31,7 @@ mock_data = {
                 "description": "wire",
                 "amount": 50.6,
                 "batch_number": 8634,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "886d467c",
@@ -35,6 +39,7 @@ mock_data = {
                 "description": "gnss wire",
                 "amount": 100,
                 "batch_number": 2109,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "b0ecc5d8",
@@ -42,6 +47,7 @@ mock_data = {
                 "description": "gnss wire",
                 "amount": 7000,
                 "batch_number": 7346,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "fe4c9dd5",
@@ -49,6 +55,7 @@ mock_data = {
                 "description": "gnss wire",
                 "amount": 2805.74,
                 "batch_number": 4598,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "cd7e4f81",
@@ -56,6 +63,7 @@ mock_data = {
                 "description": "gnss wire back up",
                 "amount": 1794.93,
                 "batch_number": 9072,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "b0ecc5d8",
@@ -63,6 +71,7 @@ mock_data = {
                 "description": "gnss wire",
                 "amount": 1500,
                 "batch_number": 6215,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "fe4c9dd5",
@@ -70,6 +79,7 @@ mock_data = {
                 "description": "gnss wire",
                 "amount": 4500,
                 "batch_number": 3857,
+                "origin": "system_file.xls",
             },
             {
                 "uuid": "cd7e4f81",
@@ -77,6 +87,7 @@ mock_data = {
                 "description": "gnss wire back up",
                 "amount": 2000,
                 "batch_number": 7490,
+                "origin": "system_file.xls",
             },
         ],
         "bank": [
@@ -85,36 +96,42 @@ mock_data = {
                 "date": "10-02-2023",
                 "description": "Preauthorized Credit",
                 "amount": 3766.0,
+                "origin": "bank_file.xls",
             },
             {
                 "uuid": "57206b0b",
                 "date": "10-02-2023",
                 "description": "Preauthorized Credit",
                 "amount": 13684.89,
+                "origin": "bank_file.xls",
             },
             {
                 "uuid": "e636c4fe",
                 "date": "10-02-2023",
                 "description": "Preauthorized Credit",
                 "amount": 7150.6,
+                "origin": "bank_file.xls",
             },
             {
                 "uuid": "86029ed8",
                 "date": "10-03-2023",
                 "description": "Preauthorized Credit",
                 "amount": 2805.74,
+                "origin": "bank_file.xls",
             },
             {
                 "uuid": "efec722d",
                 "date": "10-04-2023",
                 "description": "Preauthorized Credit",
                 "amount": 1794.93,
+                "origin": "bank_file.xls",
             },
             {
                 "uuid": "efec722d",
                 "date": "10-04-2023",
                 "description": "Preauthorized Credit",
                 "amount": 8000,
+                "origin": "bank_file.xls",
             },
         ],
     },

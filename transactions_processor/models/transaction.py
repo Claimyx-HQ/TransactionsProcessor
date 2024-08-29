@@ -19,6 +19,7 @@ class Transaction(BaseModel):
         description="Unique identifier for the transaction",
     )
     batch_number: int | None = Field(None, description="Optional batch number")
+    origin: str | None = Field(None, description="Optional origin of the transaction")
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -30,6 +31,7 @@ class Transaction(BaseModel):
             "description": self.description,
             "amount": self.amount,
             "batch_number": self.batch_number,
+            "origin": self.origin,
         }
 
     @field_validator("date")
@@ -100,7 +102,7 @@ class Transaction(BaseModel):
 
     @classmethod
     def from_raw_data(cls, raw_data: List[Union[str, float, int]]):
-        date, description, amount, batch_number = None, None, None, None
+        date, description, amount, batch_number, origin = None, None, None, None, None
 
         for value in raw_data:
             if date is None:
@@ -138,6 +140,12 @@ class Transaction(BaseModel):
                     continue
                 except (ValueError, TypeError):
                     pass
+            if origin is None:
+                try:
+                    origin = str(value)  # Treat value as origin
+                    continue
+                except (ValueError, TypeError):
+                    pass
 
         if date is None or description is None or amount is None:
             logger.error(
@@ -146,5 +154,9 @@ class Transaction(BaseModel):
             raise ValueError("Invalid input data")
 
         return cls(
-            date=date, description=description, amount=amount, batch_number=batch_number
+            date=date,
+            description=description,
+            amount=amount,
+            batch_number=batch_number,
+            origin=origin,
         )

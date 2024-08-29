@@ -21,7 +21,7 @@ class PCCCSVParser(TransactionsParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(
-        self, file: BinaryIO, file_extension: str | None, file_key: str | None = None
+        self, file: BinaryIO, file_name: str | None, file_key: str | None = None
     ) -> List[Transaction]:
         excel_df = None
         print("trying as excel")
@@ -50,13 +50,13 @@ class PCCCSVParser(TransactionsParser):
             important_columns = (
                 important_columns.dropna()
             )  # Remove missing values (NaN)
-            self.decoded_data = [
-                transaction
-                for transaction in [
-                    Transaction.from_raw_data(trans)
-                    for trans in important_columns.to_numpy().tolist()
-                ]
-            ]
+
+            transactions = []
+            for column in important_columns.to_numpy().tolist():
+                raw_data = [*column, file_name]
+                transaction = Transaction.from_raw_data(raw_data)
+                transactions.append(transaction)
+            self.decoded_data = transactions
 
             numeric_values = important_columns.iloc[:, 1].to_list()
             system_transactions = np.array(
