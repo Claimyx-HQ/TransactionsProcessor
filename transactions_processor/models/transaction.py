@@ -18,6 +18,7 @@ class Transaction(BaseModel):
         default_factory=lambda: str(uuid.uuid4()),
         description="Unique identifier for the transaction",
     )
+    batch_number: int | None = Field(None, description="Optional batch number")
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -28,6 +29,7 @@ class Transaction(BaseModel):
             "date": self.date.strftime("%m-%d-%Y"),
             "description": self.description,
             "amount": self.amount,
+            "batch_number": self.batch_number,
         }
 
     @field_validator("date")
@@ -36,7 +38,14 @@ class Transaction(BaseModel):
 
         if isinstance(date, str) and date_pattern.match(date):
             try:
-                for fmt in ("%m/%d/%y", "%m-%d-%y", "%m.%d.%y","%m/%d/%Y", "%m-%d-%Y", "%m.%d.%Y"):
+                for fmt in (
+                    "%m/%d/%y",
+                    "%m-%d-%y",
+                    "%m.%d.%y",
+                    "%m/%d/%Y",
+                    "%m-%d-%Y",
+                    "%m.%d.%Y",
+                ):
                     # logger.debug(f"trying date {date} with format {fmt}")
                     try:
                         return datetime.strptime(date, fmt)
@@ -91,7 +100,7 @@ class Transaction(BaseModel):
 
     @classmethod
     def from_raw_data(cls, raw_data: List[Union[str, float, int]]):
-        date, description, amount = None, None, None
+        date, description, amount, batch_number = None, None, None, None
 
         for value in raw_data:
             if date is None:
@@ -123,9 +132,19 @@ class Transaction(BaseModel):
                 except ValueError:
                     # logger.exception(f"Invalid description: {value}")
                     pass
+            if batch_number is None:
+                try:
+                    batch_number = int(value)  # Treat value as batch number
+                    continue
+                except (ValueError, TypeError):
+                    pass
 
         if date is None or description is None or amount is None:
-            logger.error(f"Invalid input data: {raw_data} and date: {date} description: {description} amount: {amount}")
+            logger.error(
+                f"Invalid input data: {raw_data} and date: {date} description: {description} amount: {amount}"
+            )
             raise ValueError("Invalid input data")
 
-        return cls(date=date, description=description, amount=amount)
+        return cls(
+            date=date, description=description, amount=amount, batch_number=batch_number
+        )

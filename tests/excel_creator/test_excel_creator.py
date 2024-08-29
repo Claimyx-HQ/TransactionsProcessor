@@ -18,6 +18,7 @@ def test_create_transaction_excel():  # TODO: Correct the mock data, create_tran
             date=datetime.strptime(transaction["date"], "%m-%d-%Y"),
             description=transaction["description"],
             amount=transaction["amount"],
+            batch_number=transaction["batch_number"],
         )
         for transaction in mock_data["transactions"]["system"]
     ]

@@ -41,7 +41,7 @@ class PCCCSVParser(TransactionsParser):
             file.seek(0)
         except:
             pass
-        important_columns = excel_df.iloc[:, [0, 7, 6]]
+        important_columns = excel_df.iloc[:, [0, 7, 6, 4]]
         if pd.api.types.is_numeric_dtype(important_columns):
             # If the column is already numeric, directly convert to array
             system_transactions = important_columns.to_numpy()

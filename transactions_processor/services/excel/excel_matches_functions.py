@@ -1,4 +1,3 @@
-
 import logging
 from openpyxl.utils import get_column_letter
 from transactions_processor.services.excel.excel_sorting import ExcelSorting
@@ -111,7 +110,11 @@ class ExcelMatchesAlocator:
                 column_start_index=bank_start_col_index,
                 row_index=bank_row_index,
             )
-            multi_matches = [system_transaction for key, values in matches.items() for system_transaction in values]
+            multi_matches = [
+                system_transaction
+                for key, values in matches.items()
+                for system_transaction in values
+            ]
             ExcelSorting.create_table(
                 worksheet=worksheet,
                 table_name="Multi_to_One_Matches_in_System_table",
@@ -180,7 +183,6 @@ class ExcelMatchesAlocator:
                 row_index=system_row_index,
                 start_col_index=system_start_col_index,
             )
-        
 
         for value in unmatched_system_transactions:
             ExcelHelpers._write_transaction(
@@ -207,7 +209,7 @@ class ExcelMatchesAlocator:
         logger.debug(
             f" len bank: {len(bank_transactions)} and len unmatched bank: {len(unmatched_bank_transactions)}"
         )
-        if len(unmatched_bank_transactions) > 0:    
+        if len(unmatched_bank_transactions) > 0:
             bank_row_index = ExcelHelpers._create_title_row(
                 worksheet,
                 "Unmatched Bank Transactions",
@@ -239,7 +241,7 @@ class ExcelMatchesAlocator:
     def write_data(data_dict, worksheet, green_fill, color_fills: dict):
         logger = logging.getLogger(__name__)
         system_row_index, bank_row_index = 3, 3
-        system_start_col_index, bank_start_col_index = 1, 6
+        system_start_col_index, bank_start_col_index = 1, 7
         system_transactions = data_dict["transactions"]["system"]
         bank_transactions = data_dict["transactions"]["bank"]
 
