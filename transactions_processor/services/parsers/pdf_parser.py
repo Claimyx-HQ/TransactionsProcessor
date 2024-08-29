@@ -19,15 +19,17 @@ class PDFParser(TransactionsParser):
         self.column_positions = column_positions
         self.pdf_converter = ScannedPDFConverter()
         self._enable = True
+        self.file_name = ""
 
     # field_indexes is a dictionary that maps the field names to their respective indexes
     # parse_row is a function that takes a row and returns a Transaction object
     def parse_transactions(
         self,
         file: BinaryIO,
-        file_extension: str | None = None,
+        file_name: str | None = None,
         file_key: str | None = None,
     ) -> List[Transaction]:
+        self.file_name = file_name
         tables = self._parse_pdf(file)
         if len(tables) == 0:
             if not file_key:
@@ -52,6 +54,7 @@ class PDFParser(TransactionsParser):
                 except:
                     transaction = None
                 if transaction:
+                    transaction.origin = file_name
                     bank_transactions.append(transaction)
         return bank_transactions
 

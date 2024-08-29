@@ -16,16 +16,18 @@ def test_parse_ncs_file():
         amount=-37438.65,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=1302,
+        origin="ncs.xls",
     )
     parser = NCSParser()
 
-    transactions = parser.parse_transactions(file, "xls")
+    transactions = parser.parse_transactions(file, "ncs.xls")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
     assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
 
     file.close()
 
@@ -39,16 +41,18 @@ def test_parse_pcc_pdf():
         amount=400.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=2862,
+        origin="pcc.pdf",
     )
     parser = PCCParser()
 
-    transactions = parser.parse_transactions(file, "pdf")
+    transactions = parser.parse_transactions(file, "pcc.pdf")
     parsed_transaction = transactions[1]
 
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
     assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
 
     file.close()
 
@@ -62,15 +66,17 @@ def test_parse_pcc_excel():
         amount=70.20,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=4266,
+        origin="pcc.xlsx",
     )
     parser = PCCParser()
 
-    transactions = parser.parse_transactions(file, "xlsx")
+    transactions = parser.parse_transactions(file, "pcc.xlsx")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
     assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
 
     file.close()

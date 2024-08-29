@@ -7,6 +7,6 @@ from transactions_processor.models.transaction import Transaction
 class TransactionsParser(ABC):
     @abstractmethod
     def parse_transactions(
-        self, file: BinaryIO, file_extension: str | None, file_key: str | None
+        self, file: BinaryIO, file_name: str | None, file_key: str | None
     ) -> List[Transaction]:
         raise NotImplementedError("parse_transactions method is not implemented")

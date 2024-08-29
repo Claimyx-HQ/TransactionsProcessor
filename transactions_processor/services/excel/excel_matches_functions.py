@@ -241,7 +241,7 @@ class ExcelMatchesAlocator:
     def write_data(data_dict, worksheet, green_fill, color_fills: dict):
         logger = logging.getLogger(__name__)
         system_row_index, bank_row_index = 3, 3
-        system_start_col_index, bank_start_col_index = 1, 7
+        system_start_col_index, bank_start_col_index = 1, 8
         system_transactions = data_dict["transactions"]["system"]
         bank_transactions = data_dict["transactions"]["bank"]
 

@@ -69,7 +69,7 @@ def lambda_handler(event, context):
                         "key": bank_transactions_data[i]["key"],
                         "file": bank_files_tasks[i].result(),
                         "type": bank_transactions_data[i]["type"],
-                        "extension": bank_transactions_data[i]["extension"],
+                        "name": bank_transactions_data[i]["name"],
                     }
                 )
             # bank_files = [
@@ -84,21 +84,18 @@ def lambda_handler(event, context):
         ]()
         system_transactions = system_parser.parse_transactions(
             system_file,
-            system_transactions_data["extension"],
+            system_transactions_data["name"],
             system_transactions_data["key"],
         )
-        initialized_bank_parsers = {}
         all_bank_transactions = []
         for i in range(len(bank_files)):
             bank_type = bank_files[i]["type"]
             bank_file_key = bank_files[i]["key"]
-            bank_file_extension = bank_files[i]["extension"]
+            bank_file_name = bank_files[i]["name"]
             bank_file = bank_files[i]["file"]
-            if bank_type not in initialized_bank_parsers:
-                initialized_bank_parsers[bank_type] = bank_parsers[bank_type]()
-            bank_parser: TransactionsParser = initialized_bank_parsers[bank_type]
+            bank_parser: TransactionsParser = bank_parsers[bank_type]()
             bank_transactions = bank_parser.parse_transactions(
-                bank_file, bank_file_extension, bank_file_key
+                bank_file, bank_file_name, bank_file_key
             )
             all_bank_transactions.extend(bank_transactions)
 

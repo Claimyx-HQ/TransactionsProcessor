@@ -35,6 +35,9 @@ class ExcelHelpers:
         worksheet[f"{get_column_letter(column_start_index+4)}{row_index}"].value = (
             transaction.batch_number
         )
+        worksheet[f"{get_column_letter(column_start_index+5)}{row_index}"].value = (
+            transaction.origin
+        )
         if format is not None:
             worksheet[f"{get_column_letter(column_start_index)}{row_index}"].fill = (
                 format
@@ -51,7 +54,10 @@ class ExcelHelpers:
             worksheet[f"{get_column_letter(column_start_index+4)}{row_index}"].fill = (
                 format
             )
-        worksheet[f"F{row_index}"].fill = PatternFill("solid", fgColor="000000")
+            worksheet[f"{get_column_letter(column_start_index+5)}{row_index}"].fill = (
+                format
+            )
+        worksheet[f"G{row_index}"].fill = PatternFill("solid", fgColor="000000")
 
     @staticmethod
     def _setup_excel(
@@ -100,16 +106,16 @@ class ExcelHelpers:
         merged_header_fill = PatternFill("solid", fgColor="DDEBF7")
 
         # Setting column widths
-        columns = ["A", "B", "C", "D", "F", "G", "H", "I", "J"]
+        columns = ["A", "B", "C", "D", "E", "F", "H", "I", "J", "K", "L", "M"]
         for col in columns:
             worksheet.column_dimensions[col].width = 20
-        worksheet.column_dimensions["F"].width = 3  # Empty column for separation
+        worksheet.column_dimensions["G"].width = 3  # Empty column for separation
 
         # Merging for main header titles and setting their values
-        worksheet.merge_cells("A1:E1")
+        worksheet.merge_cells("A1:F1")
         worksheet["A1"].value = system_name
-        worksheet.merge_cells("F1:J1")
-        worksheet["F1"].value = bank_name
+        worksheet.merge_cells("H1:M1")
+        worksheet["H1"].value = bank_name
 
         # Applying styles to merged headers
         for cell in ["A1", "F1"]:
@@ -117,8 +123,13 @@ class ExcelHelpers:
             worksheet[cell].font = header_font
             worksheet[cell].alignment = header_alignment
 
+        for cell in ["H1", "M1"]:
+            worksheet[cell].fill = merged_header_fill
+            worksheet[cell].font = header_font
+            worksheet[cell].alignment = header_alignment
+
         # Setting individual headers below main titles
-        headers = ["UID", "Date", "Description", "Amount", "Batch"]
+        headers = ["UID", "Date", "Description", "Amount", "Batch", "Origin"]
         for i, header in enumerate(headers, start=1):
             cell = f"{get_column_letter(i)}2"
             worksheet[cell].value = header
@@ -127,8 +138,8 @@ class ExcelHelpers:
                 horizontal="center", vertical="center"
             )
 
-            # Repeat for bank headers, offset by 5 columns due to separation
-            bank_cell = f"{get_column_letter(i + 6)}2"
+            # Repeat for bank headers, offset by 7 columns due to separation
+            bank_cell = f"{get_column_letter(i + 7)}2"
             worksheet[bank_cell].value = header
             worksheet[bank_cell].font = Font(bold=True)
             worksheet[bank_cell].alignment = Alignment(
@@ -143,7 +154,7 @@ class ExcelHelpers:
     @staticmethod
     def _create_title_row(worksheet, title, column_start_index, row_index):
         start_cell = f"{get_column_letter(column_start_index)}{row_index}"
-        stop_cell = f"{get_column_letter(column_start_index + 4)}{row_index}"
+        stop_cell = f"{get_column_letter(column_start_index + 5)}{row_index}"
         worksheet.merge_cells(f"{start_cell}:{stop_cell}")
         worksheet[start_cell].value = title
         worksheet[start_cell].font = Font(bold=True, color="000000")
@@ -154,7 +165,7 @@ class ExcelHelpers:
         worksheet[f"F{row_index}"].fill = PatternFill("solid", fgColor="FFFFFF")
         row_index += 1
 
-        headers = ["UID", "Date", "Description", "Amount", "Batch"]
+        headers = ["UID", "Date", "Description", "Amount", "Batch", "Origin"]
         for i, header in enumerate(headers, start=1):
             cell = f"{get_column_letter(i+column_start_index-1)}{row_index}"
             worksheet[cell].value = header
