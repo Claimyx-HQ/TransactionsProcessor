@@ -18,7 +18,7 @@ def test_parse_ncs_file():
     )
     parser = NCSParser()
 
-    transactions = parser.parse_transactions(file)
+    transactions = parser.parse_transactions(file, "xls")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
@@ -39,7 +39,7 @@ def test_parse_pcc_pdf():
     )
     parser = PCCParser()
 
-    transactions = parser.parse_transactions(file)
+    transactions = parser.parse_transactions(file, "pdf")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
@@ -60,7 +60,7 @@ def test_parse_pcc_excel():
     )
     parser = PCCParser()
 
-    transactions = parser.parse_transactions(file)
+    transactions = parser.parse_transactions(file, "xlsx")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date

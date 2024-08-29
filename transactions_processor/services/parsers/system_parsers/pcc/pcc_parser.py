@@ -29,11 +29,11 @@ class PCCParser(TransactionsParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(
-        self, file: BinaryIO, file_key: str | None = None
+        self, file: BinaryIO, file_extension: str | None, file_key: str | None = None
     ) -> List[Transaction]:
-        if not file_key:
+        if not file_extension:
             raise ValueError("unknown file type")
-        if file_key.endswith(".pdf"):
+        if file_extension.lower() == "pdf":
             return self.pdf_parser().parse_transactions(file, file_key)
         else:
             return self.csv_parser().parse_transactions(file, file_key)

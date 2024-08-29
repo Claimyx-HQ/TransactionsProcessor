@@ -21,7 +21,7 @@ class PCCCSVParser(TransactionsParser):
         self.logger = logging.getLogger(__name__)
 
     def parse_transactions(
-        self, file: BinaryIO, file_key: str | None = None
+        self, file: BinaryIO, file_extension: str | None, file_key: str | None = None
     ) -> List[Transaction]:
         excel_df = None
         print("trying as excel")

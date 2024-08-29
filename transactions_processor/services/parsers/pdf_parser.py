@@ -23,7 +23,10 @@ class PDFParser(TransactionsParser):
     # field_indexes is a dictionary that maps the field names to their respective indexes
     # parse_row is a function that takes a row and returns a Transaction object
     def parse_transactions(
-        self, file: BinaryIO, file_key: str | None = None
+        self,
+        file: BinaryIO,
+        file_extension: str | None = None,
+        file_key: str | None = None,
     ) -> List[Transaction]:
         tables = self._parse_pdf(file)
         if len(tables) == 0:
@@ -61,7 +64,7 @@ class PDFParser(TransactionsParser):
             guess=False,
             columns=self.column_positions,
         )
-        return tables # type: ignore
+        return tables  # type: ignore
 
     @abstractmethod
     def _parse_row(self, row: List[Any], table_index: int) -> Transaction | None:
