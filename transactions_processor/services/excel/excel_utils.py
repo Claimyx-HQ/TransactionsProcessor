@@ -32,6 +32,9 @@ class ExcelHelpers:
         worksheet[f"{get_column_letter(column_start_index+3)}{row_index}"].value = (
             transaction.amount
         )
+        worksheet[f"{get_column_letter(column_start_index+4)}{row_index}"].value = (
+            transaction.batch_number
+        )
         if format is not None:
             worksheet[f"{get_column_letter(column_start_index)}{row_index}"].fill = (
                 format
@@ -45,7 +48,10 @@ class ExcelHelpers:
             worksheet[f"{get_column_letter(column_start_index+3)}{row_index}"].fill = (
                 format
             )
-        worksheet[f"E{row_index}"].fill = PatternFill("solid", fgColor="000000")
+            worksheet[f"{get_column_letter(column_start_index+4)}{row_index}"].fill = (
+                format
+            )
+        worksheet[f"F{row_index}"].fill = PatternFill("solid", fgColor="000000")
 
     @staticmethod
     def _setup_excel(
@@ -94,15 +100,15 @@ class ExcelHelpers:
         merged_header_fill = PatternFill("solid", fgColor="DDEBF7")
 
         # Setting column widths
-        columns = ["A", "B", "C", "D", "F", "G", "H", "I"]
+        columns = ["A", "B", "C", "D", "F", "G", "H", "I", "J"]
         for col in columns:
             worksheet.column_dimensions[col].width = 20
-        worksheet.column_dimensions["E"].width = 3  # Empty column for separation
+        worksheet.column_dimensions["F"].width = 3  # Empty column for separation
 
         # Merging for main header titles and setting their values
-        worksheet.merge_cells("A1:D1")
+        worksheet.merge_cells("A1:E1")
         worksheet["A1"].value = system_name
-        worksheet.merge_cells("F1:I1")
+        worksheet.merge_cells("F1:J1")
         worksheet["F1"].value = bank_name
 
         # Applying styles to merged headers
@@ -112,7 +118,7 @@ class ExcelHelpers:
             worksheet[cell].alignment = header_alignment
 
         # Setting individual headers below main titles
-        headers = ["UID", "Date", "Description", "Amount"]
+        headers = ["UID", "Date", "Description", "Amount", "Batch"]
         for i, header in enumerate(headers, start=1):
             cell = f"{get_column_letter(i)}2"
             worksheet[cell].value = header
@@ -122,7 +128,7 @@ class ExcelHelpers:
             )
 
             # Repeat for bank headers, offset by 5 columns due to separation
-            bank_cell = f"{get_column_letter(i + 5)}2"
+            bank_cell = f"{get_column_letter(i + 6)}2"
             worksheet[bank_cell].value = header
             worksheet[bank_cell].font = Font(bold=True)
             worksheet[bank_cell].alignment = Alignment(
@@ -137,7 +143,7 @@ class ExcelHelpers:
     @staticmethod
     def _create_title_row(worksheet, title, column_start_index, row_index):
         start_cell = f"{get_column_letter(column_start_index)}{row_index}"
-        stop_cell = f"{get_column_letter(column_start_index + 3)}{row_index}"
+        stop_cell = f"{get_column_letter(column_start_index + 4)}{row_index}"
         worksheet.merge_cells(f"{start_cell}:{stop_cell}")
         worksheet[start_cell].value = title
         worksheet[start_cell].font = Font(bold=True, color="000000")
@@ -145,10 +151,10 @@ class ExcelHelpers:
             horizontal="center", vertical="center"
         )
         worksheet[start_cell].fill = PatternFill("solid", fgColor="FFFFFF")
-        worksheet[f"E{row_index}"].fill = PatternFill("solid", fgColor="FFFFFF")
+        worksheet[f"F{row_index}"].fill = PatternFill("solid", fgColor="FFFFFF")
         row_index += 1
 
-        headers = ["UID", "Date", "Description", "Amount"]
+        headers = ["UID", "Date", "Description", "Amount", "Batch"]
         for i, header in enumerate(headers, start=1):
             cell = f"{get_column_letter(i+column_start_index-1)}{row_index}"
             worksheet[cell].value = header

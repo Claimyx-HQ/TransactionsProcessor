@@ -15,6 +15,7 @@ def test_parse_ncs_file():
         description="gnss wire",
         amount=-37438.65,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=1302,
     )
     parser = NCSParser()
 
@@ -24,6 +25,7 @@ def test_parse_ncs_file():
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
 
     file.close()
 
@@ -36,15 +38,17 @@ def test_parse_pcc_pdf():
         description="Credit Card 04/01/202",
         amount=400.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=2862,
     )
     parser = PCCParser()
 
     transactions = parser.parse_transactions(file, "pdf")
-    parsed_transaction = transactions[0]
+    parsed_transaction = transactions[1]
 
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
 
     file.close()
 
@@ -57,6 +61,7 @@ def test_parse_pcc_excel():
         description="Anthem 05/02/2024",
         amount=70.20,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=4266,
     )
     parser = PCCParser()
 
@@ -66,5 +71,6 @@ def test_parse_pcc_excel():
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
 
     file.close()

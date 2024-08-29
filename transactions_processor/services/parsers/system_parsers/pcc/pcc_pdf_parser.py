@@ -51,10 +51,13 @@ class PCCPDFParser(TransactionsParser):
                     date = row[0]
                     description = row[4]
                     amount = parse_amount(amount_string)
+                    batch_number = row[3]
                     if math.isnan(amount):  # Skip if amount is NaN
                         continue
                     bank_transactions.append(
-                        Transaction.from_raw_data([date, description, amount])
+                        Transaction.from_raw_data(
+                            [date, description, amount, batch_number]
+                        )
                     )
                     bank_transactions_amounts.append(amount)
         return bank_transactions
