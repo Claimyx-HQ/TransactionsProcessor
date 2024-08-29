@@ -26,6 +26,9 @@ from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import
 from transactions_processor.services.parsers.bank_parsers.cadence_bank_parser import (
     CadenceBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.capital_one_bank_parser import (
+    CapitalOneBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.cfg_bank_parser import (
     CfgBankParser,
 )
@@ -106,6 +109,9 @@ from transactions_processor.services.parsers.bank_parsers.sunflower_bank_parser 
 )
 from transactions_processor.services.parsers.bank_parsers.the_berkshire_bank_parser import (
     TheBerkshireBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.tomball_baylor_bank_parser import (
+    TomballBaylorBankParser,
 )
 from transactions_processor.services.parsers.bank_parsers.truist_bank_parser import (
     TruistBankParser,
@@ -873,6 +879,40 @@ def test_parse_customers_bank():
         uuid="2e28281e-29c1-4ba5-a737-d665a4dab7db",
     )
     parser = CustomersBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_tomball_baylor_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/tomball_baylor/tomball_baylor.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 7, 1, 0, 0),
+        description="HCCLAIMPMT UnitedHealthcare",
+        amount=640.0,
+        uuid="2e28281e-29c1-4ba5-a737-d665a4dab7db",
+    )
+    parser = TomballBaylorBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_capital_one_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/capital_one/capital_one.PDF"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 7, 17, 0, 0),
+        description="ACH deposit Marketplace",
+        amount=2112.76,
+        uuid="2e28281e-29c1-4ba5-a737-d665a4dab7db",
+    )
+    parser = CapitalOneBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
