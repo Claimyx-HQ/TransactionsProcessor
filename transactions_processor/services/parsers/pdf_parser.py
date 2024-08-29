@@ -13,7 +13,7 @@ from transactions_processor.services.parsers.transactions_parser import (
 )
 
 filtered_transaction_descriptions = [
-    "Automatic Transafer",
+    "Automatic Transfer",
     "Automatic Bank Transfer",
 ]
 
