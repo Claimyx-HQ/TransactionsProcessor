@@ -12,6 +12,11 @@ from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,
 )
 
+filtered_transaction_descriptions = [
+    "Automatic Transafer",
+    "Automatic Bank Transfer",
+]
+
 
 class PDFParser(TransactionsParser):
     def __init__(self, column_positions: List[float]) -> None:
@@ -54,6 +59,8 @@ class PDFParser(TransactionsParser):
                 except:
                     transaction = None
                 if transaction:
+                    if transaction.description in filtered_transaction_descriptions:
+                        continue
                     transaction.origin = file_name
                     bank_transactions.append(transaction)
         return bank_transactions
