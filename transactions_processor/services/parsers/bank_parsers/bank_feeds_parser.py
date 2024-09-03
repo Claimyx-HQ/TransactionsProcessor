@@ -30,12 +30,44 @@ class BankFeedsParser(TransactionsParser):
         
         # Step 5: Convert the Amount column to numeric, coercing errors to NaN
         extracted_columns.iloc[:, 2] = pd.to_numeric(extracted_columns.iloc[:, 2], errors='coerce')
-        
         cleaned_columns = extracted_columns.dropna()
         result_array = cleaned_columns.to_numpy().tolist()
+        date_format = detect_date_format(result_array[0][0])  # First, detect the format
         self.decoded_data = [
-                Transaction.from_raw_data([str(datetime.strptime(row[0], '%Y-%m-%d')), row[1], row[2], row[3]])
+                Transaction.from_raw_data([str(parse_date_with_format(row[0], date_format)), row[1], row[2], row[3]])
                 for row in result_array
             ]
 
         return self.decoded_data
+
+def parse_date_with_format(date_str: str, date_format: str) -> datetime:
+    # Parse the date string using the provided format
+    parsed_date = datetime.strptime(date_str, date_format)
+    # Return the datetime object in the standardized format '%Y-%m-%d'
+    standardized_date = parsed_date.strftime('%Y-%m-%d')
+    return datetime.strptime(standardized_date, '%Y-%m-%d')
+
+def detect_date_format(date_str: str) -> str:
+    # Define possible date formats
+    date_formats = [
+        '%Y-%m-%d',    # e.g., 2023-09-15
+        '%m/%d/%Y',    # e.g., 09/15/2023
+        '%d/%m/%Y',    # e.g., 15/09/2023
+        '%d-%m-%Y',    # e.g., 15-09-2023
+        '%m-%d-%Y',    # e.g., 09-15-2023
+        '%Y/%m/%d',    # e.g., 2023/09/15
+        '%d.%m.%Y',    # e.g., 15.09.2023
+        '%m.%d.%Y'     # e.g., 09.15.2023
+    ]
+    
+    # Try parsing the date string with each format
+    for date_format in date_formats:
+        try:
+            # If parsing succeeds, return the format
+            datetime.strptime(date_str, date_format)
+            return date_format
+        except ValueError:
+            continue
+    
+    # If none of the formats match, raise an error
+    raise ValueError(f"Date format not recognized for date string: {date_str}")
