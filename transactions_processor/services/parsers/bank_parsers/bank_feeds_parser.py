@@ -32,7 +32,7 @@ class BankFeedsParser(TransactionsParser):
         extracted_columns.iloc[:, 2] = pd.to_numeric(extracted_columns.iloc[:, 2], errors='coerce')
         cleaned_columns = extracted_columns.dropna()
         result_array = cleaned_columns.to_numpy().tolist()
-        date_format = detect_date_format(result_array[0][0])  # First, detect the format
+        date_format = detect_date_format(result_array[0][1])  # First, detect the format
         self.decoded_data = [
                 Transaction.from_raw_data([str(parse_date_with_format(row[0], date_format)), row[1], row[2], row[3]])
                 for row in result_array

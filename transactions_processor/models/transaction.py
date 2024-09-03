@@ -151,7 +151,7 @@ class Transaction(BaseModel):
             logger.error(
                 f"Invalid input data: {raw_data} and date: {date} description: {description} amount: {amount}"
             )
-            raise ValueError("Invalid input data")
+            raise ValueError(f"Invalid input data: {raw_data} and date: {date} description: {description} amount: {amount}")
 
         return cls(
             date=date,
