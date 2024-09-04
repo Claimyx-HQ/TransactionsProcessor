@@ -274,9 +274,7 @@ def test_parse_bank_feeds():
     )
     parser = BankFeedsParser()
 
-    transactions = parser.parse_transactions(file)
-    formatted_transactions = " \n".join(str(t) for t in transactions)
-    logger.info(f"\nFormatted Transactions:\n{formatted_transactions}\n")
+    transactions = parser.parse_transactions(file, "bank_feeds.csv")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()

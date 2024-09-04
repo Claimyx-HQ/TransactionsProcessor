@@ -31,6 +31,6 @@ class FlagstarBankParser(PDFParser):
             except ValueError:
                 return None
 
-            return Transaction.from_raw_data([formatted_date, description_str, amount])
+            return Transaction.from_raw_data(formatted_date, description_str, amount)
 
         return None

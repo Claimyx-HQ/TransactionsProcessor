@@ -30,6 +30,6 @@ class CadenceBankParser(PDFParser):
             if not valid_amount(amount):
                 return None
 
-            return Transaction.from_raw_data([date_str, description_str, amount])
+            return Transaction.from_raw_data(date_str, description_str, amount)
 
         return None

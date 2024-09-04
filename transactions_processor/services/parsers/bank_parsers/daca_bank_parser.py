@@ -28,6 +28,6 @@ class DACABankParser(PDFParser):
             amount = parse_amount(amount_str)
             if not valid_amount(amount):
                 return None
-            transaction = Transaction.from_raw_data([date_str, description_str, amount])
+            transaction = Transaction.from_raw_data(date_str, description_str, amount)
             return transaction
         return None
