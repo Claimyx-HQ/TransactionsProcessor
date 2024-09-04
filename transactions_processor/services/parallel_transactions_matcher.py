@@ -2,9 +2,9 @@ import logging
 from typing import Any, Callable, Dict, List, Tuple
 import numpy as np
 from transactions_processor.services.transactions_matcher import TransactionsMatcher
-import time
 import multiprocessing
 from multiprocessing import Pipe
+from time import time
 
 
 class ParallelTransactionsMatcher(TransactionsMatcher):
@@ -77,11 +77,24 @@ class ParallelTransactionsMatcher(TransactionsMatcher):
 
     @staticmethod
     def process_chunk(
-        chunk: List[float], system_transactions: List[float], conn
+        chunk: List[float],
+        system_transactions: List[float],
+        conn,
+        progress_dict: Dict,
+        process_id: int,
+        update_progress: Callable[[float], None] | None = None,
     ) -> None:
         # ) -> Dict[float, List[List[float]]]:
         matches = {}
-        for bank_transaction in chunk:
+
+        for i, bank_transaction in enumerate(chunk):
+            progress_dict[process_id] = (i + 1) / len(chunk)
+            if update_progress:
+                current_progress = (
+                    sum(progress_dict.values()) / len(progress_dict) * 100
+                )
+                update_progress(current_progress)
+
             max_possibilities = 3 if bank_transaction <= 5000 else 5
             possible_matches = []
             ParallelTransactionsMatcher.find_matches_n_sum(
@@ -98,11 +111,30 @@ class ParallelTransactionsMatcher(TransactionsMatcher):
         conn.send(matches)
         conn.close()
 
-    @staticmethod
-    def worker(chunk, system_transactions, conn):
-        result = ParallelTransactionsMatcher.process_chunk(
-            chunk, system_transactions, conn
-        )
+    # @staticmethod
+    # def worker(chunk, system_transactions, conn):
+    #     result = ParallelTransactionsMatcher.process_chunk(
+    #         chunk, system_transactions, conn
+    #     )
+    #
+    # @staticmethod
+    # def worker(chunk, system_transactions, child_conn, progress_dict, process_id):
+    #     start_time = time()
+    #     counter = 100
+    #     for i, transaction in enumerate(chunk):
+    #         # process transaction
+    #         if time() - start_time > 5:  # update every 5 seconds
+    #             progress_dict[process_id] = (
+    #                 (i + 1) / len(chunk) * 100
+    #             )  # update progress in percentage
+    #             start_time = time()
+    #     child_conn.close()
+
+    # @staticmethod
+    # def worker(chunk, system_transactions, conn):
+    #     result = ParallelTransactionsMatcher.process_chunk(
+    #         chunk, system_transactions, conn
+    #     )
 
     def find_reconciling_matches(
         self,
@@ -114,6 +146,7 @@ class ParallelTransactionsMatcher(TransactionsMatcher):
 
         # Determine the number of processes to use
         num_processes = multiprocessing.cpu_count() * 2
+        num_processes = 2
         print(f"num_processes: {num_processes}")
 
         # Split bank_transactions into chunks
@@ -131,11 +164,21 @@ class ParallelTransactionsMatcher(TransactionsMatcher):
         #         [(chunk, system_transactions) for chunk in chunks],
         #     )
         processes = []
+        manager = multiprocessing.Manager()
+        progress_dict = manager.dict()
         pipe_list = []
-        for chunk in chunks:
+        for i, chunk in enumerate(chunks):
             parent_conn, child_conn = Pipe()
             p = multiprocessing.Process(
-                target=self.worker, args=(chunk, system_transactions, child_conn)
+                target=self.process_chunk,
+                args=(
+                    chunk,
+                    system_transactions,
+                    child_conn,
+                    progress_dict,
+                    i,
+                    update_progress,
+                ),
             )
             processes.append(p)
             pipe_list.append(parent_conn)

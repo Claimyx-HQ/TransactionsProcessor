@@ -9,7 +9,6 @@ from transactions_processor.services.default_transactions_matcher import (
     DefaultTransactionsMatcher,
 )
 from transactions_processor.services.excel.excel_controller import ExcelController
-import logging
 import io
 from transactions_processor.services.parallel_transactions_matcher import (
     ParallelTransactionsMatcher,
@@ -32,19 +31,23 @@ from transactions_processor.utils.aws_utils import (
     upload_file_to_s3,
 )
 import multiprocessing
+from loguru import logger
+
+
+bank_name = "Bank"
+system_name = "PharmBills System"
+bucket_name = "bankrectool-files"
 
 
 def lambda_handler(event, context):
     client_id: str | None = None
 
     try:
-        bank_name = "Bank"
-        system_name = "PharmBills System"
-        body = json.loads(event["Records"][0]["body"])
-        system_transactions_data = body["system_file"]
-        bank_transactions_data = body["bank_files"]
-        client_id = body["client_id"]
-        bucket_name = "bankrectool-files"
+        logger.info(f"Received event: {event}")
+
+        system_transactions_data, bank_transactions_data, client_id = (
+            parse_lambda_event(event)
+        )
 
         if not client_id:
             raise Exception("Client ID is required")
@@ -52,56 +55,29 @@ def lambda_handler(event, context):
         transaction_matcher = ParallelTransactionsMatcher()
         excel_controller = ExcelController()
 
-        # Create a thread pool executor
-        bank_files = []
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            update_progress(client_id, "Processing", 0)
-            system_file = retrieve_file(bucket_name, system_transactions_data["key"])
-            # system_file_task = executor.submit(retrieve_file, bucket_name, system_transactions_data['key'])
-            bank_files_tasks = [
-                executor.submit(retrieve_file, bucket_name, bank_file["key"])
-                for bank_file in bank_transactions_data
-            ]
-            concurrent.futures.wait(bank_files_tasks)
-            for i in range(len(bank_files_tasks)):
-                bank_files.append(
-                    {
-                        "key": bank_transactions_data[i]["key"],
-                        "file": bank_files_tasks[i].result(),
-                        "type": bank_transactions_data[i]["type"],
-                        "name": bank_transactions_data[i]["name"],
-                    }
-                )
-            # bank_files = [
-            #     {"key": bank_file["key"], "file": task.result()}
-            #     for bank_file, task in zip(bank_transactions_data, bank_files_tasks)
-            # ]
-            # bank_files = [task.result() for task in bank_files_tasks]
+        logger.debug("Retrieving files from s3")
 
-        # TODO: This also needs to run in parallel
-        system_parser: TransactionsParser = system_parsers[
-            system_transactions_data["type"]
-        ]()
-        system_transactions = system_parser.parse_transactions(
-            system_file,
-            system_transactions_data["name"],
-            system_transactions_data["key"],
+        update_progress(client_id, "Processing", 0)
+
+        system_data, banks_data = retrieve_files(
+            bucket_name, system_transactions_data, bank_transactions_data
         )
-        all_bank_transactions = []
-        for i in range(len(bank_files)):
-            bank_type = bank_files[i]["type"]
-            bank_file_key = bank_files[i]["key"]
-            bank_file_name = bank_files[i]["name"]
-            bank_file = bank_files[i]["file"]
-            bank_parser: TransactionsParser = bank_parsers[bank_type]()
-            bank_transactions = bank_parser.parse_transactions(
-                bank_file, bank_file_name, bank_file_key
-            )
-            all_bank_transactions.extend(bank_transactions)
+
+        logger.debug(
+            f'Parsing transactions, system: {system_data["name"]}, bank: {len(banks_data)}'
+        )
+
+        system_transactions, bank_transactions = parse_transactions(
+            system_data, banks_data
+        )
+
+        logger.debug(
+            f"Transactions parsed, system: {len(system_transactions)}, bank: {len(bank_transactions)}"
+        )
 
         data = find_matches(
             client_id,
-            all_bank_transactions,
+            bank_transactions,
             system_transactions,
             transaction_matcher,
         )
@@ -112,7 +88,9 @@ def lambda_handler(event, context):
 
         # Construct the response
         if generated_excel is None:
-            print(f"Failed to generate excel file for client {client_id}, body: {body}")
+            logger.error(
+                f"Failed to generate excel file for client {client_id}, event: {event}"
+            )
             response = {
                 "statusCode": 200,
                 "headers": {
@@ -141,12 +119,14 @@ def lambda_handler(event, context):
             client_id, {"message": "Processing complete", "url": presigned_url}
         )
 
-        print(f"Successfully processed transactions, body: {body}")
+        logger.info(
+            f"Successfully processed transactions, system_data: {system_transactions_data}, bank_data: {bank_transactions_data}"
+        )
 
         return response
     except Exception as e:
         error_code = generate_error_code(e)
-        print(
+        logger.error(
             f"Failed to process transactions: {e}, error code: {error_code}, event: {event}"
         )
         if client_id:
@@ -170,6 +150,70 @@ def lambda_handler(event, context):
         return response
 
 
+def parse_lambda_event(event):
+    body = json.loads(event["Records"][0]["body"])
+    system_transactions_data = body["system_file"]
+    bank_transactions_data = body["bank_files"]
+    client_id = body["client_id"]
+    return system_transactions_data, bank_transactions_data, client_id
+
+
+def retrieve_files(bucket_name, system_transactions_data, bank_transactions_data):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        raw_system_file = retrieve_file(bucket_name, system_transactions_data["key"])
+
+        system_file = {
+            "key": system_transactions_data["key"],
+            "file": raw_system_file,
+            "type": system_transactions_data["type"],
+            "name": system_transactions_data["name"],
+        }
+        # system_file_task = executor.submit(retrieve_file, bucket_name, system_transactions_data['key'])
+        bank_files_tasks = [
+            executor.submit(retrieve_file, bucket_name, bank_file["key"])
+            for bank_file in bank_transactions_data
+        ]
+        concurrent.futures.wait(bank_files_tasks)
+        bank_files = []
+        for i in range(len(bank_files_tasks)):
+            bank_files.append(
+                {
+                    "key": bank_transactions_data[i]["key"],
+                    "file": bank_files_tasks[i].result(),
+                    "type": bank_transactions_data[i]["type"],
+                    "name": bank_transactions_data[i]["name"],
+                }
+            )
+        # bank_files = [
+        #     {"key": bank_file["key"], "file": task.result()}
+        #     for bank_file, task in zip(bank_transactions_data, bank_files_tasks)
+        # ]
+        # bank_files = [task.result() for task in bank_files_tasks]
+    return system_file, bank_files
+
+
+def parse_transactions(system_data, banks_data):
+    # TODO: This also needs to run in parallel
+    system_parser: TransactionsParser = system_parsers[system_data["type"]]()
+    system_transactions = system_parser.parse_transactions(
+        system_data["file"],
+        system_data["name"],
+        system_data["key"],
+    )
+    bank_transactions = []
+    for i in range(len(banks_data)):
+        bank_type = banks_data[i]["type"]
+        bank_file_key = banks_data[i]["key"]
+        bank_file_name = banks_data[i]["name"]
+        bank_file = banks_data[i]["file"]
+        bank_parser: TransactionsParser = bank_parsers[bank_type]()
+        parsed_bank_transactions = bank_parser.parse_transactions(
+            bank_file, bank_file_name, bank_file_key
+        )
+        bank_transactions.extend(parsed_bank_transactions)
+    return system_transactions, bank_transactions
+
+
 def process_file(file_content):
     # Your file processing logic goes here
     # This is just a placeholder example
@@ -183,8 +227,10 @@ def find_matches(
     system_transactions: List[Transaction],
     transaction_matcher: TransactionsMatcher,
 ):
-    logger = logging.getLogger(__name__)
     update_progress(client_id, "Matching", 0)
+    logger.debug(
+        f"Finding matches, system: {len(system_transactions)}, bank: {len(all_bank_transactions)}"
+    )
     (
         perfect_matches,
         unmatched_bank_amounts,
@@ -200,7 +246,10 @@ def find_matches(
         amount for amount in unmatched_system_amounts if amount > 0
     ]
 
-    update_progress(client_id, "matching", 100)
+    logger.debug(f"Matching complete, perfect matches: {len(perfect_matches)}")
+
+    update_progress(client_id, "Matching", 100)
+    update_progress(client_id, "Reconciling", 0)
 
     (
         matches,
