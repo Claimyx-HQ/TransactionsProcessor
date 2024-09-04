@@ -146,7 +146,6 @@ class ParallelTransactionsMatcher(TransactionsMatcher):
 
         # Determine the number of processes to use
         num_processes = multiprocessing.cpu_count() * 2
-        num_processes = 2
         print(f"num_processes: {num_processes}")
 
         # Split bank_transactions into chunks
