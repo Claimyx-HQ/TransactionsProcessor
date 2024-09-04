@@ -6,7 +6,10 @@ from transactions_processor.models.transaction import Transaction
 from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,
 )
+import io
 import pandas as pd
+from loguru import logger
+
 
 filtered_transaction_descriptions = [
     "Automatic Transfer",
@@ -58,14 +61,15 @@ class CSVParser(TransactionsParser):
     def _parse_excel(self, file: BinaryIO) -> pd.DataFrame:
         excel_df = None
         try:
-            print("trying as excel")
+            logger.info("Trying to parse file as Excel")
             excel_df = pd.read_excel(file, sheet_name=0)
         except Exception as e:
-            print("trying as csv")
+            logger.info(f"Failed to parse file as Excel: {e}\nTrying as CSV")
             file.seek(0)
             try:
                 excel_df = pd.read_csv(file)
             except Exception as csv_e:
+                logger.error(f"Failed to parse file as CSV: {csv_e}")
                 raise ValueError(f"Failed to parse file as Excel or CSV: {e}, {csv_e}")
         try:
             file.seek(0)
