@@ -20,5 +20,5 @@ class TomballBaylorBankParser(PDFParser):
         if valid_date(date_str, "%m/%d"):
             amount = parse_amount(amount_str)
             if valid_amount(amount):
-                return Transaction.from_raw_data([date_str, description_str, amount])
+                return Transaction.from_raw_data(date_str, description_str, amount)
         return None

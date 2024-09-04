@@ -15,5 +15,5 @@ class UnitedBankParser(PDFParser):
             date_str, description_str, amount_str = row[1], row[2], row[4]
             amount = parse_amount(amount_str)
             if valid_amount(amount):
-                return Transaction.from_raw_data([date_str, description_str, amount])
+                return Transaction.from_raw_data(date_str, description_str, amount)
         return None

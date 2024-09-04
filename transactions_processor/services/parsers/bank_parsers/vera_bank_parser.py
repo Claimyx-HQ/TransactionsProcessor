@@ -24,5 +24,5 @@ class VeraBankParser(PDFParser):
             date_str = datetime.strptime(date_str, "%b %d").strftime("%m/%d")
             amount = parse_amount(amount_str)
             if valid_amount(amount):
-                return Transaction.from_raw_data([date_str, description_str, amount])
+                return Transaction.from_raw_data(date_str, description_str, amount)
         return None

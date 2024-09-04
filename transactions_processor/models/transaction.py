@@ -36,11 +36,11 @@ class Transaction(BaseModel):
 
     @field_validator("date")
     def validate_date(cls, date: Union[str, datetime]) -> datetime:  # type: ignore
-        date_pattern = re.compile(r"^\d{1,2}[-/.]\d{1,2}([-/.]\d{2,4})?$")
 
-        if isinstance(date, str) and date_pattern.match(date):
+        if isinstance(date, str):
             try:
                 for fmt in (
+                    "%Y-%m-%d",
                     "%m/%d/%y",
                     "%m-%d-%y",
                     "%m.%d.%y",
@@ -48,7 +48,6 @@ class Transaction(BaseModel):
                     "%m-%d-%Y",
                     "%m.%d.%Y",
                 ):
-                    # logger.debug(f"trying date {date} with format {fmt}")
                     try:
                         return datetime.strptime(date, fmt)
                     except Exception as e:
@@ -101,58 +100,21 @@ class Transaction(BaseModel):
         return hashlib.sha256(uid_data.encode()).hexdigest()[:8]
 
     @classmethod
-    def from_raw_data(cls, raw_data: List[Union[str, float, int]]):
-        date, description, amount, batch_number, origin = None, None, None, None, None
-
-        for value in raw_data:
-            if date is None:
-                try:
-                    # logger.debug(f"trying value {value} for date")
-                    date = cls.validate_date(value)  # type: ignore
-                    # logger.debug(f"value {value} accepted for date")
-                    continue
-                except ValueError:
-                    # logger.exception(f"Invalid date: {value}")
-                    pass
-
-            if amount is None:
-                try:
-                    # logger.debug(f"trying value {value} for amount")
-                    amount = cls.validate_amount(value)  # type: ignore
-                    # logger.debug(f"value {value} accepted for amount")
-                    continue
-                except ValueError:
-                    # logger.exception(f"Invalid amount: {value}")
-                    pass
-
-            if description is None:
-                try:
-                    # logger.debug(f"trying value {value} for description")
-                    description = cls.validate_description(value)  # type: ignore
-                    # logger.debug(f"value {value} accepted for description")
-                    continue
-                except ValueError:
-                    # logger.exception(f"Invalid description: {value}")
-                    pass
-            if batch_number is None:
-                try:
-                    batch_number = int(value)  # Treat value as batch number
-                    continue
-                except (ValueError, TypeError):
-                    pass
-            if origin is None:
-                try:
-                    origin = str(value)  # Treat value as origin
-                    continue
-                except (ValueError, TypeError):
-                    pass
-
-        if date is None or description is None or amount is None:
-            logger.error(
-                f"Invalid input data: {raw_data} and date: {date} description: {description} amount: {amount}"
-            )
+    def from_raw_data(
+        cls,
+        date: str,
+        description: str,
+        amount: str | float | int,
+        batch_number: int | None = None,
+        origin: str | None = None,
+    ):
+        try:
+            date = cls.validate_date(date)  # type: ignore
+            amount = cls.validate_amount(amount)  # type: ignore
+            description = cls.validate_description(description)  # type: ignore
+        except ValueError as e:
+            logger.error(f"Failed to parse raw data: {e}")
             raise ValueError("Invalid input data")
-
         return cls(
             date=date,
             description=description,
