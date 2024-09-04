@@ -56,7 +56,7 @@ class PCCPDFParser(TransactionsParser):
                         continue
                     bank_transactions.append(
                         Transaction.from_raw_data(
-                            [date, description, amount, batch_number, file_name or ""]
+                            date, description, amount, batch_number, file_name or ""
                         )
                     )
                     bank_transactions_amounts.append(amount)

@@ -29,6 +29,6 @@ class FirstUnitedBankParser(PDFParser):
             except ValueError:
                 return None
 
-            return Transaction.from_raw_data([date_str, description_str, amount])
+            return Transaction.from_raw_data(date_str, description_str, amount)
 
         return None

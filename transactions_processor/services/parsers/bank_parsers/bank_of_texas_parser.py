@@ -11,17 +11,17 @@ class BankOfTexasParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
-        title = ''.join(map(str, row[:3])).lower()
-        if any(word in title for word in ['debits', 'daily', 'balance', 'summary']):
+        title = "".join(map(str, row[:3])).lower()
+        if any(word in title for word in ["debits", "daily", "balance", "summary"]):
             self.valid_table = False
-        elif any(word in title for word in ['credit', 'deposit', 'additions']):
+        elif any(word in title for word in ["credit", "deposit", "additions"]):
             self.valid_table = True
 
         date_str, description_str, amount_str = row[1], row[2], row[3]
-        
+
         if valid_date(date_str, "%m-%d") and self.valid_table and amount_str:
             amount = parse_amount(amount_str)
             if valid_amount(amount):
-                return Transaction.from_raw_data([date_str, description_str, amount])
+                return Transaction.from_raw_data(date_str, description_str, amount)
 
         return None
