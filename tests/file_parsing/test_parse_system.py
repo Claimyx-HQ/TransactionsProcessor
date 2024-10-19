@@ -1,7 +1,12 @@
 from datetime import datetime
 
 from transactions_processor.models.transaction import Transaction
-from transactions_processor.services.parsers.system_parsers.ncs_parser import NCSParser
+from transactions_processor.services.parsers.system_parsers.ncs.ncs_csv_parser import (
+    NCSCSVParser,
+)
+from transactions_processor.services.parsers.system_parsers.ncs.ncs_pdf_parser import (
+    NCSPDFParser,
+)
 from transactions_processor.services.parsers.system_parsers.pcc.pcc_parser import (
     PCCParser,
 )
@@ -18,9 +23,34 @@ def test_parse_ncs_file():
         batch_number=1302,
         origin="ncs.xls",
     )
-    parser = NCSParser()
+    parser = NCSCSVParser()
 
     transactions = parser.parse_transactions(file, "ncs.xls")
+    parsed_transaction = transactions[0]
+
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
+
+    file.close()
+
+
+def test_parse_ncs_pdf_file():
+    file_path = "tests/data/system/NCS/ncs.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 1, 0, 0),
+        description="BCBS In Process 07/01",
+        amount=599.76,
+        uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=None,
+        origin="ncs.pdf",
+    )
+    parser = NCSPDFParser()
+
+    transactions = parser.parse_transactions(file, "ncs.pdf")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
