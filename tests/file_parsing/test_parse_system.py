@@ -4,6 +4,9 @@ from transactions_processor.models.transaction import Transaction
 from transactions_processor.services.parsers.system_parsers.ncs.ncs_csv_parser import (
     NCSCSVParser,
 )
+from transactions_processor.services.parsers.system_parsers.ncs.ncs_parser import (
+    NCSParser,
+)
 from transactions_processor.services.parsers.system_parsers.ncs.ncs_pdf_parser import (
     NCSPDFParser,
 )
@@ -23,7 +26,7 @@ def test_parse_ncs_file():
         batch_number=1302,
         origin="ncs.xls",
     )
-    parser = NCSCSVParser()
+    parser = NCSParser()
 
     transactions = parser.parse_transactions(file, "ncs.xls")
     parsed_transaction = transactions[0]
@@ -48,7 +51,7 @@ def test_parse_ncs_pdf_file():
         batch_number=None,
         origin="ncs.pdf",
     )
-    parser = NCSPDFParser()
+    parser = NCSParser()
 
     transactions = parser.parse_transactions(file, "ncs.pdf")
     parsed_transaction = transactions[0]

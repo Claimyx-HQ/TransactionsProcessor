@@ -13,8 +13,8 @@ from transactions_processor.services.parsers.transactions_parser import (
 
 class NCSParser(TransactionsParser):
     def __init__(self) -> None:
-        self.pdf_parser = NCSCSVParser
-        self.csv_parser = NCSPDFParser
+        self.pdf_parser = NCSPDFParser
+        self.csv_parser = NCSCSVParser
 
     def parse_transactions(
         self, file: BinaryIO, file_name: str | None, file_key: str | None = None
