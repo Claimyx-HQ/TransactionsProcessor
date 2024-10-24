@@ -5,7 +5,7 @@ import tabula
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 from transactions_processor.services.parsers.csv_parser import CSVParser
 from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,

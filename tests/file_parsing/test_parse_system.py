@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 from transactions_processor.services.parsers.system_parsers.ncs.ncs_csv_parser import (
     NCSCSVParser,
 )

@@ -1,7 +1,7 @@
 import os
 from typing import List
 from tests.mocks.excel_creator.mock_transactions_and_matches import mock_data
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 from transactions_processor.services.excel.excel_controller import ExcelController
 from datetime import datetime
 

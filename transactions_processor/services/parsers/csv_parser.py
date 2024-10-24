@@ -1,7 +1,7 @@
 from abc import abstractmethod
 import logging
 from typing import BinaryIO, List
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 
 from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,

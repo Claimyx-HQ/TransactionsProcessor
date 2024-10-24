@@ -3,7 +3,7 @@ from openpyxl.styles import PatternFill, Alignment, Font
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.utils import get_column_letter
 
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 
 
 class ExcelHelpers:

@@ -1,5 +1,5 @@
 from typing import Any, List
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 from transactions_processor.services.parsers.pdf_parser import PDFParser
 from transactions_processor.utils.date_utils import valid_date
 from transactions_processor.utils.math_utils import parse_amount, valid_amount

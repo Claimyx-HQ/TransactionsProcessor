@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.10
+FROM public.ecr.aws/lambda/python:3.12
 
 
 COPY --from=openjdk:8-jre-slim /usr/local/openjdk-8 /usr/local/openjdk-8

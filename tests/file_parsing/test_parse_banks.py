@@ -4,7 +4,7 @@ import logging
 # conftest.py or your specific test file
 import pytest
 import pandas as pd
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 from transactions_processor.services.parsers.bank_parsers.amalgamated_bank_parser import (
     AmalgamatedBankParser,
 )

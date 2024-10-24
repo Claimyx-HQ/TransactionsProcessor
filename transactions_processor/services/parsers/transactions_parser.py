@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import BinaryIO, Dict, List, Union
 
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 
 
 class TransactionsParser(ABC):

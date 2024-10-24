@@ -4,7 +4,7 @@ from typing import Any, BinaryIO, Callable, Dict, List, Union
 import tabula
 import pandas as pd
 import numpy as np
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 from datetime import datetime
 
 from transactions_processor.services.parsers.pdf_parser import PDFParser

@@ -2,7 +2,7 @@ from abc import abstractmethod
 import logging
 from typing import Any, BinaryIO, Callable, Dict, List, Union
 import tabula
-from transactions_processor.models.transaction import Transaction
+from transactions_processor.schemas.transaction import Transaction
 from datetime import datetime
 
 from transactions_processor.services.converters.scanned_pdf_converter import (

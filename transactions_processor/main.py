@@ -1,15 +1,18 @@
+import asyncio
 import json
 import requests
 from typing import List
 import uuid
 import concurrent.futures
-from transactions_processor.exceptions.file_exceptions import UnreadableFileException
-from transactions_processor.models.transaction import Transaction
-from transactions_processor.services.default_transactions_matcher import (
-    DefaultTransactionsMatcher,
+from transactions_processor.schemas.analysis_request import (
+    AnalysisRequest,
+    AnalysisRequestCreate,
+)
+from transactions_processor.schemas.transaction import Transaction
+from transactions_processor.services.analysis_requests_service import (
+    AnalysisRequestsService,
 )
 from transactions_processor.services.excel.excel_controller import ExcelController
-import io
 from transactions_processor.services.parallel_transactions_matcher import (
     ParallelTransactionsMatcher,
 )
@@ -40,7 +43,23 @@ bucket_name = "bankrectool-files"
 
 
 def lambda_handler(event, context):
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(async_handler(event, context))
+
+
+async def async_handler(event, context):
     client_id: str | None = None
+    analysis_request: AnalysisRequest | None = None
+    analysis_requests_service = AnalysisRequestsService()
+    response = {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        },
+        "body": None,
+    }
 
     try:
         logger.info(f"Received event: {event}")
@@ -54,6 +73,18 @@ def lambda_handler(event, context):
 
         transaction_matcher = ParallelTransactionsMatcher()
         excel_controller = ExcelController()
+
+        analysis_request = await analysis_requests_service.create_request(
+            AnalysisRequestCreate(
+                user_id=client_id,
+                request_type="reconciliation",
+                status="processing",
+                parameters={
+                    "system_file": system_transactions_data,
+                    "bank_files": bank_transactions_data,
+                },
+            )
+        )
 
         logger.debug("Retrieving files from s3")
 
@@ -88,32 +119,25 @@ def lambda_handler(event, context):
 
         # Construct the response
         if generated_excel is None:
-            logger.error(
-                f"Failed to generate excel file for client {client_id}, event: {event}"
-            )
-            response = {
-                "statusCode": 200,
-                "headers": {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "*",
-                    "Access-Control-Allow-Headers": "*",
-                },
-            }
-            return response
+            raise Exception("Failed to generate excel file")
 
-        presigned_url = upload_file_to_s3(
-            generated_excel, bucket_name, f"{uuid.uuid4()}.xlsx"
+        result_file_key = f"{uuid.uuid4()}.xlsx"
+        presigned_url = upload_file_to_s3(generated_excel, bucket_name, result_file_key)
+
+        await analysis_requests_service.complete_request(
+            str(analysis_request.id),
+            {
+                "matches": {
+                    "one_to_one": len(data["matches"]["one_to_one"]),
+                    "multi_to_one": len(data["matches"]["multi_to_one"]),
+                    "unmatched_system": len(data["matches"]["unmatched_system"]),
+                    "unmatched_bank": len(data["matches"]["unmatched_bank"]),
+                },
+                "result_file_key": result_file_key,
+            },
         )
 
-        response = {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "*",
-                "Access-Control-Allow-Headers": "*",
-            },
-            "body": json.dumps({"presigned_url": presigned_url}),
-        }
+        response["body"] = json.dumps({"presigned_url": presigned_url})
 
         notify_client(
             client_id, {"message": "Processing complete", "url": presigned_url}
@@ -123,30 +147,26 @@ def lambda_handler(event, context):
             f"Successfully processed transactions, system_data: {system_transactions_data}, bank_data: {bank_transactions_data}"
         )
 
-        return response
     except Exception as e:
         error_code = generate_error_code(e)
         logger.error(
             f"Failed to process transactions: {e}, error code: {error_code}, event: {event}"
         )
-        if client_id:
-            notify_client(
-                client_id,
-                {
-                    "message": "error",
-                    "error": "Processing failed",
-                    "error_code": error_code,
-                },
+        if analysis_request:
+            await analysis_requests_service.fail_request(
+                str(analysis_request.id), {"error": str(e), "error_code": error_code}
             )
 
-        response = {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "*",
-                "Access-Control-Allow-Headers": "*",
+        notify_client(
+            client_id,
+            {
+                "message": "error",
+                "error": "Processing failed",
+                "error_code": error_code,
             },
-        }
+        )
+
+    finally:
         return response
 
 
