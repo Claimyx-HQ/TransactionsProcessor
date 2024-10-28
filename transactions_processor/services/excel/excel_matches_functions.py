@@ -8,7 +8,7 @@ class ExcelMatchesAlocator:
     @staticmethod
     def _get_full_transaction_by_amount(transaction_list, amount):
         for transaction in transaction_list:
-            if transaction["amount"] == amount:
+            if transaction.amount == amount:
                 transaction_list.pop(transaction_list.index(transaction))
                 return transaction
 
@@ -23,8 +23,11 @@ class ExcelMatchesAlocator:
         system_start_col_index,
         bank_start_col_index,
         format,
-    ) -> None:
+    ):
         logger = logging.getLogger(__name__)
+        total_system_amount = 0
+        total_bank_amount = 0
+
         logger.debug(
             f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
         )
@@ -56,29 +59,47 @@ class ExcelMatchesAlocator:
                 start_col_index=bank_start_col_index,
             )
         for value in matches:
+            system_transaction = ExcelMatchesAlocator._get_full_transaction_by_amount(
+                system_transactions, value
+            )
+            bank_transaction = ExcelMatchesAlocator._get_full_transaction_by_amount(
+                bank_transactions, value
+            )
             ExcelHelpers._write_transaction(
                 worksheet,
                 system_row_index,
                 system_start_col_index,
-                ExcelMatchesAlocator._get_full_transaction_by_amount(
-                    system_transactions, value
-                ),
+                system_transaction,
                 format=format,
             )
+            total_system_amount += system_transaction.amount
             ExcelHelpers._write_transaction(
                 worksheet,
                 bank_row_index,
                 bank_start_col_index,
-                ExcelMatchesAlocator._get_full_transaction_by_amount(
-                    bank_transactions, value
-                ),
+                bank_transaction,
                 format=format,
             )
+            total_bank_amount += bank_transaction.amount
             system_row_index += 1
             bank_row_index += 1
 
+        # Add Total Row
+        system_row_index = ExcelHelpers._write_total_row(
+            worksheet,
+            system_row_index,
+            system_start_col_index,
+            total_system_amount,
+        )
+        bank_row_index = ExcelHelpers._write_total_row(
+            worksheet,
+            bank_row_index,
+            bank_start_col_index,
+            total_bank_amount,
+        )
+
         logger.debug("Finished writing all one to one matches")
-        return system_row_index, bank_row_index
+        return system_row_index + 1, bank_row_index + 1  # Move to next row after total
 
     @staticmethod
     def _multi_to_one_matches(
@@ -91,9 +112,12 @@ class ExcelMatchesAlocator:
         system_start_col_index,
         bank_start_col_index,
         format,
-    ) -> None:
+    ):
         logger = logging.getLogger(__name__)
         multi_to_one_color_index = 0
+        total_system_amount = 0
+        total_bank_amount = 0
+
         logger.debug(
             f" len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
         )
@@ -111,9 +135,9 @@ class ExcelMatchesAlocator:
                 row_index=bank_row_index,
             )
             multi_matches = [
-                system_transaction
+                amount
                 for key, values in matches.items()
-                for system_transaction in values
+                for amount in values
             ]
             ExcelSorting.create_table(
                 worksheet=worksheet,
@@ -125,37 +149,56 @@ class ExcelMatchesAlocator:
             ExcelSorting.create_table(
                 worksheet=worksheet,
                 table_name="Multi_to_One_Matches_in_Bank_table",
-                matches=matches,
+                matches=list(matches.keys()),
                 row_index=bank_row_index,
                 start_col_index=bank_start_col_index,
             )
-        for bank_transaction, system_combination_transactions in matches.items():
+        for bank_transaction_amount, system_combination_amounts in matches.items():
             if multi_to_one_color_index >= len(format):
                 multi_to_one_color_index = 0
+            bank_transaction = ExcelMatchesAlocator._get_full_transaction_by_amount(
+                bank_transactions, amount=bank_transaction_amount
+            )
             ExcelHelpers._write_transaction(
                 worksheet,
                 bank_row_index,
                 bank_start_col_index,
-                ExcelMatchesAlocator._get_full_transaction_by_amount(
-                    bank_transactions, amount=bank_transaction
-                ),
+                bank_transaction,
                 format=format[multi_to_one_color_index],
             )
+            total_bank_amount += bank_transaction.amount
             bank_row_index += 1
-            for transaction in system_combination_transactions:
+            for amount in system_combination_amounts:
+                system_transaction = ExcelMatchesAlocator._get_full_transaction_by_amount(
+                    system_transactions, amount=amount
+                )
                 ExcelHelpers._write_transaction(
                     worksheet,
                     system_row_index,
                     system_start_col_index,
-                    ExcelMatchesAlocator._get_full_transaction_by_amount(
-                        system_transactions, amount=transaction
-                    ),
+                    system_transaction,
                     format=format[multi_to_one_color_index],
                 )
+                total_system_amount += system_transaction.amount
                 system_row_index += 1
             multi_to_one_color_index += 1
+
+        # Add Total Row
+        system_row_index = ExcelHelpers._write_total_row(
+            worksheet,
+            system_row_index,
+            system_start_col_index,
+            total_system_amount,
+        )
+        bank_row_index = ExcelHelpers._write_total_row(
+            worksheet,
+            bank_row_index,
+            bank_start_col_index,
+            total_bank_amount,
+        )
+
         logger.debug("Finished writing all multi to one matches")
-        return system_row_index, bank_row_index
+        return system_row_index + 1, bank_row_index + 1  # Move to next row after total
 
     @staticmethod
     def _unmatched_system_transactions(
@@ -164,8 +207,10 @@ class ExcelMatchesAlocator:
         system_transactions,
         system_row_index,
         system_start_col_index,
-    ) -> None:
+    ):
         logger = logging.getLogger(__name__)
+        total_system_amount = 0
+
         logger.debug(
             f" len system: {len(system_transactions)} and len unmatched system: {len(unmatched_system_transactions)}"
         )
@@ -185,17 +230,28 @@ class ExcelMatchesAlocator:
             )
 
         for value in unmatched_system_transactions:
+            system_transaction = ExcelMatchesAlocator._get_full_transaction_by_amount(
+                system_transactions, value
+            )
             ExcelHelpers._write_transaction(
                 worksheet,
                 system_row_index,
                 system_start_col_index,
-                ExcelMatchesAlocator._get_full_transaction_by_amount(
-                    system_transactions, value
-                ),
+                system_transaction,
             )
+            total_system_amount += system_transaction.amount
             system_row_index += 1
+
+        # Add Total Row
+        system_row_index = ExcelHelpers._write_total_row(
+            worksheet,
+            system_row_index,
+            system_start_col_index,
+            total_system_amount,
+        )
+
         logger.debug("Finished writing all unmatched system transactions")
-        return system_row_index
+        return system_row_index + 1  # Move to next row after total
 
     @staticmethod
     def _unmatched_bank_transactions(
@@ -204,8 +260,10 @@ class ExcelMatchesAlocator:
         bank_transactions,
         bank_row_index,
         bank_start_col_index,
-    ) -> None:
+    ):
         logger = logging.getLogger(__name__)
+        total_bank_amount = 0
+
         logger.debug(
             f" len bank: {len(bank_transactions)} and len unmatched bank: {len(unmatched_bank_transactions)}"
         )
@@ -218,32 +276,43 @@ class ExcelMatchesAlocator:
             )
             ExcelSorting.create_table(
                 worksheet=worksheet,
-                table_name="Unmatched_Bank_Transactions_in_System_table",
+                table_name="Unmatched_Bank_Transactions_in_Bank_table",
                 matches=unmatched_bank_transactions,
                 row_index=bank_row_index,
                 start_col_index=bank_start_col_index,
             )
 
         for value in unmatched_bank_transactions:
+            bank_transaction = ExcelMatchesAlocator._get_full_transaction_by_amount(
+                bank_transactions, value
+            )
             ExcelHelpers._write_transaction(
                 worksheet,
                 bank_row_index,
                 bank_start_col_index,
-                ExcelMatchesAlocator._get_full_transaction_by_amount(
-                    bank_transactions, value
-                ),
+                bank_transaction,
             )
+            total_bank_amount += bank_transaction.amount
             bank_row_index += 1
+
+        # Add Total Row
+        bank_row_index = ExcelHelpers._write_total_row(
+            worksheet,
+            bank_row_index,
+            bank_start_col_index,
+            total_bank_amount,
+        )
+
         logger.debug("Finished writing all unmatched bank transactions")
-        return bank_row_index
+        return bank_row_index + 1  # Move to next row after total
 
     @staticmethod
     def write_data(data_dict, worksheet, green_fill, color_fills: dict):
         logger = logging.getLogger(__name__)
         system_row_index, bank_row_index = 3, 3
         system_start_col_index, bank_start_col_index = 1, 8
-        system_transactions = data_dict["transactions"]["system"]
-        bank_transactions = data_dict["transactions"]["bank"]
+        system_transactions = data_dict["transactions"]["system"][:]
+        bank_transactions = data_dict["transactions"]["bank"][:]
 
         logger.debug(
             f"len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
@@ -267,7 +336,6 @@ class ExcelMatchesAlocator:
                         format=green_fill,
                     )
                 )
-
             elif key == "multi_to_one":
                 system_row_index, bank_row_index = (
                     ExcelMatchesAlocator._multi_to_one_matches(
@@ -305,7 +373,7 @@ class ExcelMatchesAlocator:
         logger.debug(
             f"Finished len system: {len(system_transactions)} len bank: {len(bank_transactions)}"
         )
-        if len(system_transactions) != 0 and len(bank_transactions) != 0:
+        if len(system_transactions) != 0 or len(bank_transactions) != 0:
             logger.debug(f"system_transactions: {system_transactions}")
             logger.debug(f"bank_transactions: {bank_transactions}")
             raise ValueError("There are still unmatched transactions")
