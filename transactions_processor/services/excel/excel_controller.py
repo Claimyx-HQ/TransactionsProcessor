@@ -15,7 +15,7 @@ class ExcelController:
         workbook_name: Union[str, None] = None,
         bank_name="Bank",
         system_name="PharmBills System",
-    ) -> io.BytesIO | None:
+    ) -> Union[io.BytesIO, None]:
         output = io.BytesIO() if workbook_name is None else workbook_name
         workbook = openpyxl.Workbook()
         worksheet = workbook.active
@@ -36,5 +36,3 @@ class ExcelController:
                 os.makedirs(folder_path)
             workbook.save(workbook_name)
         return output
-
-    # Private methods
