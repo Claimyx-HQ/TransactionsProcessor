@@ -827,6 +827,25 @@ def test_parse_bankwell_bank():
     )
     parser = BankWellBankParser()
     transactions = parser.parse_transactions(file)
+    print(transactions)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+    
+    
+def test_parse_bankwell_bank2():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bankwell/775 Dep.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 3, 0, 0),
+        description="NDC SWEEP FAC 13",
+        amount=317.24,
+        uuid="f7cc32e9-b3a8-455e-812a-aa48efb909c8",
+    )
+    parser = BankWellBankParser()
+    transactions = parser.parse_transactions(file)
+    print(transactions)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
