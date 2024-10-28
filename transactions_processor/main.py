@@ -88,7 +88,7 @@ async def async_handler(event, context):
 
         logger.debug("Retrieving files from s3")
 
-        update_progress(client_id, "Processing", 0)
+        update_progress(client_id, "Processing", 0, str(analysis_request.id))
 
         system_data, banks_data = retrieve_files(
             bucket_name, system_transactions_data, bank_transactions_data
@@ -108,6 +108,7 @@ async def async_handler(event, context):
 
         data = find_matches(
             client_id,
+            str(analysis_request.id),
             bank_transactions,
             system_transactions,
             transaction_matcher,
@@ -140,7 +141,12 @@ async def async_handler(event, context):
         response["body"] = json.dumps({"presigned_url": presigned_url})
 
         notify_client(
-            client_id, {"message": "Processing complete", "url": presigned_url}
+            client_id,
+            {
+                "message": "Processing complete",
+                "url": presigned_url,
+                "request_id": str(analysis_request.id),
+            },
         )
 
         logger.info(
@@ -161,6 +167,7 @@ async def async_handler(event, context):
             client_id,
             {
                 "message": "error",
+                "request_id": str(analysis_request.id if analysis_request else ""),
                 "error": "Processing failed",
                 "error_code": error_code,
             },
@@ -243,11 +250,12 @@ def process_file(file_content):
 
 def find_matches(
     client_id: str,
+    request_id: str,
     all_bank_transactions: List[Transaction],
     system_transactions: List[Transaction],
     transaction_matcher: TransactionsMatcher,
 ):
-    update_progress(client_id, "Matching", 0)
+    update_progress(client_id, "Matching", 0, request_id)
     logger.debug(
         f"Finding matches, system: {len(system_transactions)}, bank: {len(all_bank_transactions)}"
     )
@@ -268,8 +276,8 @@ def find_matches(
 
     logger.debug(f"Matching complete, perfect matches: {len(perfect_matches)}")
 
-    update_progress(client_id, "Matching", 100)
-    update_progress(client_id, "Reconciling", 0)
+    update_progress(client_id, "Matching", 100, request_id)
+    update_progress(client_id, "Reconciling", 0, request_id)
 
     (
         matches,
@@ -278,7 +286,9 @@ def find_matches(
     ) = transaction_matcher.find_reconciling_matches(
         unmatched_bank_amounts,
         unmatched_system_amounts,
-        lambda progress: update_progress(client_id, "Reconciling", progress),
+        lambda progress: update_progress(
+            client_id, "Reconciling", progress, request_id
+        ),
     )
     unmatched_system_amounts.extend(zero_and_negative_system_amounts)
 
@@ -320,11 +330,12 @@ def update_progress_thread(
             continue
 
 
-def update_progress(client_id, type, progress):
+def update_progress(client_id, type, progress, request_id):
     notify_client(
         client_id,
         {
             "message": "progress",
+            "request_id": request_id,
             "type": type,
             "progress": progress,
         },
