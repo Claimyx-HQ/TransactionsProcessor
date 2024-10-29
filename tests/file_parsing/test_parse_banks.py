@@ -139,7 +139,11 @@ from transactions_processor.services.parsers.bank_parsers.webster_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import (
     WellsFargoBankParser,
 )
+
 from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import YadBankFeedsParser
+
+from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
+
 
 
 def _check_the_test(first_transaction, parsed_transaction):
@@ -280,6 +284,7 @@ def test_parse_bank_feeds():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+
 def test_parse_yad_bank_feeds():
 
     logger = logging.getLogger(__name__)
@@ -297,6 +302,27 @@ def test_parse_yad_bank_feeds():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+
+def test_parse_workday_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/workday_bank_feeds/Workday Bank Feeds1.xlsx"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 8, 28, 0, 0),
+        description="AARP Supplementa  HCCLAIMPMT        11119571304*1362739571*000036273\\ PREAUTHORIZED ACH CREDIT",
+        amount=1400.0,
+        uuid="423d74f7-797f-411a-ae3d-05918ca72baa",
+        batch_number="20060285 Wilke DEP Connect X6635",
+        origin="Workday Bank Feeds1.xlsx"
+    )
+    parser = WorkdayBankFeedsParser()
+
+    transactions = parser.parse_transactions(file, "Workday Bank Feeds1.xlsx")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
 
 def test_parse_webster_bank():
     logger = logging.getLogger(__name__)
@@ -842,6 +868,23 @@ def test_parse_bankwell_bank():
         description="NDC SWEEP FAC 774",
         amount=703.6,
         uuid="250044e3-158a-4a45-9d18-ae7b82c8cad9",
+    )
+    parser = BankWellBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+    
+    
+def test_parse_bankwell_bank2():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bankwell/775 Dep.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 3, 0, 0),
+        description="NDC SWEEP FAC 13",
+        amount=317.24,
+        uuid="f7cc32e9-b3a8-455e-812a-aa48efb909c8",
     )
     parser = BankWellBankParser()
     transactions = parser.parse_transactions(file)

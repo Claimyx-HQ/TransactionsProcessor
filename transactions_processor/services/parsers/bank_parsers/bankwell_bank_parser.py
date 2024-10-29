@@ -7,7 +7,7 @@ from transactions_processor.utils.math_utils import parse_amount, valid_amount
 
 class BankWellBankParser(PDFParser):
     def __init__(self) -> None:
-        super().__init__([87, 320, 410, 485, 570])
+        super().__init__([98, 312, 412, 490, 575])
 
     def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
         date_str = str(row[0]).replace(" ", "")

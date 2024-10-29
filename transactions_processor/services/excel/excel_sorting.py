@@ -9,13 +9,17 @@ class ExcelSorting:
 
     @staticmethod
     def create_table(worksheet, table_name, matches, row_index, start_col_index):
-        table_range = f"{get_column_letter(start_col_index)}{row_index-1}:{get_column_letter(start_col_index+5)}{row_index-1+len(matches)}"
+        # row_index is the first data row
+        start_row = row_index - 1  # Header row
+        end_row = start_row + len(matches)  # Includes header and data rows
+
+        table_range = f"{get_column_letter(start_col_index)}{start_row}:{get_column_letter(start_col_index + 5)}{end_row}"
         table = Table(displayName=table_name, ref=table_range)
         table_style = TableStyleInfo(
-            name="TableStyleLight9",
+            name="TableStyleMedium9",
             showFirstColumn=False,
             showLastColumn=False,
-            showRowStripes=False,
+            showRowStripes=True,
             showColumnStripes=False,
         )
         table.tableStyleInfo = table_style
