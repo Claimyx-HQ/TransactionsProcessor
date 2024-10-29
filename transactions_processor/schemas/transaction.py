@@ -18,7 +18,7 @@ class Transaction(BaseModel):
         default_factory=lambda: str(uuid.uuid4()),
         description="Unique identifier for the transaction",
     )
-    batch_number: int | None = Field(None, description="Optional batch number")
+    batch_number: int | str | None = Field(None, description="Optional batch number")
     origin: str | None = Field(None, description="Optional origin of the transaction")
 
     def __getitem__(self, item):
