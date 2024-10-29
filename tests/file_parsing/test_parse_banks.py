@@ -139,6 +139,7 @@ from transactions_processor.services.parsers.bank_parsers.webster_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import (
     WellsFargoBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
 
 
 def _check_the_test(first_transaction, parsed_transaction):
@@ -276,6 +277,27 @@ def test_parse_bank_feeds():
 
     transactions = parser.parse_transactions(file, "bank_feeds.csv")
     parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_workday_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/workday_bank_feeds/Workday Bank Feeds1.xlsx"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 8, 28, 0, 0),
+        description="AARP Supplementa  HCCLAIMPMT        11119571304*1362739571*000036273\\ PREAUTHORIZED ACH CREDIT",
+        amount=1400.0,
+        uuid="423d74f7-797f-411a-ae3d-05918ca72baa",
+        batch_number="20060285 Wilke DEP Connect X6635",
+        origin="Workday Bank Feeds1.xlsx"
+    )
+    parser = WorkdayBankFeedsParser()
+
+    transactions = parser.parse_transactions(file, "Workday Bank Feeds1.xlsx")
+    parsed_transaction = transactions[0]
+    print("all transactions:",transactions)
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 

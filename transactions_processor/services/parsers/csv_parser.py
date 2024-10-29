@@ -23,7 +23,7 @@ class CSVParser(TransactionsParser):
         date_col_index,
         description_col_indx: int,
         amount_col_index: int,
-        batch_col_index: int | None = None,
+        batch_col_index: int | str | None = None,
     ) -> None:
         self.logger = logging.getLogger(__name__)
         self.date_col_index = date_col_index
