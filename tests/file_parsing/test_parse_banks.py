@@ -139,6 +139,7 @@ from transactions_processor.services.parsers.bank_parsers.webster_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import (
     WellsFargoBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import YadBankFeedsParser
 
 
 def _check_the_test(first_transaction, parsed_transaction):
@@ -279,6 +280,23 @@ def test_parse_bank_feeds():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+def test_parse_yad_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/yad/YAD Feeds.xlsx"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 30, 0, 0),
+        description="Transfer From 0399021949",
+        amount=10063.42,
+        uuid="09b5dfd9-49c3-426d-81dc-4fe8f9f4f520",
+    )
+    parser = YadBankFeedsParser()
+
+    transactions = parser.parse_transactions(file, "YAD Feeds.xlsx")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
 
 def test_parse_webster_bank():
     logger = logging.getLogger(__name__)
