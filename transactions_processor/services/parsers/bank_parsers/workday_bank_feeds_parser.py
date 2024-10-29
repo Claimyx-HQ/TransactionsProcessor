@@ -5,12 +5,12 @@ from transactions_processor.services.parsers.csv_parser import CSVParser
 class WorkdayBankFeedsParser(CSVParser):
     def __init__(self) -> None:
         super().__init__(
-            date_col_index=5,           # Statement Line Date
-            description_col_indx=11,    # Addenda
-            amount_col_index=7,         # Statement Line Amount
-            batch_col_index=3           # Bank Account
+            date_col_index=5,         
+            description_col_indx=11,    
+            amount_col_index=7,         
+            batch_col_index=3          
         )
-        self.debit_credit_col_index = 8  # Debit/Credit column index
+        self.debit_credit_col_index = 8 
 
     def parse_transactions(
         self,
