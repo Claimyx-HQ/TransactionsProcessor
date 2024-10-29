@@ -12,7 +12,7 @@ class BankOfTexasParser(PDFParser):
 
     def _parse_row(self, row: List[Any], table_index: int) -> Optional[Transaction]:
         title = "".join(map(str, row[:3])).lower()
-        if any(word in title for word in ["debits", "daily", "balance", "summary"]):
+        if any(word in title for word in ["debits", "daily", "balance", "summary", "withdrawal"]):
             self.valid_table = False
         elif any(word in title for word in ["credit", "deposit", "additions"]):
             self.valid_table = True
