@@ -8,6 +8,7 @@ from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser impo
 from transactions_processor.services.parsers.bank_parsers.bank_of_america_merrill_lynch_parser import (
     BankOfAmericaMerrillLynchParser,
 )
+from transactions_processor.services.parsers.bank_parsers.bank_of_texas_parser import BankOfTexasParser
 from transactions_processor.services.parsers.bank_parsers.bankwell_bank_parser import (
     BankWellBankParser,
 )
@@ -125,6 +126,7 @@ from transactions_processor.services.parsers.bank_parsers.webster_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import (
     WellsFargoBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
 from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,
 )
@@ -133,6 +135,8 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "amalgamated": AmalgamatedBankParser,
     "bank_feed": BankFeedsParser,
     "bank_of_america": BankOfAmericaMerrillLynchParser,
+    "bank_of_texas": BankOfTexasParser,
+    "workday_bank_feeds": WorkdayBankFeedsParser,
     "bhi": BHIBankParser,
     "bankwell": BankWellBankParser,
     "cadence": CadenceBankParser,
