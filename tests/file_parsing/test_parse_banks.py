@@ -297,7 +297,6 @@ def test_parse_workday_bank_feeds():
 
     transactions = parser.parse_transactions(file, "Workday Bank Feeds1.xlsx")
     parsed_transaction = transactions[0]
-    print("all transactions:",transactions)
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
