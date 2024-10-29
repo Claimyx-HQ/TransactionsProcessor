@@ -827,7 +827,6 @@ def test_parse_bankwell_bank():
     )
     parser = BankWellBankParser()
     transactions = parser.parse_transactions(file)
-    print(transactions)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
@@ -845,7 +844,6 @@ def test_parse_bankwell_bank2():
     )
     parser = BankWellBankParser()
     transactions = parser.parse_transactions(file)
-    print(transactions)
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
