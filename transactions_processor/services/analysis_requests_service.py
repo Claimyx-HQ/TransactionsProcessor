@@ -15,7 +15,7 @@ class AnalysisRequestsService:
 
     async def create_request(self, request: AnalysisRequestCreate) -> AnalysisRequest:
         async with aiohttp.ClientSession() as session:
-            url = f"{config.analysis_service_url}/v1/analysis"
+            url = f"{config.analysis_service_url}/v1/analysis/request"
             data = request.dict()
             async with session.post(url, json=data) as response:
                 result = await response.json()
@@ -25,7 +25,7 @@ class AnalysisRequestsService:
         self, request_id: str, status: str
     ) -> AnalysisRequest:
         async with aiohttp.ClientSession() as session:
-            url = f"{config.analysis_service_url}/v1/analysis/{request_id}/status?analysis_status={status}"
+            url = f"{config.analysis_service_url}/v1/analysis/request/{request_id}/status?analysis_status={status}"
             async with session.patch(url) as response:
                 result = await response.json()
                 return AnalysisRequest.model_validate(result)
@@ -34,7 +34,7 @@ class AnalysisRequestsService:
         async with aiohttp.ClientSession() as session:
             end_time = datetime.now(UTC).isoformat()
             print(end_time)
-            url = f"{config.analysis_service_url}/v1/analysis/{request_id}/complete"
+            url = f"{config.analysis_service_url}/v1/analysis/request/{request_id}/complete"
             async with session.patch(
                 url, json={"results": results, "end_time": end_time}
             ) as response:
@@ -44,7 +44,7 @@ class AnalysisRequestsService:
     async def fail_request(self, request_id: str, errors: Dict) -> AnalysisRequest:
         async with aiohttp.ClientSession() as session:
             end_time = datetime.now(UTC).isoformat()
-            url = f"{config.analysis_service_url}/v1/analysis/{request_id}/fail"
+            url = f"{config.analysis_service_url}/v1/analysis/request/{request_id}/fail"
             async with session.patch(
                 url, json={"errors": errors, "end_time": end_time}
             ) as response:
