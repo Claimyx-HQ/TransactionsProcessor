@@ -841,20 +841,20 @@ def test_parse_bank_of_texas():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
-def test_parse_bank_of_texas2():
+def test_parse_bank_of_bok_financial(): # This bank has the same parser that Bank of Texas has
     logger = logging.getLogger(__name__)
-    file_path = "tests/data/banks/bank_of_texas/bank_of_texas2.pdf"
+    file_path = "tests/data/banks/bok_financial/BOK Financial Operating.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2024, 9, 3, 0, 0),
-        description="WISCONSIN PHYSIC  HCCLAIMPMT  345150",
-        amount=2304.0,
+        description="RCC DEPOSIT",
+        amount=5331.0,
         uuid="6b399e04-f60f-4729-8e0d-e2bbe4edfd9e",
         batch_number=None,
-        origin="bank_of_texas2.pdf"
+        origin="BOK Financial Operating.pdf"
     )
     parser = BankOfTexasParser()
-    transactions = parser.parse_transactions(file, "bank_of_texas2.pdf")
+    transactions = parser.parse_transactions(file, "BOK Financial Operating.pdf")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
