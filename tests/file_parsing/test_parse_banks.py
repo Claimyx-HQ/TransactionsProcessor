@@ -143,6 +143,7 @@ from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parse
 from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import YadBankFeedsParser
 
 from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import MTBankParser
 
 
 
@@ -992,5 +993,23 @@ def test_parse_capital_one_bank():
     parser = CapitalOneBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_mt_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/m&t/mt.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 3, 0, 0),
+        description="ACH Credit Rcvd",
+        amount=13946.59,
+        uuid="8174604c-d973-4d94-b985-faabe1f7f08d",
+    )
+    parser = MTBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+
+
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
