@@ -75,6 +75,7 @@ from transactions_processor.services.parsers.bank_parsers.midfirst_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.midwest_bank_parser import (
     MidwestBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import MTBankParser
 from transactions_processor.services.parsers.bank_parsers.old_national_bank_parser import (
     OldNationalBankParser,
 )
@@ -160,6 +161,7 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "metropolitan": MetropolitanBankParser,
     "midfirst": MidFirstBankParser,
     "midwest": MidwestBankParser,
+    "m&t": MTBankParser,
     "old_national": OldNationalBankParser,
     "pnc": PNCBankParser,
     "popular": PopularBankParser,
