@@ -21,7 +21,10 @@ class CfgBankParser(PDFParser):
             for title_type in ["electronic debits", "daily balance", "other debits"]
         ):
             self.valid_table = False
-        elif "deposits" in date_str.lower():
+        elif any(
+            title_type in title
+            for title_type in ["deposits", "electronic credits"]
+        ):
             self.valid_table = True
 
         if valid_date(date_str, "%m/%d/%Y") and self.valid_table:
