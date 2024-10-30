@@ -139,6 +139,7 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "workday_bank_feeds": WorkdayBankFeedsParser,
     "bhi": BHIBankParser,
     "bankwell": BankWellBankParser,
+    "bok_financial": BankOfTexasParser,
     "cadence": CadenceBankParser,
     "capital_one": CapitalOneBankParser,
     "cfg": CfgBankParser,
