@@ -70,7 +70,7 @@ def test_parse_pcc_pdf():
     file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2024, 4, 1, 0, 0),
-        description="Credit Card 04/01/202",
+        description="Credit Card 04/01/2024",
         amount=400.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=2862,
@@ -79,6 +79,32 @@ def test_parse_pcc_pdf():
     parser = PCCParser()
 
     transactions = parser.parse_transactions(file, "pcc.pdf")
+    print("all transactions:", transactions)
+    parsed_transaction = transactions[1]
+
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
+
+    file.close()
+
+def test_parse_pcc_pdf2():
+    file_path = "tests/data/system/PCC/PCC2.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 10, 1, 0, 0),
+        description="Insurance Co-Insurance A 10/01/2024",
+        amount=5916.0,
+        uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=3929,
+        origin="pcc.pdf",
+    )
+    parser = PCCParser()
+
+    transactions = parser.parse_transactions(file, "pcc.pdf")
+    print("all transactions:", transactions)
     parsed_transaction = transactions[1]
 
     assert first_transaction.date == parsed_transaction.date
