@@ -62,6 +62,7 @@ from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import (
     ForbrightBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.fortis_bank_parser import FortisBankParser
 from transactions_processor.services.parsers.bank_parsers.hancock_whitney_bank_parser import (
     HancockWhitneyBankParser,
 )
@@ -1011,5 +1012,23 @@ def test_parse_mt_bank():
     parsed_transaction = transactions[0]
 
 
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_fortis_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/fortis/Fortis Bank 5.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 8, 20, 0, 0),
+        description="Remote Merchant Deposit",
+        amount=2207.0,
+        uuid="8174604c-d973-4d94-b985-faabe1f7f08d",
+    )
+    parser = FortisBankParser()
+    transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    print("all transactions", transactions)
+    print("all transactions number", len(transactions))
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
