@@ -11,9 +11,9 @@ class FortisBankParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Union[Transaction, None]:
-        print(row)
         date_str, description_str, amount_str = row[0], row[1], row[2]
-        title = (str(date_str)+str(description_str)+str(amount_str)).upper()
+        title = " ".join([str(date_str), str(description_str), str(amount_str)]).upper()
+
         if any(
             title_type in title
             for title_type in ["WITHDRAWAL", "DAILY BALANCE", "SUMMARY"]
