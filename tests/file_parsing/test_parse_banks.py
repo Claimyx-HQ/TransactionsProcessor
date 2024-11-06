@@ -1028,7 +1028,5 @@ def test_parse_fortis_bank():
     parser = FortisBankParser()
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
-    print("all transactions", transactions)
-    print("all transactions number", len(transactions))
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
