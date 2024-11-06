@@ -79,7 +79,6 @@ def test_parse_pcc_pdf():
     parser = PCCParser()
 
     transactions = parser.parse_transactions(file, "pcc.pdf")
-    print("all transactions:", transactions)
     parsed_transaction = transactions[1]
 
     assert first_transaction.date == parsed_transaction.date
@@ -104,7 +103,6 @@ def test_parse_pcc_pdf2():
     parser = PCCParser()
 
     transactions = parser.parse_transactions(file, "pcc.pdf")
-    print("all transactions:", transactions)
     parsed_transaction = transactions[1]
 
     assert first_transaction.date == parsed_transaction.date

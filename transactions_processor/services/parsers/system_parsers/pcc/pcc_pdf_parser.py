@@ -24,7 +24,6 @@ class PCCPDFParser(TransactionsParser):
         self, file: BinaryIO, file_name: str | None, file_key: str | None = None
     ) -> List[Transaction]:
         columns = [74, 128, 260, 350, 400, 600, 670, 800]
-        # columns = [70, 150, 250, 400, 500, 600, 670, 850]
         df = tabula.io.read_pdf(
             file,
             multiple_tables=True,
@@ -46,7 +45,6 @@ class PCCPDFParser(TransactionsParser):
             table_data: List = table.values.tolist()  # type: ignore
             for row in table_data:
                 valid_row = len(row) == 8 and self._valid_date(row[0])
-                print(row)
                 if valid_row:
                     amount_string = row[6]
                     date = row[0]
