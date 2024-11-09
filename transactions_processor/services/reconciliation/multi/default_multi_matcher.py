@@ -1,4 +1,4 @@
-import logging
+from loguru import logger
 from typing import Any, Callable, Dict, List, Match, Tuple
 from transactions_processor.schemas.transaction import Transaction
 from transactions_processor.schemas.transactions_matcher import ReconcilingMatches
@@ -30,7 +30,7 @@ class DefaultMultiMatcher(MultiMatcher):
     @staticmethod
     def process_chunk(
         chunk: List[float],
-        system_transactions: List[float],
+        system_transactions_groups: List[List[float]],
         conn,
         progress_dict: Dict,
         process_id: int,
@@ -49,31 +49,37 @@ class DefaultMultiMatcher(MultiMatcher):
 
             max_possibilities = 3 if bank_transaction <= 5000 else 5
             possible_matches = []
-            ReconciliationUtils.find_matches_n_sum(
-                system_transactions,
-                bank_transaction,
-                max_possibilities,
-                0,
-                [],
-                possible_matches,
-            )
+            for system_transactions in system_transactions_groups:
+                ReconciliationUtils.find_matches_n_sum(
+                    system_transactions,
+                    bank_transaction,
+                    max_possibilities,
+                    0,
+                    [],
+                    possible_matches,
+                )
             if possible_matches:
                 matches[bank_transaction] = possible_matches
         # return matches
         conn.send(matches)
         conn.close()
 
-    def find_one_to_many(
+    def reoncile_transactions(
         self,
         bank_transactions: List[Transaction],
+        system_transactions_groups: List[List[Transaction]],
         system_transactions: List[Transaction],
-    ) -> ReconcilingMatches:
+    ):
         bank_amounts = [transaction.amount for transaction in bank_transactions]
-        system_amounts = [transaction.amount for transaction in system_transactions]
-        logger = logging.getLogger(__name__)
+        # system_amounts = [transaction.amount for transaction in system_transactions]
+        system_amounts = []
+        system_amounts_groups = []
+        for group in system_transactions_groups:
+            system_amounts.extend([transaction.amount for transaction in group])
+            system_amounts_groups.append([transaction.amount for transaction in group])
 
         matches = self._run_reconciliation_processes(
-            bank_amounts, system_amounts, self.update_progress
+            bank_amounts, system_amounts_groups, self.update_progress
         )
 
         validated_matches: Dict[float, List[float]] = {}
@@ -122,9 +128,22 @@ class DefaultMultiMatcher(MultiMatcher):
                     break
 
         logger.info(f"validated_matches: {validated_matches}")
-        print(f"validated_matches: {validated_matches}")
-        print(f"bank_amounts: {bank_amounts}")
-        print(f"system_amounts: {system_amounts}")
+
+        return validated_matches, bank_amounts, system_amounts
+
+    def find_one_to_many(
+        self,
+        bank_transactions: List[Transaction],
+        system_transactions: List[Transaction],
+    ) -> ReconcilingMatches:
+        grouped_transactions = ReconciliationUtils.group_by_description(
+            system_transactions
+        )
+        validated_matches, unmatched_bank_amounts, unmatched_system_amounts = (
+            self.reoncile_transactions(
+                bank_transactions, grouped_transactions, system_transactions
+            )
+        )
 
         matches = TransactionUtils.matched_amounts_to_transactions(
             validated_matches, {}, bank_transactions, system_transactions
@@ -134,7 +153,7 @@ class DefaultMultiMatcher(MultiMatcher):
     def _run_reconciliation_processes(
         self,
         bank_amounts: List[float],
-        system_amounts: List[float],
+        system_amounts_groups: List[List[float]],
         update_progress: Callable[[float], None] | None = None,
     ) -> Dict[float, List[List[float]]]:
         num_processes = multiprocessing.cpu_count() * 2
@@ -156,7 +175,7 @@ class DefaultMultiMatcher(MultiMatcher):
                 target=self.process_chunk,
                 args=(
                     chunk,
-                    system_amounts,
+                    system_amounts_groups,
                     child_conn,
                     progress_dict,
                     i,

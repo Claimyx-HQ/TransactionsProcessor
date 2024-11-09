@@ -1,4 +1,6 @@
-from typing import Any, List
+from typing import Any, Dict, List, Tuple
+
+from transactions_processor.schemas.transaction import Transaction
 
 
 class ReconciliationUtils:
@@ -31,3 +33,20 @@ class ReconciliationUtils:
                     matches,
                 )
                 copy_path.pop()
+
+    @staticmethod
+    def group_by_description(
+        transactions: List[Transaction],
+    ) -> List[List[Transaction]]:
+        grouped_transactions: Dict[str, List[Transaction]] = {}
+        for transaction in transactions:
+            key = transaction.description[:3]
+            grouped_transactions[key] = grouped_transactions.get(key, [])
+            grouped_transactions[key].append(transaction)
+
+        # remove single transactions
+        # grouped_transactions = {
+        #     k: v for k, v in grouped_transactions.items() if len(v) > 1
+        # }
+
+        return list(grouped_transactions.values())

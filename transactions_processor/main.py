@@ -319,7 +319,7 @@ def find_matches(
     ]
 
     # TODO: this is a hack until excel parser will handle transactions instead of amounts
-    unmatched_system_amounts.extend(zero_and_negative_system_amounts)
+    # unmatched_system_amounts.extend(zero_and_negative_system_amounts)
 
     logger.info(
         f"""
