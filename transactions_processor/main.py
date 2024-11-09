@@ -64,7 +64,7 @@ async def async_handler(event, context):
     try:
         logger.info(f"Received event: {event}")
 
-        system_transactions_data, bank_transactions_data, client_id = (
+        system_transactions_data, bank_transactions_data, client_id, analysis_name = (
             parse_lambda_event(event)
         )
 
@@ -83,6 +83,7 @@ async def async_handler(event, context):
                     "system_file": system_transactions_data,
                     "bank_files": bank_transactions_data,
                 },
+                name=analysis_name,
             )
         )
 
@@ -182,7 +183,8 @@ def parse_lambda_event(event):
     system_transactions_data = body["system_file"]
     bank_transactions_data = body["bank_files"]
     client_id = body["client_id"]
-    return system_transactions_data, bank_transactions_data, client_id
+    analysis_name = body["analysis_name"]
+    return system_transactions_data, bank_transactions_data, client_id, analysis_name
 
 
 def retrieve_files(bucket_name, system_transactions_data, bank_transactions_data):
