@@ -1,4 +1,3 @@
-import logging
 from openpyxl.utils import get_column_letter
 from transactions_processor.services.excel.excel_sorting import ExcelSorting
 from transactions_processor.services.excel.excel_utils import ExcelHelpers
@@ -25,7 +24,6 @@ class ExcelMatchesAlocator:
         bank_start_col_index,
         format,
     ):
-        logger = logging.getLogger(__name__)
         total_system_amount = 0
         total_bank_amount = 0
 
@@ -114,7 +112,6 @@ class ExcelMatchesAlocator:
         bank_start_col_index,
         format,
     ):
-        logger = logging.getLogger(__name__)
         multi_to_one_color_index = 0
         total_system_amount = 0
         total_bank_amount = 0
@@ -209,7 +206,6 @@ class ExcelMatchesAlocator:
         system_row_index,
         system_start_col_index,
     ):
-        logger = logging.getLogger(__name__)
         total_system_amount = 0
 
         logger.debug(
@@ -262,7 +258,6 @@ class ExcelMatchesAlocator:
         bank_row_index,
         bank_start_col_index,
     ):
-        logger = logging.getLogger(__name__)
         total_bank_amount = 0
 
         logger.debug(

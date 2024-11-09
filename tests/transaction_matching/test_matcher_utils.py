@@ -8,6 +8,10 @@ from transactions_processor.services.reconciliation.utils.reconciliatoin_utils i
 from transactions_processor.services.reconciliation.utils.transaction_utils import (
     TransactionUtils,
 )
+from tests.mocks.transaction_matcher.mock_transactions import (
+    bank_transactions as mock_bank_transactions,
+    system_transactions as mock_system_transactions,
+)
 
 
 def test_find_reconciliation_matches():
@@ -83,3 +87,14 @@ def test_match_amounts_to_transactions():
     assert matches.matched == expected_matched
     assert matches.unmatched_bank == expected_unmatched_bank
     assert matches.unmatched_system == expected_unmatched_system
+
+
+def test_find_transaction_description_groups():
+    grouped_transactions = ReconciliationUtils.group_by_description(
+        mock_bank_transactions
+    )
+    exptected_groups = [
+        [mock_bank_transactions[0], mock_bank_transactions[1]],
+        [mock_bank_transactions[2], mock_bank_transactions[3]],
+    ]
+    assert grouped_transactions == exptected_groups
