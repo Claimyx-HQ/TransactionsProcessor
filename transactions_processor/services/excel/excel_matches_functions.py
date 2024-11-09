@@ -2,6 +2,7 @@ import logging
 from openpyxl.utils import get_column_letter
 from transactions_processor.services.excel.excel_sorting import ExcelSorting
 from transactions_processor.services.excel.excel_utils import ExcelHelpers
+from loguru import logger
 
 
 class ExcelMatchesAlocator:
@@ -135,9 +136,7 @@ class ExcelMatchesAlocator:
                 row_index=bank_row_index,
             )
             multi_matches = [
-                amount
-                for key, values in matches.items()
-                for amount in values
+                amount for key, values in matches.items() for amount in values
             ]
             ExcelSorting.create_table(
                 worksheet=worksheet,
@@ -169,8 +168,10 @@ class ExcelMatchesAlocator:
             total_bank_amount += bank_transaction.amount
             bank_row_index += 1
             for amount in system_combination_amounts:
-                system_transaction = ExcelMatchesAlocator._get_full_transaction_by_amount(
-                    system_transactions, amount=amount
+                system_transaction = (
+                    ExcelMatchesAlocator._get_full_transaction_by_amount(
+                        system_transactions, amount=amount
+                    )
                 )
                 ExcelHelpers._write_transaction(
                     worksheet,
@@ -308,7 +309,6 @@ class ExcelMatchesAlocator:
 
     @staticmethod
     def write_data(data_dict, worksheet, green_fill, color_fills: dict):
-        logger = logging.getLogger(__name__)
         system_row_index, bank_row_index = 3, 3
         system_start_col_index, bank_start_col_index = 1, 8
         system_transactions = data_dict["transactions"]["system"][:]
