@@ -13,9 +13,6 @@ from transactions_processor.services.analysis_requests_service import (
     AnalysisRequestsService,
 )
 from transactions_processor.services.excel.excel_controller import ExcelController
-from transactions_processor.services.parallel_transactions_matcher import (
-    ParallelTransactionsMatcher,
-)
 from transactions_processor.services.parsers.bank_parsers.bank_parsers import (
     bank_parsers,
 )
@@ -26,7 +23,9 @@ from transactions_processor.services.parsers.system_parsers.system_parsers impor
 from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,
 )
-from transactions_processor.services.transactions_matcher import TransactionsMatcher
+from transactions_processor.services.reconciliation.transactions_matcher import (
+    TransactionsMatcher,
+)
 from transactions_processor.utils.aws_utils import (
     generate_error_code,
     notify_client,
@@ -71,7 +70,7 @@ async def async_handler(event, context):
         if not client_id:
             raise Exception("Client ID is required")
 
-        transaction_matcher = ParallelTransactionsMatcher()
+        transaction_matcher = TransactionsMatcher()
         excel_controller = ExcelController()
 
         analysis_request = await analysis_requests_service.create_request(
@@ -255,18 +254,25 @@ def find_matches(
     system_transactions: List[Transaction],
     transaction_matcher: TransactionsMatcher,
 ):
+    system_amounts = [transaction.amount for transaction in system_transactions]
     update_progress(client_id, "Matching", 0, request_id)
     logger.debug(
         f"Finding matches, system: {len(system_transactions)}, bank: {len(all_bank_transactions)}"
     )
-    (
-        perfect_matches,
-        unmatched_bank_amounts,
-        unmatched_system_amounts,
-    ) = transaction_matcher.find_matched_unmatched(
-        [t.amount for t in all_bank_transactions],
-        [t.amount for t in system_transactions],
+    matched_transactions = transaction_matcher.find_one_to_one_matches(
+        all_bank_transactions, system_transactions
     )
+
+    # TODO: this is a hack until excel parser will handle transactions instead of amounts
+    perfect_matches = [
+        transaction[0].amount for transaction in matched_transactions.matched
+    ]
+    unmatched_bank_amounts = [
+        transaction.amount for transaction in matched_transactions.unmatched_bank
+    ]
+    unmatched_system_amounts = [
+        transaction.amount for transaction in matched_transactions.unmatched_system
+    ]
     zero_and_negative_system_amounts = [
         amount for amount in unmatched_system_amounts if amount <= 0
     ]
@@ -279,17 +285,38 @@ def find_matches(
     update_progress(client_id, "Matching", 100, request_id)
     update_progress(client_id, "Reconciling", 0, request_id)
 
-    (
-        matches,
-        unmatched_bank_amounts,
-        unmatched_system_amounts,
-    ) = transaction_matcher.find_reconciling_matches(
-        unmatched_bank_amounts,
-        unmatched_system_amounts,
-        lambda progress: update_progress(
-            client_id, "Reconciling", progress, request_id
-        ),
+    # (
+    #     matches,
+    #     unmatched_bank_amounts,
+    #     unmatched_system_amounts,
+    # ) = transaction_matcher.find_reconciling_matches(
+    #     unmatched_bank_amounts,
+    #     unmatched_system_amounts,
+    #     lambda progress: update_progress(
+    #         client_id, "Reconciling", progress, request_id
+    #     ),
+    # )
+    #
+    logger.debug(f"perfect matches: {perfect_matches}")
+    logger.debug(
+        f"finding matches for banks: {unmatched_bank_amounts},\n system: {unmatched_system_amounts}"
     )
+    multi_matches = transaction_matcher.find_one_to_many_matches(
+        matched_transactions.unmatched_bank,
+        matched_transactions.unmatched_system,
+    )
+
+    matches = {}
+    for transaction in multi_matches.matched:
+        matches[transaction[0][0].amount] = [t.amount for t in transaction[1]]
+    unmatched_system_amounts = [
+        transaction.amount for transaction in multi_matches.unmatched_system
+    ]
+    unmatched_bank_amounts = [
+        transaction.amount for transaction in multi_matches.unmatched_bank
+    ]
+
+    # TODO: this is a hack until excel parser will handle transactions instead of amounts
     unmatched_system_amounts.extend(zero_and_negative_system_amounts)
 
     logger.info(
