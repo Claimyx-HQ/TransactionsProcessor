@@ -10,6 +10,7 @@ class AnalysisRequestBase(BaseModel):
     request_type: str
     parameters: Dict
     status: str
+    name: Optional[str] = None
 
 
 class AnalysisRequestCreate(AnalysisRequestBase):
