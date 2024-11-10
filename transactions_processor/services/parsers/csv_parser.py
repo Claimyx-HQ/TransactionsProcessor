@@ -24,12 +24,14 @@ class CSVParser(TransactionsParser):
         description_col_indx: int,
         amount_col_index: int,
         batch_col_index: int | str | None = None,
+        gl_account_col_index: int | str | None = None,
     ) -> None:
         self.logger = logging.getLogger(__name__)
         self.date_col_index = date_col_index
         self.description_col_indx = description_col_indx
         self.amount_col_index = amount_col_index
         self.batch_col_index = batch_col_index
+        self.gl_account_col_index = gl_account_col_index
         self.file_name = ""
 
     def parse_transactions(
@@ -46,6 +48,7 @@ class CSVParser(TransactionsParser):
             self.description_col_indx,
             self.amount_col_index,
             self.batch_col_index,
+            self.gl_account_col_index
         ]
         column_indexes = [index for index in column_indexes if index is not None]
 
@@ -54,7 +57,10 @@ class CSVParser(TransactionsParser):
         important_columns = important_columns.dropna()  # Remove missing values (NaN)
         transactions: List[Transaction] = []
         for column in important_columns.to_numpy().tolist():
-            transaction = Transaction.from_raw_data(*column, origin=file_name)
+            if self.gl_account_col_index is not None:
+                transaction = Transaction.from_raw_data(*column)
+            else:
+                transaction = Transaction.from_raw_data(*column, origin=file_name)
             transactions.append(transaction)
         return transactions
 

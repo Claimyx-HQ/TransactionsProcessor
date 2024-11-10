@@ -44,6 +44,7 @@ class PCCPDFParser(TransactionsParser):
         for table in df:
             table_data: List = table.values.tolist()  # type: ignore
             for row in table_data:
+                print(row)
                 valid_row = len(row) == 8 and self._valid_date(row[0])
                 if valid_row:
                     amount_string = row[6]
@@ -51,11 +52,12 @@ class PCCPDFParser(TransactionsParser):
                     description = row[5]
                     amount = parse_amount(amount_string)
                     batch_number = int(row[4])
+                    gl_account = row[7]
                     if math.isnan(amount):  # Skip if amount is NaN
                         continue
                     bank_transactions.append(
                         Transaction.from_raw_data(
-                            date, description, amount, batch_number, file_name or ""
+                            date, description, amount, batch_number, gl_account or file_name or ""
                         )
                     )
                     bank_transactions_amounts.append(amount)

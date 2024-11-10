@@ -17,4 +17,4 @@ from transactions_processor.utils.math_utils import parse_amount
 
 class PCCCSVParser(CSVParser):
     def __init__(self) -> None:
-        super().__init__(0, 6, 7, 4)
+        super().__init__(0, 6, 7, 4, 9)
