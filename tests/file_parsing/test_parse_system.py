@@ -74,7 +74,7 @@ def test_parse_pcc_pdf():
         amount=400.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=2862,
-        origin="pcc.pdf",
+        origin="1010-409-00",
     )
     parser = PCCParser()
 
@@ -98,13 +98,15 @@ def test_parse_pcc_pdf2():
         amount=5916.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=3929,
-        origin="pcc.pdf",
+        origin="1010-409-00",
     )
     parser = PCCParser()
 
     transactions = parser.parse_transactions(file, "pcc.pdf")
     parsed_transaction = transactions[1]
-
+    print("all transactions", transactions)
+    print("all transactions n", len(transactions))
+    
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
@@ -123,7 +125,7 @@ def test_parse_pcc_excel():
         amount=70.20,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=4266,
-        origin="pcc.xlsx",
+        origin="1010-409-00",
     )
     parser = PCCParser()
 
