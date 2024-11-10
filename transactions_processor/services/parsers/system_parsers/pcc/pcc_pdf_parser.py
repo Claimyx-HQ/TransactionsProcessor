@@ -44,7 +44,6 @@ class PCCPDFParser(TransactionsParser):
         for table in df:
             table_data: List = table.values.tolist()  # type: ignore
             for row in table_data:
-                print(row)
                 valid_row = len(row) == 8 and self._valid_date(row[0])
                 if valid_row:
                     amount_string = row[6]
