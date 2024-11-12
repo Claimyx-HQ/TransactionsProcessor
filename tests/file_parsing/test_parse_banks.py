@@ -38,6 +38,9 @@ from transactions_processor.services.parsers.bank_parsers.chase_bank_parser impo
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
     CIBCBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.citadel_truist_bank_feeds_parser import CitadelTruistBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.citadel_valley_bank_feeds_parser import CitadelValleyBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_feeds_parser import CitadelWebsterBankFeedsParser
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
@@ -1027,6 +1030,60 @@ def test_parse_fortis_bank():
     )
     parser = FortisBankParser()
     transactions = parser.parse_transactions(file)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_citadel_truist_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/citadel/Citadel Truist Feeds.xls"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 10, 8, 0, 0),
+        description="HCCLAIMPMT UnitedHealthcare Haines City Rehab LLC ACH CREDIT TRN*1*24279B1000101757*1362739571*000004567",
+        amount=421.0,
+        uuid="",
+    )
+    parser = CitadelTruistBankFeedsParser()
+
+    transactions = parser.parse_transactions(file, "Citadel Truist Feeds.xls")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_citadel_valley_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/citadel/Citadel Valley Feeds.xls"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 10, 29, 0, 0),
+        description="PHONE/INTERNET TRNFR REF 3030742L  DEP XXXX7289",
+        amount=16600.0,
+        uuid="",
+    )
+    parser = CitadelValleyBankFeedsParser()
+
+    transactions = parser.parse_transactions(file, "Citadel Valley Feeds.xls")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_citadel_webster_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/citadel/Citadel Webster Feeds.csv"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 11, 6, 0, 0),
+        description="Current Available Balance",
+        amount=213675.57,
+        uuid="",
+    )
+    parser = CitadelWebsterBankFeedsParser()
+
+    transactions = parser.parse_transactions(file, "Citadel Webster Feeds.csv")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()

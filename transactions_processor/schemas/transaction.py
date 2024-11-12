@@ -89,6 +89,7 @@ class Transaction(BaseModel):
             return float(amount)
         elif isinstance(amount, str):
             try:
+                amount = amount.replace("$", "")
                 return float(amount.replace(",", ""))
             except ValueError:
                 raise ValueError("Amount not found or is not a number")
@@ -112,6 +113,9 @@ class Transaction(BaseModel):
             date = cls.validate_date(date)  # type: ignore
             amount = cls.validate_amount(amount)  # type: ignore
             description = cls.validate_description(description)  # type: ignore
+            if isinstance(origin, float):
+                origin = int(origin)
+            origin = str(origin)
         except ValueError as e:
             logger.error(f"Failed to parse raw data: {e}")
             raise ValueError("Invalid input data")

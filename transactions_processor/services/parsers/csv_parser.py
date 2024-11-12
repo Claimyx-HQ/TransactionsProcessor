@@ -43,25 +43,42 @@ class CSVParser(TransactionsParser):
         self.file_name = file_name
 
         excel_df = self._parse_excel(file)
-        column_indexes = [
-            self.date_col_index,
-            self.description_col_indx,
-            self.amount_col_index,
-            self.batch_col_index,
-            self.gl_account_col_index
-        ]
-        column_indexes = [index for index in column_indexes if index is not None]
+        column_mapping = {
+            'date': self.date_col_index,
+            'description': self.description_col_indx,
+            'amount': self.amount_col_index,
+            'batch_number': self.batch_col_index,
+            'gl_account_number': self.gl_account_col_index,
+        }
+        column_mapping = {key: index for key, index in column_mapping.items() if index is not None}
+        column_indexes = list(column_mapping.values())
 
         important_columns = excel_df.iloc[:, column_indexes]
-
+        important_columns.columns = list(column_mapping.keys())
         important_columns = important_columns.dropna()  # Remove missing values (NaN)
+
         transactions: List[Transaction] = []
-        for column in important_columns.to_numpy().tolist():
-            if self.gl_account_col_index is not None:
-                transaction = Transaction.from_raw_data(*column)
-            else:
-                transaction = Transaction.from_raw_data(*column, origin=file_name)
-            transactions.append(transaction)
+        for _, row in important_columns.iterrows():
+            try:
+                transaction_data = row.to_dict()
+
+                # Prepare arguments for Transaction.from_raw_data
+                raw_data = {
+                    'date': transaction_data.get('date'),
+                    'description': transaction_data.get('description'),
+                    'amount': transaction_data.get('amount'),
+                    'batch_number': transaction_data.get('batch_number'),
+                    'origin': transaction_data.get('gl_account_number', file_name),
+                }
+
+                # Remove None values from raw_data
+                raw_data = {k: v for k, v in raw_data.items() if v is not None}
+
+                # Create Transaction object using keyword arguments
+                transaction = Transaction.from_raw_data(**raw_data)
+                transactions.append(transaction)
+            except Exception as e:
+                logger.error(f"Failed to parse transaction: {e}")
         return transactions
 
     def _parse_excel(self, file: BinaryIO) -> pd.DataFrame:
