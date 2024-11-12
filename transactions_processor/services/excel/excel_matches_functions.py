@@ -301,6 +301,59 @@ class ExcelMatchesAlocator:
 
         logger.debug("Finished writing all unmatched bank transactions")
         return bank_row_index + 1  # Move to next row after total
+    @staticmethod
+    def _excluded_transactions(
+        excluded_transactions,
+        worksheet,
+        transactions,
+        row_index,
+        start_col_index,
+        excluded_transactions_table_name,
+        grouped_by = "",
+    ):
+        total_bank_amount = 0
+
+        logger.debug(
+            f" len transactions: {len(transactions)} and len excluded transactions: {len(excluded_transactions)}"
+        )
+        if len(excluded_transactions) > 0:
+            row_index = ExcelHelpers._create_title_row(
+                worksheet,
+                f"Excluded {grouped_by if grouped_by != '' else ''} {excluded_transactions_table_name.replace('_', ' ').title()} Transactions ",
+                column_start_index=start_col_index,
+                row_index=row_index,
+            )
+            ExcelSorting.create_table(
+                worksheet=worksheet,
+                table_name=f"excluded_{excluded_transactions_table_name}_transactions_table",
+                matches=excluded_transactions,
+                row_index=row_index,
+                start_col_index=start_col_index,
+            )
+
+        for transaction in excluded_transactions:
+            
+            ExcelHelpers._write_transaction(
+                worksheet,
+                row_index,
+                start_col_index,
+                transaction,
+            )
+            if transaction in transactions:
+                transactions.remove(transaction)
+            total_bank_amount += transaction.amount
+            row_index += 1
+
+        # Add Total Row
+        row_index = ExcelHelpers._write_total_row(
+            worksheet,
+            row_index,
+            start_col_index,
+            total_bank_amount,
+        )
+
+        logger.debug("Finished writing all unmatched bank transactions")
+        return row_index + 1  # Move to next row after total
 
     @staticmethod
     def write_data(data_dict, worksheet, green_fill, color_fills: dict):
@@ -361,6 +414,51 @@ class ExcelMatchesAlocator:
                     bank_row_index=bank_row_index,
                     bank_start_col_index=bank_start_col_index,
                 )
+            elif key == "excluded":
+                for key_in_excluded, values_in_excluded in data_dict["matches"]["excluded"].items():
+                    if key_in_excluded == "system":
+                        for key_in_excluded_system, excluded_transactions in data_dict["matches"]["excluded"]["system"].items():
+                            if key_in_excluded_system == "system":
+                                system_row_index = ExcelMatchesAlocator._excluded_transactions(
+                                    excluded_transactions=excluded_transactions,
+                                    worksheet=worksheet,
+                                    transactions=system_transactions,
+                                    row_index=system_row_index,
+                                    start_col_index=system_start_col_index,
+                                    excluded_transactions_table_name="system",
+                                    
+                                )
+                            else:
+                                system_row_index = ExcelMatchesAlocator._excluded_transactions(
+                                    excluded_transactions=excluded_transactions,
+                                    worksheet=worksheet,
+                                    transactions=system_transactions,
+                                    row_index=system_row_index,
+                                    start_col_index=system_start_col_index,
+                                    excluded_transactions_table_name="system",
+                                    grouped_by=key_in_excluded_system,
+                                )
+                    elif key_in_excluded == "bank":
+                        for key_in_excluded_bank, excluded_transactions in data_dict["matches"]["excluded"]["bank"].items():
+                            if key_in_excluded_bank == "bank":
+                                bank_row_index = ExcelMatchesAlocator._excluded_transactions(
+                                    excluded_transactions=excluded_transactions,
+                                    worksheet=worksheet,
+                                    transactions=bank_transactions,
+                                    row_index=bank_row_index,
+                                    start_col_index=bank_start_col_index,
+                                    excluded_transactions_table_name="bank",
+                                )
+                            else:
+                                bank_row_index = ExcelMatchesAlocator._excluded_transactions(
+                                    excluded_transactions=excluded_transactions,
+                                    worksheet=worksheet,
+                                    transactions=bank_transactions,
+                                    row_index=bank_row_index,
+                                    start_col_index=bank_start_col_index,
+                                    excluded_transactions_table_name="bank",
+                                    grouped_by=key_in_excluded_bank,
+                                )
             else:
                 raise ValueError(f"Unknown key: {key}")
 
