@@ -130,7 +130,7 @@ async def async_handler(event, context):
             {
                 "matches": {
                     "one_to_one": len(data["matches"]["one_to_one"]),
-                    "multi_to_one": len(data["matches"]["multi_to_one"]),
+                    "many_to_many": len(data["matches"]["multi_to_one"]),
                     "unmatched_system": len(data["matches"]["unmatched_system"]),
                     "unmatched_bank": len(data["matches"]["unmatched_bank"]),
                 },
@@ -266,21 +266,21 @@ def find_matches(
     )
 
     # TODO: this is a hack until excel parser will handle transactions instead of amounts
-    perfect_matches = [
-        transaction[0].amount for transaction in matched_transactions.matched
-    ]
-    unmatched_bank_amounts = [
-        transaction.amount for transaction in matched_transactions.unmatched_bank
-    ]
-    unmatched_system_amounts = [
-        transaction.amount for transaction in matched_transactions.unmatched_system
-    ]
-    zero_and_negative_system_amounts = [
-        amount for amount in unmatched_system_amounts if amount <= 0
-    ]
-    unmatched_system_amounts = [
-        amount for amount in unmatched_system_amounts if amount > 0
-    ]
+    # perfect_matches = [
+    #     transaction[0].amount for transaction in matched_transactions.matched
+    # ]
+    # unmatched_bank_amounts = [
+    #     transaction.amount for transaction in matched_transactions.unmatched_bank
+    # ]
+    # unmatched_system_amounts = [
+    #     transaction.amount for transaction in matched_transactions.unmatched_system
+    # ]
+    # zero_and_negative_system_amounts = [
+    #     amount for amount in unmatched_system_amounts if amount <= 0
+    # ]
+    # unmatched_system_amounts = [
+    #     amount for amount in unmatched_system_amounts if amount > 0
+    # ]
 
     logger.debug(f"Matching complete, perfect matches: {len(perfect_matches)}")
 
@@ -308,15 +308,15 @@ def find_matches(
         matched_transactions.unmatched_system,
     )
 
-    matches = {}
-    for transaction in multi_matches.matched:
-        matches[transaction[0][0].amount] = [t.amount for t in transaction[1]]
-    unmatched_system_amounts = [
-        transaction.amount for transaction in multi_matches.unmatched_system
-    ]
-    unmatched_bank_amounts = [
-        transaction.amount for transaction in multi_matches.unmatched_bank
-    ]
+    # matches = {}
+    # for transaction in multi_matches.matched:
+    #     matches[transaction[0][0].amount] = [t.amount for t in transaction[1]]
+    # unmatched_system_amounts = [
+    #     transaction.amount for transaction in multi_matches.unmatched_system
+    # ]
+    # unmatched_bank_amounts = [
+    #     transaction.amount for transaction in multi_matches.unmatched_bank
+    # ]
 
     # TODO: this is a hack until excel parser will handle transactions instead of amounts
     # unmatched_system_amounts.extend(zero_and_negative_system_amounts)
@@ -326,7 +326,7 @@ def find_matches(
         "transactions": "system": {len(system_transactions)}, "bank": {len(all_bank_transactions)},
         "matches": 
             "one_to_one": {len(perfect_matches)},
-            "multi_to_one": {len(matches)},
+            "many_to_many": {len(matches)},
             "unmatched_system": {len(unmatched_system_amounts)},
             "unmatched_bank": {len(unmatched_bank_amounts)},
         ,
@@ -336,7 +336,7 @@ def find_matches(
         "transactions": {"system": system_transactions, "bank": all_bank_transactions},
         "matches": {
             "one_to_one": perfect_matches,
-            "multi_to_one": matches,
+            "many_to_many": matches,
             "unmatched_system": unmatched_system_amounts,
             "unmatched_bank": unmatched_bank_amounts,
         },
