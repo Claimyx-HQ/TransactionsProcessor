@@ -30,6 +30,9 @@ from transactions_processor.services.parsers.bank_parsers.chase_bank_parser impo
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
     CIBCBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.citadel_truist_bank_feeds_parser import CitadelTruistBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.citadel_valley_bank_feeds_parser import CitadelValleyBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_feeds_parser import CitadelWebsterBankFeedsParser
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
@@ -54,6 +57,7 @@ from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import (
     ForbrightBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.fortis_bank_parser import FortisBankParser
 from transactions_processor.services.parsers.bank_parsers.hancock_whitney_bank_parser import (
     HancockWhitneyBankParser,
 )
@@ -146,6 +150,9 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "cfg": CfgBankParser,
     "chase": ChaseBankParser,
     "cibc": CIBCBankParser,
+    "citadel_truist_bank_feeds": CitadelTruistBankFeedsParser,
+    "citadel_valley_bank_feeds": CitadelValleyBankFeedsParser,
+    "citadel_webster_bank_feeds": CitadelWebsterBankFeedsParser,
     "citizens": CitizensBankParser,
     "connect_one": ConnectOneBankParser,
     "customers": CustomersBankParser,
@@ -154,6 +161,7 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "first_united": FirstUnitedBankParser,
     "flagstar": FlagstarBankParser,
     "forbright": ForbrightBankParser,
+    "fortis_bank": FortisBankParser,
     "hancock": HancockWhitneyBankParser,
     "huntington": HuntingtonBankParser,
     "key": KeyBankParser,
@@ -161,7 +169,7 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "metropolitan": MetropolitanBankParser,
     "midfirst": MidFirstBankParser,
     "midwest": MidwestBankParser,
-    "m&t": MTBankParser,
+    "mt_bank": MTBankParser,
     "old_national": OldNationalBankParser,
     "pnc": PNCBankParser,
     "popular": PopularBankParser,
