@@ -136,8 +136,12 @@ class ExcelMatchesAlocator:
             )
             count_of_bank_matches = []
             count_of_system_matches = []
-            count_of_bank_matches.extend(multi_matches for match in matches for multi_matches in match[0])
-            count_of_system_matches.extend(multi_matches for match in matches for multi_matches in match[1])
+            count_of_bank_matches.extend(
+                multi_matches for match in matches for multi_matches in match[0]
+            )
+            count_of_system_matches.extend(
+                multi_matches for match in matches for multi_matches in match[1]
+            )
             ExcelSorting.create_table(
                 worksheet=worksheet,
                 table_name="many_to_many_Matches_in_System_table",
@@ -227,7 +231,7 @@ class ExcelMatchesAlocator:
             )
 
         for system_transaction in unmatched_system_transactions:
-            
+
             ExcelHelpers._write_transaction(
                 worksheet,
                 system_row_index,
@@ -279,7 +283,7 @@ class ExcelMatchesAlocator:
             )
 
         for bank_transaction in unmatched_bank_transactions:
-            
+
             ExcelHelpers._write_transaction(
                 worksheet,
                 bank_row_index,
@@ -301,6 +305,7 @@ class ExcelMatchesAlocator:
 
         logger.debug("Finished writing all unmatched bank transactions")
         return bank_row_index + 1  # Move to next row after total
+
     @staticmethod
     def _excluded_transactions(
         excluded_transactions,
@@ -309,7 +314,7 @@ class ExcelMatchesAlocator:
         row_index,
         start_col_index,
         excluded_transactions_table_name,
-        grouped_by = "",
+        grouped_by="",
     ):
         total_bank_amount = 0
 
@@ -332,7 +337,7 @@ class ExcelMatchesAlocator:
             )
 
         for transaction in excluded_transactions:
-            
+
             ExcelHelpers._write_transaction(
                 worksheet,
                 row_index,
@@ -415,21 +420,18 @@ class ExcelMatchesAlocator:
                     bank_start_col_index=bank_start_col_index,
                 )
             elif key == "excluded":
-                for key_in_excluded, values_in_excluded in data_dict["matches"]["excluded"].items():
+                for key_in_excluded, values_in_excluded in data_dict["matches"][
+                    "excluded"
+                ].items():
                     if key_in_excluded == "system":
-                        for key_in_excluded_system, excluded_transactions in data_dict["matches"]["excluded"]["system"].items():
-                            if key_in_excluded_system == "system":
-                                system_row_index = ExcelMatchesAlocator._excluded_transactions(
-                                    excluded_transactions=excluded_transactions,
-                                    worksheet=worksheet,
-                                    transactions=system_transactions,
-                                    row_index=system_row_index,
-                                    start_col_index=system_start_col_index,
-                                    excluded_transactions_table_name="system",
-                                    
-                                )
-                            else:
-                                system_row_index = ExcelMatchesAlocator._excluded_transactions(
+                        for key_in_excluded_system, excluded_transactions in data_dict[
+                            "matches"
+                        ]["excluded"]["system"].items():
+                            logger.debug(
+                                f"key_in_excluded_system: {key_in_excluded_system}"
+                            )
+                            system_row_index = (
+                                ExcelMatchesAlocator._excluded_transactions(
                                     excluded_transactions=excluded_transactions,
                                     worksheet=worksheet,
                                     transactions=system_transactions,
@@ -438,19 +440,13 @@ class ExcelMatchesAlocator:
                                     excluded_transactions_table_name="system",
                                     grouped_by=key_in_excluded_system,
                                 )
+                            )
                     elif key_in_excluded == "bank":
-                        for key_in_excluded_bank, excluded_transactions in data_dict["matches"]["excluded"]["bank"].items():
-                            if key_in_excluded_bank == "bank":
-                                bank_row_index = ExcelMatchesAlocator._excluded_transactions(
-                                    excluded_transactions=excluded_transactions,
-                                    worksheet=worksheet,
-                                    transactions=bank_transactions,
-                                    row_index=bank_row_index,
-                                    start_col_index=bank_start_col_index,
-                                    excluded_transactions_table_name="bank",
-                                )
-                            else:
-                                bank_row_index = ExcelMatchesAlocator._excluded_transactions(
+                        for key_in_excluded_bank, excluded_transactions in data_dict[
+                            "matches"
+                        ]["excluded"]["bank"].items():
+                            bank_row_index = (
+                                ExcelMatchesAlocator._excluded_transactions(
                                     excluded_transactions=excluded_transactions,
                                     worksheet=worksheet,
                                     transactions=bank_transactions,
@@ -459,6 +455,7 @@ class ExcelMatchesAlocator:
                                     excluded_transactions_table_name="bank",
                                     grouped_by=key_in_excluded_bank,
                                 )
+                            )
             else:
                 raise ValueError(f"Unknown key: {key}")
 

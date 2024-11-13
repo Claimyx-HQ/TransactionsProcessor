@@ -4,7 +4,9 @@ import io
 import logging
 from typing import Union
 
-from transactions_processor.services.excel.excel_matches_functions import ExcelMatchesAlocator
+from transactions_processor.services.excel.excel_matches_functions import (
+    ExcelMatchesAlocator,
+)
 from transactions_processor.services.excel.excel_utils import ExcelHelpers
 
 

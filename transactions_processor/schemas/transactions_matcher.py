@@ -1,5 +1,5 @@
 # One to one matching
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 from pydantic import BaseModel
 
 from transactions_processor.schemas.transaction import Transaction
@@ -16,3 +16,8 @@ class ReconcilingMatches(BaseModel):
     matched: List[Tuple[List[Transaction], List[Transaction]]]  # Bank, System
     unmatched_bank: List[Transaction]
     unmatched_system: List[Transaction]
+
+
+class ExcludedDescriptions(BaseModel):
+    bank: Dict[str, List[str]]
+    system: Dict[str, List[str]]
