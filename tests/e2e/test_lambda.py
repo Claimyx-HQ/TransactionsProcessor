@@ -21,6 +21,8 @@ def test_lambda_hander():
             "system_file": system_transactions_data,
             "bank_files": bank_transactions_data,
             "client_id": client_id,
+            "analysis_name": "test_analysis",
+            "exclusions": {"system": {"test": ["credit card"]}, "bank": {}},
         }
     )
     event = {"Records": [{"body": json_body}]}

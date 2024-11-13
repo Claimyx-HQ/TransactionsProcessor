@@ -33,7 +33,6 @@ class AnalysisRequestsService:
     async def complete_request(self, request_id: str, results: Dict) -> AnalysisRequest:
         async with aiohttp.ClientSession() as session:
             end_time = datetime.now(UTC).isoformat()
-            print(end_time)
             url = f"{config.analysis_service_url}/v1/analysis/request/{request_id}/complete"
             async with session.patch(
                 url, json={"results": results, "end_time": end_time}
