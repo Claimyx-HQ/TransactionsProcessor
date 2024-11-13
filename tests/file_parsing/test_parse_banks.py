@@ -297,13 +297,33 @@ def test_parse_yad_bank_feeds():
     file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2024, 9, 30, 0, 0),
-        description="Transfer From 0399021949",
+        description="Sweep Account Credit - Transfer From 0399021949",
         amount=10063.42,
         uuid="09b5dfd9-49c3-426d-81dc-4fe8f9f4f520",
     )
     parser = YadBankFeedsParser()
 
     transactions = parser.parse_transactions(file, "YAD Feeds.xlsx")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_yad_bank_feeds1():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/yad/YAD Feeds 1.xlsx"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 30, 0, 0),
+        description="Direct Deposit - JM MAC VA/WV - P HCCLAIMPMT 240930 CCD 495375",
+        amount=12388.46,
+        uuid="",
+        batch_number=None,
+        origin='399021957',
+    )
+    parser = YadBankFeedsParser()
+
+    transactions = parser.parse_transactions(file, "YAD Feeds 1.xlsx")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
