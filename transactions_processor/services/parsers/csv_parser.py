@@ -41,11 +41,13 @@ class CSVParser(TransactionsParser):
         file_key: str | None = None,
     ) -> List[Transaction]:
         try:
+            logger.info("Parsing transactions file")
             self.file_name = file_name
             excel_df = self._parse_excel(file)
         except Exception as e:
             logger.error(f"Failed to parse file: {e}")
         try:
+            logger.info("Paresed file, now extrancting transactions")
             column_indexes = [
                 self.date_col_index,
                 self.description_col_indx,
@@ -65,6 +67,8 @@ class CSVParser(TransactionsParser):
                 else:
                     transaction = Transaction.from_raw_data(*column, origin=file_name)
                 transactions.append(transaction)
+            logger.info(f"Extracted {len(transactions)} transactions")
+
             return transactions
         except Exception as e:
             logger.error(f"Failed to parse transactions file: {e}")
@@ -86,5 +90,6 @@ class CSVParser(TransactionsParser):
         try:
             file.seek(0)
         except Exception as e:
-            pass
+            logger.error(f"Failed to seek file: {e}")
+        
         return excel_df
