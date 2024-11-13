@@ -128,6 +128,7 @@ from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parse
     WellsFargoBankParser,
 )
 from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import YadBankFeedsParser
 from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,
 )
@@ -179,4 +180,5 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "vista": VistaBankParser,
     "webster": WebsterBankParser,
     "wells_fargo": WellsFargoBankParser,
+    "yad_bank_feeds": YadBankFeedsParser,
 }
