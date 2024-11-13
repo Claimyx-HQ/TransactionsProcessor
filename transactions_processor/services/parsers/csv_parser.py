@@ -40,30 +40,34 @@ class CSVParser(TransactionsParser):
         file_name: str | None = None,
         file_key: str | None = None,
     ) -> List[Transaction]:
-        self.file_name = file_name
+        try:
+            self.file_name = file_name
+            excel_df = self._parse_excel(file)
+        except Exception as e:
+            logger.error(f"Failed to parse file: {e}")
+        try:
+            column_indexes = [
+                self.date_col_index,
+                self.description_col_indx,
+                self.amount_col_index,
+                self.batch_col_index,
+                self.gl_account_col_index
+            ]
+            column_indexes = [index for index in column_indexes if index is not None]
 
-        excel_df = self._parse_excel(file)
-        column_indexes = [
-            self.date_col_index,
-            self.description_col_indx,
-            self.amount_col_index,
-            self.batch_col_index,
-            self.gl_account_col_index
-        ]
-        column_indexes = [index for index in column_indexes if index is not None]
+            important_columns = excel_df.iloc[:, column_indexes]
 
-        important_columns = excel_df.iloc[:, column_indexes]
-
-        important_columns = important_columns.dropna()  # Remove missing values (NaN)
-        transactions: List[Transaction] = []
-        for column in important_columns.to_numpy().tolist():
-            if self.gl_account_col_index is not None:
-                transaction = Transaction.from_raw_data(*column)
-            else:
-                transaction = Transaction.from_raw_data(*column, origin=file_name)
-            transactions.append(transaction)
-        return transactions
-
+            important_columns = important_columns.dropna()  # Remove missing values (NaN)
+            transactions: List[Transaction] = []
+            for column in important_columns.to_numpy().tolist():
+                if self.gl_account_col_index is not None:
+                    transaction = Transaction.from_raw_data(*column)
+                else:
+                    transaction = Transaction.from_raw_data(*column, origin=file_name)
+                transactions.append(transaction)
+            return transactions
+        except Exception as e:
+            logger.error(f"Failed to parse transactions file: {e}")
     def _parse_excel(self, file: BinaryIO) -> pd.DataFrame:
         excel_df = None
         try:
@@ -74,6 +78,8 @@ class CSVParser(TransactionsParser):
             file.seek(0)
             try:
                 excel_df = pd.read_csv(file)
+                logger.info(f"Parsed CSV data")
+
             except Exception as csv_e:
                 logger.error(f"Failed to parse file as CSV: {csv_e}")
                 raise ValueError(f"Failed to parse file as Excel or CSV: {e}, {csv_e}")
