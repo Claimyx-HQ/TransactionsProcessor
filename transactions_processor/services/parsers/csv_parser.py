@@ -68,6 +68,7 @@ class CSVParser(TransactionsParser):
                     transaction = Transaction.from_raw_data(*column, origin=file_name)
                 transactions.append(transaction)
             logger.info(f"Extracted {len(transactions)} transactions")
+
             return transactions
         except Exception as e:
             logger.error(f"Failed to parse transactions file: {e}")
