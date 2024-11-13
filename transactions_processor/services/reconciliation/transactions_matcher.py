@@ -41,8 +41,9 @@ class TransactionsMatcher:
         self,
         bank_transactions: List[Transaction],
         system_transactions: List[Transaction],
+        max_matches: int,
     ) -> ReconcilingMatches:
         matches = self._multi_transaction_matcher.find_one_to_many(
-            bank_transactions, system_transactions
+            bank_transactions, system_transactions, max_matches
         )
         return matches

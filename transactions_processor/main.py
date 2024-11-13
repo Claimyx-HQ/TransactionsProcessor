@@ -63,9 +63,13 @@ async def async_handler(event, context):
     try:
         logger.info(f"Received event: {event}")
 
-        system_transactions_data, bank_transactions_data, client_id, analysis_name = (
-            parse_lambda_event(event)
-        )
+        (
+            system_transactions_data,
+            bank_transactions_data,
+            client_id,
+            analysis_name,
+            analysis_options,
+        ) = parse_lambda_event(event)
 
         if not client_id:
             raise Exception("Client ID is required")
@@ -112,6 +116,7 @@ async def async_handler(event, context):
             bank_transactions,
             system_transactions,
             transaction_matcher,
+            analysis_options.get("maxPossibleTransactions", 5),
         )
 
         generated_excel = excel_controller.create_transaction_excel(
@@ -183,7 +188,14 @@ def parse_lambda_event(event):
     bank_transactions_data = body["bank_files"]
     client_id = body["client_id"]
     analysis_name = body["analysis_name"]
-    return system_transactions_data, bank_transactions_data, client_id, analysis_name
+    analysis_options = body["analysis_options"]
+    return (
+        system_transactions_data,
+        bank_transactions_data,
+        client_id,
+        analysis_name,
+        analysis_options,
+    )
 
 
 def retrieve_files(bucket_name, system_transactions_data, bank_transactions_data):
@@ -255,6 +267,7 @@ def find_matches(
     all_bank_transactions: List[Transaction],
     system_transactions: List[Transaction],
     transaction_matcher: TransactionsMatcher,
+    max_matches: int = 5,
 ):
     system_amounts = [transaction.amount for transaction in system_transactions]
     update_progress(client_id, "Matching", 0, request_id)
@@ -306,6 +319,7 @@ def find_matches(
     multi_matches = transaction_matcher.find_one_to_many_matches(
         matched_transactions.unmatched_bank,
         matched_transactions.unmatched_system,
+        max_matches=max_matches,
     )
 
     matches = {}

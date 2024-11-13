@@ -14,5 +14,6 @@ class MultiMatcher(ABC):
         self,
         bank_transactions: List[Transaction],
         system_transactions: List[Transaction],
+        max_matches: int,
     ) -> ReconcilingMatches:
         pass

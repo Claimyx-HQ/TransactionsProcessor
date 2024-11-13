@@ -18,8 +18,12 @@ def test_lambda_hander():
     client_id = "a"
     json_body = json.dumps(
         {
+            "analysis_name": "test",
             "system_file": system_transactions_data,
             "bank_files": bank_transactions_data,
+            "analysis_options": {
+                "maxPossibleTransactions": 5,
+            },
             "client_id": client_id,
         }
     )
