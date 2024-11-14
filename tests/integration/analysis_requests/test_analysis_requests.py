@@ -1,4 +1,3 @@
-from transactions_processor.data.requests_repository import RequestsRepository
 from transactions_processor.schemas.analysis_request import (
     AnalysisRequest,
     AnalysisRequestCreate,

@@ -31,6 +31,7 @@ class DefaultMultiMatcher(MultiMatcher):
     def process_chunk(
         chunk: List[float],
         system_transactions_groups: List[List[float]],
+        max_matches: int,
         conn,
         progress_dict: Dict,
         process_id: int,
@@ -47,7 +48,7 @@ class DefaultMultiMatcher(MultiMatcher):
                 )
                 update_progress(current_progress)
 
-            max_possibilities = 3 if bank_transaction <= 5000 else 5
+            max_possibilities = 3 if bank_transaction <= 5000 else max_matches
             possible_matches = []
             for system_transactions in system_transactions_groups:
                 ReconciliationUtils.find_matches_n_sum(
@@ -68,6 +69,7 @@ class DefaultMultiMatcher(MultiMatcher):
         self,
         bank_transactions: List[Transaction],
         system_transactions_groups: List[List[Transaction]],
+        max_matches: int,
         system_transactions: List[Transaction],
     ):
         bank_amounts = [transaction.amount for transaction in bank_transactions]
@@ -79,7 +81,7 @@ class DefaultMultiMatcher(MultiMatcher):
             system_amounts_groups.append([transaction.amount for transaction in group])
 
         matches = self._run_reconciliation_processes(
-            bank_amounts, system_amounts_groups, self.update_progress
+            bank_amounts, system_amounts_groups, max_matches, self.update_progress
         )
 
         validated_matches: Dict[float, List[float]] = {}
@@ -135,13 +137,17 @@ class DefaultMultiMatcher(MultiMatcher):
         self,
         bank_transactions: List[Transaction],
         system_transactions: List[Transaction],
+        max_matches: int,
     ) -> ReconcilingMatches:
         grouped_transactions = ReconciliationUtils.group_by_description(
             system_transactions
         )
         validated_matches, unmatched_bank_amounts, unmatched_system_amounts = (
             self.reoncile_transactions(
-                bank_transactions, grouped_transactions, system_transactions
+                bank_transactions,
+                grouped_transactions,
+                max_matches,
+                system_transactions,
             )
         )
 
@@ -154,6 +160,7 @@ class DefaultMultiMatcher(MultiMatcher):
         self,
         bank_amounts: List[float],
         system_amounts_groups: List[List[float]],
+        max_matches: int,
         update_progress: Callable[[float], None] | None = None,
     ) -> Dict[float, List[List[float]]]:
         num_processes = multiprocessing.cpu_count() * 2
@@ -176,6 +183,7 @@ class DefaultMultiMatcher(MultiMatcher):
                 args=(
                     chunk,
                     system_amounts_groups,
+                    max_matches,
                     child_conn,
                     progress_dict,
                     i,

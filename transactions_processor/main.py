@@ -69,6 +69,7 @@ async def async_handler(event, context):
             bank_transactions_data,
             client_id,
             analysis_name,
+            analysis_options,
             excluded,
         ) = parse_lambda_event(event)
 
@@ -118,6 +119,7 @@ async def async_handler(event, context):
             bank_transactions,
             system_transactions,
             transaction_matcher,
+            analysis_options.get("maxPossibleTransactions", 5),
             excluded,
         )
         generated_excel = excel_controller.create_transaction_excel(
@@ -189,12 +191,14 @@ def parse_lambda_event(event):
     bank_transactions_data = body["bank_files"]
     client_id = body["client_id"]
     analysis_name = body["analysis_name"]
+    analysis_options = body["analysis_options"]
     excluded = body["exclusions"]
     return (
         system_transactions_data,
         bank_transactions_data,
         client_id,
         analysis_name,
+        analysis_options,
         excluded,
     )
 
@@ -268,6 +272,7 @@ def find_matches(
     bank_transactions: List[Transaction],
     system_transactions: List[Transaction],
     transaction_matcher: TransactionsMatcher,
+    max_matches: int = 5,
     excluded: ExcludedDescriptions,
 ):
     excluded_bank_descriptions_map = {}
@@ -355,6 +360,7 @@ def find_matches(
     multi_matches = transaction_matcher.find_one_to_many_matches(
         matched_transactions.unmatched_bank,
         matched_transactions.unmatched_system,
+        max_matches=max_matches,
     )
 
     # matches = {}
