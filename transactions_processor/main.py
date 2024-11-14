@@ -119,8 +119,8 @@ async def async_handler(event, context):
             bank_transactions,
             system_transactions,
             transaction_matcher,
-            analysis_options.get("maxPossibleTransactions", 5),
             excluded,
+            analysis_options.get("maxPossibleTransactions", 5),
         )
         generated_excel = excel_controller.create_transaction_excel(
             data, None, bank_name, system_name
@@ -272,8 +272,8 @@ def find_matches(
     bank_transactions: List[Transaction],
     system_transactions: List[Transaction],
     transaction_matcher: TransactionsMatcher,
-    max_matches: int = 5,
     excluded: ExcludedDescriptions,
+    max_matches: int = 5,
 ):
     excluded_bank_descriptions_map = {}
     excluded_system_descriptions_map = {}
