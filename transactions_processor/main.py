@@ -9,6 +9,7 @@ from transactions_processor.schemas.analysis_request import (
     AnalysisRequestCreate,
 )
 from transactions_processor.schemas.transaction import Transaction
+from transactions_processor.schemas.transactions_matcher import ExcludedDescriptions
 from transactions_processor.services.analysis_requests_service import (
     AnalysisRequestsService,
 )
@@ -69,6 +70,7 @@ async def async_handler(event, context):
             client_id,
             analysis_name,
             analysis_options,
+            excluded,
         ) = parse_lambda_event(event)
 
         if not client_id:
@@ -85,6 +87,7 @@ async def async_handler(event, context):
                 parameters={
                     "system_file": system_transactions_data,
                     "bank_files": bank_transactions_data,
+                    "excluded": excluded,
                 },
                 name=analysis_name,
             )
@@ -117,8 +120,8 @@ async def async_handler(event, context):
             system_transactions,
             transaction_matcher,
             analysis_options.get("maxPossibleTransactions", 5),
+            excluded,
         )
-
         generated_excel = excel_controller.create_transaction_excel(
             data, None, bank_name, system_name
         )
@@ -135,7 +138,7 @@ async def async_handler(event, context):
             {
                 "matches": {
                     "one_to_one": len(data["matches"]["one_to_one"]),
-                    "multi_to_one": len(data["matches"]["multi_to_one"]),
+                    "many_to_many": len(data["matches"]["many_to_many"]),
                     "unmatched_system": len(data["matches"]["unmatched_system"]),
                     "unmatched_bank": len(data["matches"]["unmatched_bank"]),
                 },
@@ -160,7 +163,7 @@ async def async_handler(event, context):
 
     except Exception as e:
         error_code = generate_error_code(e)
-        logger.error(
+        logger.opt(exception=True).error(
             f"Failed to process transactions: {e}, error code: {error_code}, event: {event}"
         )
         if analysis_request:
@@ -189,12 +192,14 @@ def parse_lambda_event(event):
     client_id = body["client_id"]
     analysis_name = body["analysis_name"]
     analysis_options = body["analysis_options"]
+    excluded = body["exclusions"]
     return (
         system_transactions_data,
         bank_transactions_data,
         client_id,
         analysis_name,
         analysis_options,
+        excluded,
     )
 
 
@@ -264,38 +269,78 @@ def process_file(file_content):
 def find_matches(
     client_id: str,
     request_id: str,
-    all_bank_transactions: List[Transaction],
+    bank_transactions: List[Transaction],
     system_transactions: List[Transaction],
     transaction_matcher: TransactionsMatcher,
     max_matches: int = 5,
+    excluded: ExcludedDescriptions,
 ):
-    system_amounts = [transaction.amount for transaction in system_transactions]
+    excluded_bank_descriptions_map = {}
+    excluded_system_descriptions_map = {}
+    for key, value in excluded["bank"].items():
+        for description in value:
+            excluded_bank_descriptions_map[description] = key
+    for key, value in excluded["system"].items():
+        for description in value:
+            excluded_system_descriptions_map[description] = key
+    excluded_transactions = {"system": {}, "bank": {}}
+    valid_bank_transactions = []
+    valid_system_transactions = []
+    for transaction in bank_transactions:
+        if transaction.description in excluded_bank_descriptions_map:
+
+            excluded_transactions["bank"][
+                excluded_bank_descriptions_map[transaction.description]
+            ] = excluded_transactions["bank"].get(
+                excluded_bank_descriptions_map[transaction.description], []
+            )
+            excluded_transactions["bank"][
+                excluded_bank_descriptions_map[transaction.description]
+            ].append(transaction)
+        else:
+            valid_bank_transactions.append(transaction)
+
+    for transaction in system_transactions:
+        if transaction.description in excluded_system_descriptions_map:
+            excluded_transactions["system"][
+                excluded_system_descriptions_map[transaction.description]
+            ] = excluded_transactions["system"].get(
+                excluded_system_descriptions_map[transaction.description], []
+            )
+            excluded_transactions["system"][
+                excluded_system_descriptions_map[transaction.description]
+            ].append(transaction)
+        else:
+            valid_system_transactions.append(transaction)
+
     update_progress(client_id, "Matching", 0, request_id)
     logger.debug(
-        f"Finding matches, system: {len(system_transactions)}, bank: {len(all_bank_transactions)}"
+        f"Finding matches, system: {len(valid_system_transactions)}, bank: {len(valid_bank_transactions)}"
     )
     matched_transactions = transaction_matcher.find_one_to_one_matches(
-        all_bank_transactions, system_transactions
+        valid_bank_transactions, valid_system_transactions
     )
 
     # TODO: this is a hack until excel parser will handle transactions instead of amounts
-    perfect_matches = [
-        transaction[0].amount for transaction in matched_transactions.matched
-    ]
-    unmatched_bank_amounts = [
-        transaction.amount for transaction in matched_transactions.unmatched_bank
-    ]
-    unmatched_system_amounts = [
-        transaction.amount for transaction in matched_transactions.unmatched_system
-    ]
-    zero_and_negative_system_amounts = [
-        amount for amount in unmatched_system_amounts if amount <= 0
-    ]
-    unmatched_system_amounts = [
-        amount for amount in unmatched_system_amounts if amount > 0
-    ]
+    # perfect_matches = [
+    #     transaction[0].amount for transaction in matched_transactions.matched
+    # ]
+    # unmatched_bank_amounts = [
+    #     transaction.amount for transaction in matched_transactions.unmatched_bank
+    # ]
+    # unmatched_system_amounts = [
+    #     transaction.amount for transaction in matched_transactions.unmatched_system
+    # ]
+    # zero_and_negative_system_amounts = [
+    #     amount for amount in unmatched_system_amounts if amount <= 0
+    # ]
+    # unmatched_system_amounts = [
+    #     amount for amount in unmatched_system_amounts if amount > 0
+    # ]
 
-    logger.debug(f"Matching complete, perfect matches: {len(perfect_matches)}")
+    logger.debug(
+        f"Matching complete, perfect matches: {len(matched_transactions.matched)}"
+    )
 
     update_progress(client_id, "Matching", 100, request_id)
     update_progress(client_id, "Reconciling", 0, request_id)
@@ -312,47 +357,46 @@ def find_matches(
     #     ),
     # )
     #
-    logger.debug(f"perfect matches: {perfect_matches}")
-    logger.debug(
-        f"finding matches for banks: {unmatched_bank_amounts},\n system: {unmatched_system_amounts}"
-    )
     multi_matches = transaction_matcher.find_one_to_many_matches(
         matched_transactions.unmatched_bank,
         matched_transactions.unmatched_system,
         max_matches=max_matches,
     )
 
-    matches = {}
-    for transaction in multi_matches.matched:
-        matches[transaction[0][0].amount] = [t.amount for t in transaction[1]]
-    unmatched_system_amounts = [
-        transaction.amount for transaction in multi_matches.unmatched_system
-    ]
-    unmatched_bank_amounts = [
-        transaction.amount for transaction in multi_matches.unmatched_bank
-    ]
+    # matches = {}
+    # for transaction in multi_matches.matched:
+    #     matches[transaction[0][0].amount] = [t.amount for t in transaction[1]]
+    # unmatched_system_amounts = [
+    #     transaction.amount for transaction in multi_matches.unmatched_system
+    # ]
+    # unmatched_bank_amounts = [
+    #     transaction.amount for transaction in multi_matches.unmatched_bank
+    # ]
 
     # TODO: this is a hack until excel parser will handle transactions instead of amounts
     # unmatched_system_amounts.extend(zero_and_negative_system_amounts)
 
     logger.info(
         f"""
-        "transactions": "system": {len(system_transactions)}, "bank": {len(all_bank_transactions)},
+        "transactions": "system": {len(system_transactions)}, "bank": {len(bank_transactions)},
+        "valid_transactions": "system": {len(valid_system_transactions)}, "bank": {len(valid_bank_transactions)},
         "matches": 
-            "one_to_one": {len(perfect_matches)},
-            "multi_to_one": {len(matches)},
-            "unmatched_system": {len(unmatched_system_amounts)},
-            "unmatched_bank": {len(unmatched_bank_amounts)},
+            "one_to_one": {len(matched_transactions.matched)},
+            "many_to_many": {len(multi_matches.matched)},
+            "unmatched_system": {len(multi_matches.unmatched_system)},
+            "unmatched_bank": {len(multi_matches.unmatched_bank)},
+            'excluded': {excluded_transactions},
         ,
     """
     )
     return {
-        "transactions": {"system": system_transactions, "bank": all_bank_transactions},
+        "transactions": {"system": system_transactions, "bank": bank_transactions},
         "matches": {
-            "one_to_one": perfect_matches,
-            "multi_to_one": matches,
-            "unmatched_system": unmatched_system_amounts,
-            "unmatched_bank": unmatched_bank_amounts,
+            "one_to_one": matched_transactions.matched,
+            "many_to_many": multi_matches.matched,
+            "unmatched_system": multi_matches.unmatched_system,
+            "unmatched_bank": multi_matches.unmatched_bank,
+            "excluded": excluded_transactions,
         },
     }
 
