@@ -277,12 +277,12 @@ def find_matches(
 ):
     excluded_bank_descriptions_map = {}
     excluded_system_descriptions_map = {}
-    for key, value in excluded["bank"].items():
-        for description in value:
-            excluded_bank_descriptions_map[description] = key
-    for key, value in excluded["system"].items():
-        for description in value:
-            excluded_system_descriptions_map[description] = key
+    for exclusion in excluded["bank"]:
+        for description in exclusion["values"]:
+            excluded_bank_descriptions_map[description] = exclusion["key"]
+    for exclusion in excluded["system"]:
+        for description in exclusion["values"]:
+            excluded_system_descriptions_map[description] = exclusion["key"]
     excluded_transactions = {"system": {}, "bank": {}}
     valid_bank_transactions = []
     valid_system_transactions = []
