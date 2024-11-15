@@ -275,42 +275,42 @@ def find_matches(
     excluded: ExcludedDescriptions,
     max_matches: int = 5,
 ):
-    excluded_bank_descriptions_map = {}
-    excluded_system_descriptions_map = {}
+    excluded_bank_descriptions = []
+    excluded_system_descriptions = []
     for exclusion in excluded["bank"]:
         for description in exclusion["values"]:
-            excluded_bank_descriptions_map[description] = exclusion["key"]
+            excluded_bank_descriptions.append(description.lower())
     for exclusion in excluded["system"]:
         for description in exclusion["values"]:
-            excluded_system_descriptions_map[description] = exclusion["key"]
+            excluded_system_descriptions.append(description.lower())
     excluded_transactions = {"system": {}, "bank": {}}
     valid_bank_transactions = []
     valid_system_transactions = []
+    # TODO: This can be done in parallel and could be optimized using a trie
     for transaction in bank_transactions:
-        if transaction.description in excluded_bank_descriptions_map:
-
-            excluded_transactions["bank"][
-                excluded_bank_descriptions_map[transaction.description]
-            ] = excluded_transactions["bank"].get(
-                excluded_bank_descriptions_map[transaction.description], []
-            )
-            excluded_transactions["bank"][
-                excluded_bank_descriptions_map[transaction.description]
-            ].append(transaction)
-        else:
+        is_excluded = False
+        for description in excluded_bank_descriptions:
+            if description in transaction.description.lower():
+                excluded_transactions["bank"][description] = excluded_transactions[
+                    "bank"
+                ].get(description, [])
+                excluded_transactions["bank"][description].append(transaction)
+                is_excluded = True
+                break
+        if not is_excluded:
             valid_bank_transactions.append(transaction)
 
     for transaction in system_transactions:
-        if transaction.description in excluded_system_descriptions_map:
-            excluded_transactions["system"][
-                excluded_system_descriptions_map[transaction.description]
-            ] = excluded_transactions["system"].get(
-                excluded_system_descriptions_map[transaction.description], []
-            )
-            excluded_transactions["system"][
-                excluded_system_descriptions_map[transaction.description]
-            ].append(transaction)
-        else:
+        is_excluded = False
+        for description in excluded_system_descriptions:
+            if description in transaction.description.lower():
+                excluded_transactions["system"][description] = excluded_transactions[
+                    "system"
+                ].get(description, [])
+                excluded_transactions["system"][description].append(transaction)
+                is_excluded = True
+                break
+        if not is_excluded:
             valid_system_transactions.append(transaction)
 
     update_progress(client_id, "Matching", 0, request_id)

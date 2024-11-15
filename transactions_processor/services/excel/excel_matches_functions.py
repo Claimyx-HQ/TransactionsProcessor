@@ -430,31 +430,27 @@ class ExcelMatchesAlocator:
                             logger.debug(
                                 f"key_in_excluded_system: {key_in_excluded_system}"
                             )
-                            system_row_index = (
-                                ExcelMatchesAlocator._excluded_transactions(
-                                    excluded_transactions=excluded_transactions,
-                                    worksheet=worksheet,
-                                    transactions=system_transactions,
-                                    row_index=system_row_index,
-                                    start_col_index=system_start_col_index,
-                                    excluded_transactions_table_name="system",
-                                    grouped_by=key_in_excluded_system,
-                                )
+                            system_row_index = ExcelMatchesAlocator._excluded_transactions(
+                                excluded_transactions=excluded_transactions,
+                                worksheet=worksheet,
+                                transactions=system_transactions,
+                                row_index=system_row_index,
+                                start_col_index=system_start_col_index,
+                                excluded_transactions_table_name=f"system_{key_in_excluded_system}",
+                                grouped_by=key_in_excluded_system,
                             )
                     elif key_in_excluded == "bank":
                         for key_in_excluded_bank, excluded_transactions in data_dict[
                             "matches"
                         ]["excluded"]["bank"].items():
-                            bank_row_index = (
-                                ExcelMatchesAlocator._excluded_transactions(
-                                    excluded_transactions=excluded_transactions,
-                                    worksheet=worksheet,
-                                    transactions=bank_transactions,
-                                    row_index=bank_row_index,
-                                    start_col_index=bank_start_col_index,
-                                    excluded_transactions_table_name="bank",
-                                    grouped_by=key_in_excluded_bank,
-                                )
+                            bank_row_index = ExcelMatchesAlocator._excluded_transactions(
+                                excluded_transactions=excluded_transactions,
+                                worksheet=worksheet,
+                                transactions=bank_transactions,
+                                row_index=bank_row_index,
+                                start_col_index=bank_start_col_index,
+                                excluded_transactions_table_name=f"bank_{key_in_excluded_bank}",
+                                grouped_by=key_in_excluded_bank,
                             )
             else:
                 raise ValueError(f"Unknown key: {key}")
