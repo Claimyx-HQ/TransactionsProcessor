@@ -48,7 +48,8 @@ class DefaultMultiMatcher(MultiMatcher):
                 )
                 update_progress(current_progress)
 
-            max_possibilities = 3 if bank_transaction <= 5000 else max_matches
+            # max_possibilities = 3 if bank_transaction <= 5000 else max_matches
+            max_possibilities = max_matches
             possible_matches = []
             for system_transactions in system_transactions_groups:
                 ReconciliationUtils.find_matches_n_sum(
