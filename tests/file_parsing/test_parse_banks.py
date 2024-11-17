@@ -144,10 +144,11 @@ from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parse
     WellsFargoBankParser,
 )
 
-from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import YadBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser_csv import YadBankFeedsParserCSV
 
 from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
 from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import MTBankParser
+from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser_pdf import YadBankFeedsParserPDF
 
 
 
@@ -290,7 +291,7 @@ def test_parse_bank_feeds():
     file.close()
 
 
-def test_parse_yad_bank_feeds():
+def test_parse_yad_bank_feeds_csv():
 
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/yad/YAD Feeds.xlsx"
@@ -301,14 +302,14 @@ def test_parse_yad_bank_feeds():
         amount=10063.42,
         uuid="09b5dfd9-49c3-426d-81dc-4fe8f9f4f520",
     )
-    parser = YadBankFeedsParser()
+    parser = YadBankFeedsParserCSV()
 
     transactions = parser.parse_transactions(file, "YAD Feeds.xlsx")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
-def test_parse_yad_bank_feeds1():
+def test_parse_yad_bank_feeds_csv1():
 
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/yad/YAD Feeds 1.xlsx"
@@ -321,10 +322,31 @@ def test_parse_yad_bank_feeds1():
         batch_number=None,
         origin='399021957',
     )
-    parser = YadBankFeedsParser()
+    parser = YadBankFeedsParserCSV()
 
     transactions = parser.parse_transactions(file, "YAD Feeds 1.xlsx")
     parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+def test_parse_yad_bank_feeds_pdf():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/yad/emp 2.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 30, 0, 0),
+        description="Direct Deposit - JM MAC VA/WV - P HCCLAIMPMT 240930 CCD 495375",
+        amount=12388.46,
+        uuid="",
+        batch_number=None,
+        origin='399021957',
+    )
+    parser = YadBankFeedsParserPDF()
+
+    transactions = parser.parse_transactions(file, "emp 2.pdf")
+    parsed_transaction = transactions[0]
+    print("all transaction", transactions)
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
@@ -1107,3 +1129,4 @@ def test_parse_citadel_webster_bank_feeds():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+    
