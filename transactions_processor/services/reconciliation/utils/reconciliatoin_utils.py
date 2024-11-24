@@ -45,8 +45,8 @@ class ReconciliationUtils:
             grouped_transactions[key].append(transaction)
 
         # remove single transactions
-        # grouped_transactions = {
-        #     k: v for k, v in grouped_transactions.items() if len(v) > 1
-        # }
+        grouped_transactions = {
+            k: v for k, v in grouped_transactions.items() if len(v) > 1
+        }
 
         return list(grouped_transactions.values())

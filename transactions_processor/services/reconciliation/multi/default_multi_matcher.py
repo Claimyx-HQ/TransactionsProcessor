@@ -73,22 +73,41 @@ class DefaultMultiMatcher(MultiMatcher):
         max_matches: int,
         system_transactions: List[Transaction],
     ):
+        validated_matches: Dict[float, List[float]] = {}
         bank_amounts = [transaction.amount for transaction in bank_transactions]
-        # system_amounts = [transaction.amount for transaction in system_transactions]
-        system_amounts = []
+        system_amounts = [transaction.amount for transaction in system_transactions]
         system_amounts_groups = []
         for group in system_transactions_groups:
-            system_amounts.extend([transaction.amount for transaction in group])
-            system_amounts_groups.append([transaction.amount for transaction in group])
+            group_system_amounts = [transaction.amount for transaction in group]
+            system_amounts_groups.append(group_system_amounts)
 
         matches = self._run_reconciliation_processes(
             bank_amounts, system_amounts_groups, max_matches, self.update_progress
         )
 
-        validated_matches: Dict[float, List[float]] = {}
+        unmatched_bank_amounts, unmatched_system_amounts = self._find_validated_matches(
+            validated_matches, system_amounts, bank_amounts, matches
+        )
 
+        # run the reconciliation process again with the unmatched transactions
+        unmatche_system_amounts_group = [unmatched_system_amounts]
+        matches = self._run_reconciliation_processes(
+            unmatched_bank_amounts,
+            unmatche_system_amounts_group,
+            max_matches,
+            self.update_progress,
+        )
+
+        unmatched_bank_amounts, unmatched_system_amounts = self._find_validated_matches(
+            validated_matches, unmatched_system_amounts, unmatched_bank_amounts, matches
+        )
+
+        return validated_matches, unmatched_bank_amounts, unmatched_system_amounts
+
+    def _find_validated_matches(
+        self, validated_matches, system_amounts, bank_amounts, matches
+    ):
         unused_amounts = {}
-
         # Count possible amounts from system transactions to be used for reconciliation
         for amount in system_amounts:
             unused_amounts[amount] = unused_amounts.get(amount, 0) + 1
@@ -132,7 +151,7 @@ class DefaultMultiMatcher(MultiMatcher):
 
         logger.info(f"validated_matches: {validated_matches}")
 
-        return validated_matches, bank_amounts, system_amounts
+        return bank_amounts, system_amounts
 
     def find_one_to_many(
         self,
