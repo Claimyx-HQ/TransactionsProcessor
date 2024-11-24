@@ -192,7 +192,7 @@ def parse_lambda_event(event):
     client_id = body["client_id"]
     analysis_name = body["analysis_name"]
     analysis_options = body["analysis_options"]
-    excluded = body["exclusions"]
+    excluded = ExcludedDescriptions.model_validate(body["exclusions"])
     return (
         system_transactions_data,
         bank_transactions_data,
