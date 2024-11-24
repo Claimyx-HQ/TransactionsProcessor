@@ -18,6 +18,11 @@ class ReconcilingMatches(BaseModel):
     unmatched_system: List[Transaction]
 
 
+class ExcludedGroup(BaseModel):
+    key: str
+    values: List[str]
+
+
 class ExcludedDescriptions(BaseModel):
-    bank: Dict[str, List[str]]
-    system: Dict[str, List[str]]
+    bank: List[ExcludedGroup]
+    system: List[ExcludedGroup]

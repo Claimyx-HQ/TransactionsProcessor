@@ -277,11 +277,11 @@ def find_matches(
 ):
     excluded_bank_descriptions = []
     excluded_system_descriptions = []
-    for exclusion in excluded["bank"]:
-        for description in exclusion["values"]:
+    for exclusion in excluded.bank:
+        for description in exclusion.values:
             excluded_bank_descriptions.append(description.lower())
-    for exclusion in excluded["system"]:
-        for description in exclusion["values"]:
+    for exclusion in excluded.system:
+        for description in exclusion.values:
             excluded_system_descriptions.append(description.lower())
     excluded_transactions = {"system": {}, "bank": {}}
     valid_bank_transactions = []
