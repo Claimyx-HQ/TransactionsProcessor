@@ -20,6 +20,9 @@ from transactions_processor.services.parsers.bank_parsers.bank_of_texas_parser i
 from transactions_processor.services.parsers.bank_parsers.bankwell_bank_parser import (
     BankWellBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.bhi_bank_feed_parser import (
+    BHIBankFeedParser,
+)
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
 )
@@ -38,9 +41,15 @@ from transactions_processor.services.parsers.bank_parsers.chase_bank_parser impo
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
     CIBCBankParser,
 )
-from transactions_processor.services.parsers.bank_parsers.citadel_truist_bank_feeds_parser import CitadelTruistBankFeedsParser
-from transactions_processor.services.parsers.bank_parsers.citadel_valley_bank_feeds_parser import CitadelValleyBankFeedsParser
-from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_feeds_parser import CitadelWebsterBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.citadel_truist_bank_feeds_parser import (
+    CitadelTruistBankFeedsParser,
+)
+from transactions_processor.services.parsers.bank_parsers.citadel_valley_bank_feeds_parser import (
+    CitadelValleyBankFeedsParser,
+)
+from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_feeds_parser import (
+    CitadelWebsterBankFeedsParser,
+)
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
@@ -65,7 +74,9 @@ from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import (
     ForbrightBankParser,
 )
-from transactions_processor.services.parsers.bank_parsers.fortis_bank_parser import FortisBankParser
+from transactions_processor.services.parsers.bank_parsers.fortis_bank_parser import (
+    FortisBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.hancock_whitney_bank_parser import (
     HancockWhitneyBankParser,
 )
@@ -144,11 +155,16 @@ from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parse
     WellsFargoBankParser,
 )
 
-from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import YadBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import (
+    YadBankFeedsParser,
+)
 
-from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
-from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import MTBankParser
-
+from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import (
+    WorkdayBankFeedsParser,
+)
+from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import (
+    MTBankParser,
+)
 
 
 def _check_the_test(first_transaction, parsed_transaction):
@@ -308,6 +324,7 @@ def test_parse_yad_bank_feeds():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+
 def test_parse_yad_bank_feeds1():
 
     logger = logging.getLogger(__name__)
@@ -319,7 +336,7 @@ def test_parse_yad_bank_feeds1():
         amount=12388.46,
         uuid="",
         batch_number=None,
-        origin='399021957',
+        origin="399021957",
     )
     parser = YadBankFeedsParser()
 
@@ -327,6 +344,7 @@ def test_parse_yad_bank_feeds1():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+
 
 def test_parse_workday_bank_feeds():
 
@@ -339,7 +357,7 @@ def test_parse_workday_bank_feeds():
         amount=1400.0,
         uuid="423d74f7-797f-411a-ae3d-05918ca72baa",
         batch_number="20060285 Wilke DEP Connect X6635",
-        origin="Workday Bank Feeds1.xlsx"
+        origin="Workday Bank Feeds1.xlsx",
     )
     parser = WorkdayBankFeedsParser()
 
@@ -866,7 +884,8 @@ def test_parse_bank_of_texas():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
-def test_parse_bank_of_bok_financial(): # This bank has the same parser that Bank of Texas has
+
+def test_parse_bank_of_bok_financial():  # This bank has the same parser that Bank of Texas has
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/bok_financial/BOK Financial Operating.pdf"
     file = open(file_path, "rb")
@@ -876,7 +895,7 @@ def test_parse_bank_of_bok_financial(): # This bank has the same parser that Ban
         amount=5331.0,
         uuid="6b399e04-f60f-4729-8e0d-e2bbe4edfd9e",
         batch_number=None,
-        origin="BOK Financial Operating.pdf"
+        origin="BOK Financial Operating.pdf",
     )
     parser = BankOfTexasParser()
     transactions = parser.parse_transactions(file, "BOK Financial Operating.pdf")
@@ -917,8 +936,8 @@ def test_parse_bankwell_bank():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
-    
-    
+
+
 def test_parse_bankwell_bank2():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/bankwell/775 Dep.pdf"
@@ -1020,6 +1039,7 @@ def test_parse_capital_one_bank():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+
 def test_parse_mt_bank():
     logger = logging.getLogger(__name__)
     file_path = "tests/data/banks/m&t/mt.pdf"
@@ -1034,9 +1054,9 @@ def test_parse_mt_bank():
     transactions = parser.parse_transactions(file)
     parsed_transaction = transactions[0]
 
-
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+
 
 def test_parse_fortis_bank():
     logger = logging.getLogger(__name__)
@@ -1053,6 +1073,7 @@ def test_parse_fortis_bank():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+
 
 def test_parse_citadel_truist_bank_feeds():
 
@@ -1072,6 +1093,7 @@ def test_parse_citadel_truist_bank_feeds():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+
 def test_parse_citadel_valley_bank_feeds():
 
     logger = logging.getLogger(__name__)
@@ -1090,6 +1112,7 @@ def test_parse_citadel_valley_bank_feeds():
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
 
+
 def test_parse_citadel_webster_bank_feeds():
 
     logger = logging.getLogger(__name__)
@@ -1104,6 +1127,25 @@ def test_parse_citadel_webster_bank_feeds():
     parser = CitadelWebsterBankFeedsParser()
 
     transactions = parser.parse_transactions(file, "Citadel Webster Feeds.csv")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_bhi_bank_feeds():
+
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/bhi/bhi_bank_feed.xlsx"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 11, 4, 0, 0),
+        description="INCOMING ACH CREDIT",
+        amount=187.77,
+        uuid="",
+        batch_number=2141563300,
+    )
+    parser = BHIBankFeedParser()
+    transactions = parser.parse_transactions(file, "bhi_bank_feed.xlsx")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
