@@ -8,9 +8,14 @@ from transactions_processor.services.parsers.bank_parsers.bank_feeds_parser impo
 from transactions_processor.services.parsers.bank_parsers.bank_of_america_merrill_lynch_parser import (
     BankOfAmericaMerrillLynchParser,
 )
-from transactions_processor.services.parsers.bank_parsers.bank_of_texas_parser import BankOfTexasParser
+from transactions_processor.services.parsers.bank_parsers.bank_of_texas_parser import (
+    BankOfTexasParser,
+)
 from transactions_processor.services.parsers.bank_parsers.bankwell_bank_parser import (
     BankWellBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.bhi_bank_feed_parser import (
+    BHIBankFeedParser,
 )
 from transactions_processor.services.parsers.bank_parsers.bhi_bank_parser import (
     BHIBankParser,
@@ -30,9 +35,15 @@ from transactions_processor.services.parsers.bank_parsers.chase_bank_parser impo
 from transactions_processor.services.parsers.bank_parsers.cibc_bank_parser import (
     CIBCBankParser,
 )
-from transactions_processor.services.parsers.bank_parsers.citadel_truist_bank_feeds_parser import CitadelTruistBankFeedsParser
-from transactions_processor.services.parsers.bank_parsers.citadel_valley_bank_feeds_parser import CitadelValleyBankFeedsParser
-from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_feeds_parser import CitadelWebsterBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.citadel_truist_bank_feeds_parser import (
+    CitadelTruistBankFeedsParser,
+)
+from transactions_processor.services.parsers.bank_parsers.citadel_valley_bank_feeds_parser import (
+    CitadelValleyBankFeedsParser,
+)
+from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_feeds_parser import (
+    CitadelWebsterBankFeedsParser,
+)
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
@@ -57,7 +68,9 @@ from transactions_processor.services.parsers.bank_parsers.flagstar_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.forbright_bank_parser import (
     ForbrightBankParser,
 )
-from transactions_processor.services.parsers.bank_parsers.fortis_bank_parser import FortisBankParser
+from transactions_processor.services.parsers.bank_parsers.fortis_bank_parser import (
+    FortisBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.hancock_whitney_bank_parser import (
     HancockWhitneyBankParser,
 )
@@ -79,7 +92,9 @@ from transactions_processor.services.parsers.bank_parsers.midfirst_bank_parser i
 from transactions_processor.services.parsers.bank_parsers.midwest_bank_parser import (
     MidwestBankParser,
 )
-from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import MTBankParser
+from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import (
+    MTBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.old_national_bank_parser import (
     OldNationalBankParser,
 )
@@ -131,14 +146,19 @@ from transactions_processor.services.parsers.bank_parsers.webster_bank_parser im
 from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import (
     WellsFargoBankParser,
 )
-from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import WorkdayBankFeedsParser
-from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import YadBankFeedsParser
+from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import (
+    WorkdayBankFeedsParser,
+)
+from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import (
+    YadBankFeedsParser,
+)
 from transactions_processor.services.parsers.transactions_parser import (
     TransactionsParser,
 )
 
 bank_parsers: Dict[str, type[TransactionsParser]] = {
     "amalgamated": AmalgamatedBankParser,
+    "bhi_bank_feeds": BHIBankFeedParser,
     "bank_feed": BankFeedsParser,
     "bank_of_america": BankOfAmericaMerrillLynchParser,
     "bank_of_texas": BankOfTexasParser,
