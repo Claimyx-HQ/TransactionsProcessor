@@ -16,7 +16,7 @@ class ReconciliationUtils:
     ) -> Any:
         copy_path = path.copy()
         if index == len(nums) or max == 0:
-            if target == 0:
+            if target == 0 and len(copy_path) > 0:
                 matches.append(copy_path)
         else:
             ReconciliationUtils.find_matches_n_sum(
