@@ -158,7 +158,7 @@ async def async_handler(event, context):
         )
 
         logger.info(
-            f"Successfully processed transactions, system_data: {system_transactions_data}, bank_data: {bank_transactions_data}"
+            f"Successfully processed transactions, system_data: {system_transactions_data}, bank_data: {bank_transactions_data}, result_file_key: {result_file_key}"
         )
 
     except Exception as e:
@@ -345,35 +345,12 @@ def find_matches(
     update_progress(client_id, "Matching", 100, request_id)
     update_progress(client_id, "Reconciling", 0, request_id)
 
-    # (
-    #     matches,
-    #     unmatched_bank_amounts,
-    #     unmatched_system_amounts,
-    # ) = transaction_matcher.find_reconciling_matches(
-    #     unmatched_bank_amounts,
-    #     unmatched_system_amounts,
-    #     lambda progress: update_progress(
-    #         client_id, "Reconciling", progress, request_id
-    #     ),
-    # )
-    #
     multi_matches = transaction_matcher.find_one_to_many_matches(
         matched_transactions.unmatched_bank,
         matched_transactions.unmatched_system,
         max_matches=max_matches,
     )
 
-    # matches = {}
-    # for transaction in multi_matches.matched:
-    #     matches[transaction[0][0].amount] = [t.amount for t in transaction[1]]
-    # unmatched_system_amounts = [
-    #     transaction.amount for transaction in multi_matches.unmatched_system
-    # ]
-    # unmatched_bank_amounts = [
-    #     transaction.amount for transaction in multi_matches.unmatched_bank
-    # ]
-
-    # TODO: this is a hack until excel parser will handle transactions instead of amounts
     # unmatched_system_amounts.extend(zero_and_negative_system_amounts)
 
     logger.info(

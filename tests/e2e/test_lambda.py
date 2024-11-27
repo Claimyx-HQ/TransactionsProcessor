@@ -27,7 +27,8 @@ def test_lambda_hander():
             "client_id": client_id,
             "analysis_name": "test_analysis",
             "exclusions": {
-                "system": [{"key": "test", "values": ["credit", "rfms"]}],
+                # "system": [{"key": "test", "values": ["credit", "rfms"]}],
+                "system": [],
                 "bank": [],
             },
         }
