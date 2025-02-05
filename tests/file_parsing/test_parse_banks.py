@@ -53,6 +53,9 @@ from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_f
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.city_wide_bank_parser import (
+    CityWideBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parser import (
     ConnectOneBankParser,
 )
@@ -106,6 +109,9 @@ from transactions_processor.services.parsers.bank_parsers.pnc_bank_parser import
 )
 from transactions_processor.services.parsers.bank_parsers.popular_bank_parser import (
     PopularBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.prosperity_bank_parser import (
+    ProsperityBankParser,
 )
 from transactions_processor.services.parsers.bank_parsers.regions_bank_parser import (
     RegionsBankParser,
@@ -1146,6 +1152,38 @@ def test_parse_bhi_bank_feeds():
     )
     parser = BHIBankFeedParser()
     transactions = parser.parse_transactions(file, "bhi_bank_feed.xlsx")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_prosperity_bank():
+    file_path = "tests/data/banks/prosperity_bank/prosperity_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 12, 2, 0, 0),
+        description="ACH Deposit UHC COMMUNITY PL HCCLAIMPMT *****5588 910000",
+        amount=2136.5,
+        uuid="",
+    )
+    parser = ProsperityBankParser()
+    transactions = parser.parse_transactions(file, "prosperity_bank.pdf")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_city_wide_bank_parser():
+    file_path = "tests/data/banks/city_wide_bank/city_wide_bank.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2025, 1, 2, 0, 0),
+        description="Savvy Mobile Deposit #1890233082",
+        amount=12244.97,
+        uuid="",
+    )
+    parser = CityWideBankParser()
+    transactions = parser.parse_transactions(file, "city_wide_bank.pdf")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
