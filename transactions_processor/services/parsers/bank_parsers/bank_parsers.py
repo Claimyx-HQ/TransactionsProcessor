@@ -47,6 +47,9 @@ from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_f
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.city_wide_bank_parser import (
+    CityWideBankParser,
+)
 from transactions_processor.services.parsers.bank_parsers.connect_one_bank_parser import (
     ConnectOneBankParser,
 )
@@ -103,6 +106,9 @@ from transactions_processor.services.parsers.bank_parsers.pnc_bank_parser import
 )
 from transactions_processor.services.parsers.bank_parsers.popular_bank_parser import (
     PopularBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.prosperity_bank_parser import (
+    ProsperityBankParser,
 )
 from transactions_processor.services.parsers.bank_parsers.regions_bank_parser import (
     RegionsBankParser,
@@ -209,4 +215,6 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "webster": WebsterBankParser,
     "wells_fargo": WellsFargoBankParser,
     "yad_bank_feeds": YadBankFeedsParser,
+    "city_wide_bank": CityWideBankParser,
+    "prosperity_bank": ProsperityBankParser,
 }
