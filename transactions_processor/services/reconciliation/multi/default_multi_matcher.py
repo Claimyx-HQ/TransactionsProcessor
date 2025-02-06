@@ -41,6 +41,7 @@ class DefaultMultiMatcher(MultiMatcher):
         matches = {}
 
         for i, target_transaction in enumerate(original_transactions_chunk):
+            # TODO: understand why processes update the same progress amount at the beginning
             progress_dict[process_id] = (i + 1) / len(original_transactions_chunk)
             if update_progress:
                 current_progress = (
@@ -225,7 +226,8 @@ class DefaultMultiMatcher(MultiMatcher):
         max_matches: int,
         update_progress: Callable[[float], None] | None = None,
     ) -> Dict[float, List[List[float]]]:
-        num_processes = multiprocessing.cpu_count() * 2
+        # num_processes = multiprocessing.cpu_count() * 2
+        num_processes = multiprocessing.cpu_count()
         print(f"num_processes: {num_processes}")
 
         chunk_size = max(1, len(target_transaction_amounts) // num_processes)

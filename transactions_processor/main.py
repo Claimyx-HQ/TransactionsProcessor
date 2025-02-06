@@ -93,6 +93,12 @@ async def async_handler(event, context):
             )
         )
 
+        transaction_matcher.set_update_progress(
+            lambda progress: update_progress(
+                client_id, "Reconciling", progress, str(analysis_request.id)
+            )
+        )
+
         logger.debug("Retrieving files from s3")
 
         update_progress(client_id, "Processing", 0, str(analysis_request.id))
