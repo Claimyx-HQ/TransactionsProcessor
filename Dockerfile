@@ -11,16 +11,16 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 # Copy the poetry.lock and pyproject.toml files to the container
 COPY poetry.lock ./
 COPY pyproject.toml ./
+# Copy the rest of your application code to the container
+COPY . ./
 
 # Install Poetry
 RUN pip install poetry
 
 # Create a virtual environment and install dependencies
 RUN poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi --only main
+  poetry install --no-interaction --no-ansi --only main
 
-# Copy the rest of your application code to the container
-COPY . ./
 
 # Copy the .env file to the container
 #COPY .env ./
