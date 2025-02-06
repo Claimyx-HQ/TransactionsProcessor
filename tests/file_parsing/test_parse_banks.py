@@ -53,6 +53,9 @@ from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_f
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.city_wide_bank_feeds_parser import (
+    CityWideBankFeedsParser,
+)
 from transactions_processor.services.parsers.bank_parsers.city_wide_bank_parser import (
     CityWideBankParser,
 )
@@ -1184,6 +1187,22 @@ def test_parse_city_wide_bank_parser():
     )
     parser = CityWideBankParser()
     transactions = parser.parse_transactions(file, "city_wide_bank.pdf")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_city_wide_bank_feeds_parser():
+    file_path = "tests/data/banks/city_wide_bank/city_wide_bank_feeds.xls"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2025, 1, 31, 0, 0),
+        description="NDC SWEEP        FAC N022 HARMONY CARE AT BEAUMO",
+        amount=4755.29,
+        uuid="",
+    )
+    parser = CityWideBankFeedsParser()
+    transactions = parser.parse_transactions(file, "city_wide_bank_feeds.xls")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
