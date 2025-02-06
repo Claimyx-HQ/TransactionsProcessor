@@ -47,6 +47,9 @@ from transactions_processor.services.parsers.bank_parsers.citadel_webster_bank_f
 from transactions_processor.services.parsers.bank_parsers.citizens_bank_parser import (
     CitizensBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.city_wide_bank_feeds_parser import (
+    CityWideBankFeedsParser,
+)
 from transactions_processor.services.parsers.bank_parsers.city_wide_bank_parser import (
     CityWideBankParser,
 )
@@ -216,5 +219,6 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "wells_fargo": WellsFargoBankParser,
     "yad_bank_feeds": YadBankFeedsParser,
     "city_wide_bank": CityWideBankParser,
+    "city_wide_bank_feeds": CityWideBankFeedsParser,
     "prosperity_bank": ProsperityBankParser,
 }
