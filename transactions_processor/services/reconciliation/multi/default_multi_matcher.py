@@ -226,8 +226,7 @@ class DefaultMultiMatcher(MultiMatcher):
         max_matches: int,
         update_progress: Callable[[float], None] | None = None,
     ) -> Dict[float, List[List[float]]]:
-        # num_processes = multiprocessing.cpu_count() * 2
-        num_processes = multiprocessing.cpu_count()
+        num_processes = multiprocessing.cpu_count() * 2
         print(f"num_processes: {num_processes}")
 
         chunk_size = max(1, len(target_transaction_amounts) // num_processes)
