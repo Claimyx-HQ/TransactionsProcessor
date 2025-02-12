@@ -38,7 +38,7 @@ from loguru import logger
 
 
 bank_name = "Bank"
-system_name = "PharmBills System"
+system_name = "Billing System"
 bucket_name = "bankrectool-files"
 
 

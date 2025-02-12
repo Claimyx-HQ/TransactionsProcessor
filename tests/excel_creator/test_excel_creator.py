@@ -22,7 +22,7 @@ from transactions_processor.services.reconciliation.transactions_matcher import 
 def test_create_transaction_excel2():  # TODO: Correct the mock data, create_transaction_excel() works with Transaction model and not dict
     workbook_name = "tests/output_tests_data/transactions_output.xlsx"
     bank_name = "Bank"
-    system_name = "PharmBills System"
+    system_name = "Billing System"
     raw_system_file = "tests/data/excel_creation/PCC report.pdf"
     with open(raw_system_file, "rb") as f:
         system_file = io.BytesIO(f.read())

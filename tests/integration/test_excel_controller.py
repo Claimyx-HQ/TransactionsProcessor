@@ -93,7 +93,7 @@ def create_the_test(
 #     system_file_path = "tests/data/bankst.xls"
 #     workbook_name = "tests/output_tests_data/united_transactions_output.xlsx"
 #     bank_name = "Bank"
-#     system_name = "PharmBills System"
+#     system_name = "EHR System"
 #     transaction_matcher = TransactionMatcher()
 #     bank_parser = UnitedBankParser()
 #     system_parser = PharmBillsParser()
@@ -115,7 +115,7 @@ def create_the_test(
 #     system_file_path = "tests/data/system/NCS/bankst.xls"
 #     workbook_name = "tests/output_tests_data/forbright_transactions_output.xlsx"
 #     bank_name = "Bank"
-#     system_name = "PharmBills System"
+#     system_name = "EHR System"
 #     transaction_matcher = TransactionMatcher()
 #     bank_parser = ForbrightBankParser()
 #     system_parser = PCCParser()
