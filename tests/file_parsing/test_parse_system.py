@@ -16,7 +16,7 @@ from transactions_processor.services.parsers.system_parsers.pcc.pcc_parser impor
 
 
 def test_parse_ncs_file():
-    file_path = "tests/data/system/NCS/bankst.xls"
+    file_path = "tests/data/system/NCS/version_1/ncs.xls"
     file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2023, 10, 1, 0, 0),
@@ -40,15 +40,65 @@ def test_parse_ncs_file():
     file.close()
 
 
+def test_parse_ncs_file2():
+    file_path = "tests/data/system/NCS/version_2/ncs.xlsx"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 12, 1, 0, 0),
+        description="Atlantic Union SNF",
+        amount=0.0,
+        uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=18923,
+        origin="ncs.xls",
+    )
+    parser = NCSParser()
+
+    transactions = parser.parse_transactions(file, "ncs.xls")
+    parsed_transaction = transactions[0]
+
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
+
+    file.close()
+
+
 def test_parse_ncs_pdf_file():
-    file_path = "tests/data/system/NCS/ncs.pdf"
+    file_path = "tests/data/system/NCS/version_1/ncs.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2024, 9, 1, 0, 0),
         description="BCBS In Process 07/01",
         amount=599.76,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
-        batch_number=None,
+        batch_number="6726",
+        origin="ncs.pdf",
+    )
+    parser = NCSParser()
+
+    transactions = parser.parse_transactions(file, "ncs.pdf")
+    parsed_transaction = transactions[0]
+
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
+
+    file.close()
+
+
+def test_parse_ncs_pdf_file2():
+    file_path = "tests/data/system/NCS/version_2/ncs.pdf"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 1, 1, 0, 0),
+        description="CC",
+        amount=1000.0,
+        uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number="25641",
         origin="ncs.pdf",
     )
     parser = NCSParser()
@@ -89,6 +139,7 @@ def test_parse_pcc_pdf():
 
     file.close()
 
+
 def test_parse_pcc_pdf2():
     file_path = "tests/data/system/PCC/PCC2.pdf"
     file = open(file_path, "rb")
@@ -104,7 +155,7 @@ def test_parse_pcc_pdf2():
 
     transactions = parser.parse_transactions(file, "pcc.pdf")
     parsed_transaction = transactions[1]
-    
+
     assert first_transaction.date == parsed_transaction.date
     assert first_transaction.description == parsed_transaction.description
     assert first_transaction.amount == parsed_transaction.amount
