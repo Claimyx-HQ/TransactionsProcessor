@@ -257,7 +257,7 @@ def test_parse_connect_one_bank():
     file_path = "tests/data/banks/connect_one/connect_one_bank.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 2, 8, 0, 0),
+        date=datetime(2025, 2, 8, 0, 0),
         description="Maintenance Fee Rfnd",
         amount=100.59,
         uuid="dc924399-5628-4884-8180-7a3eb6d52a25",
