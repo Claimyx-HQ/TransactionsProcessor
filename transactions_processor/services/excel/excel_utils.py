@@ -39,11 +39,11 @@ class ExcelHelpers:
         )
         if format is not None:
             for i in range(6):
-                worksheet[f"{get_column_letter(column_start_index + i)}{row_index}"].fill = (
-                    format
-                )
+                worksheet[
+                    f"{get_column_letter(column_start_index + i)}{row_index}"
+                ].fill = format
         # Set number format for amount
-        worksheet[amount_cell].number_format = '#,##0.00'
+        worksheet[amount_cell].number_format = "#,##0.00"
 
     @staticmethod
     def _write_total_row(
@@ -63,20 +63,24 @@ class ExcelHelpers:
         # Write total amount in the 'Amount' column
         worksheet[amount_cell].value = total_amount
         worksheet[amount_cell].font = Font(bold=True)
-        worksheet[amount_cell].number_format = '#,##0.00'
+        worksheet[amount_cell].number_format = "#,##0.00"
 
         # Apply formatting to the total row
         for i in range(6):
             cell = f"{get_column_letter(column_start_index + i)}{row_index}"
-            worksheet[cell].fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
-            thin_border = Border(bottom=Side(style='thin'))
+            worksheet[cell].fill = PatternFill(
+                start_color="FFF2CC", end_color="FFF2CC", fill_type="solid"
+            )
+            thin_border = Border(bottom=Side(style="thin"))
             worksheet[cell].border = thin_border
 
-        return row_index  # Return the same row index as we have just written the total row
+        return (
+            row_index  # Return the same row index as we have just written the total row
+        )
 
     @staticmethod
     def _setup_excel(
-        worksheet: Worksheet, bank_name="Bank", system_name="PharmBills System"
+        worksheet: Worksheet, bank_name="Bank", system_name="Billing System"
     ):
         ExcelHelpers._setup_headers(
             worksheet=worksheet,
@@ -114,7 +118,7 @@ class ExcelHelpers:
 
     @staticmethod
     def _setup_headers(
-        worksheet: Worksheet, bank_name="Bank", system_name="PharmBills System"
+        worksheet: Worksheet, bank_name="Bank", system_name="Billing System"
     ):
         header_font = Font(bold=True)
         header_alignment = Alignment(horizontal="center", vertical="center")

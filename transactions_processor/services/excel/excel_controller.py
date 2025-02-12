@@ -16,7 +16,7 @@ class ExcelController:
         sorted_transactions,
         workbook_name: Union[str, None] = None,
         bank_name="Bank",
-        system_name="PharmBills System",
+        system_name="Billing System",
     ) -> Union[io.BytesIO, None]:
         output = io.BytesIO() if workbook_name is None else workbook_name
         workbook = openpyxl.Workbook()
