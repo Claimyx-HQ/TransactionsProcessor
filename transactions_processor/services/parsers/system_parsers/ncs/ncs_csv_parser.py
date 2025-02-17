@@ -18,7 +18,7 @@ class NCSCSVParser(CSVParser):
         file_name: str | None = "",
         file_key: str | None = None,
     ) -> List[Transaction]:
-        first_cell = self._get_first_excel_cell(file)
+        first_cell = self._get_first_excel_cell(file, file_name or "")
         if first_cell == "Date":
             self.date_col_index = 0
             self.description_col_indx = 1
@@ -26,8 +26,8 @@ class NCSCSVParser(CSVParser):
             self.batch_col_index = 7
         return super().parse_transactions(file, file_name, file_key)
 
-    def _get_first_excel_cell(self, file: BinaryIO) -> str:
-        file_extension = file.name.split(".")[-1]
+    def _get_first_excel_cell(self, file: BinaryIO, file_name: str) -> str:
+        file_extension = file_name.split(".")[-1]
         if file_extension == "xlsx":
             return get_xlsx_first_cell(file)
         elif file_extension == "xls":

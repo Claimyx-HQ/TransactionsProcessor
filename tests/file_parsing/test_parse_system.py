@@ -53,7 +53,7 @@ def test_parse_ncs_file2():
     )
     parser = NCSParser()
 
-    transactions = parser.parse_transactions(file, "ncs.xls")
+    transactions = parser.parse_transactions(file, "ncs.xlsx")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date
