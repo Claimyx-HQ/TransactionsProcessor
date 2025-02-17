@@ -2,8 +2,8 @@ from datetime import datetime
 from transactions_processor.schemas.transaction import Transaction
 
 
-bank_amounts = [100, 200, 300, 300]
-system_amounts = [50, 50, 120, 80, 200, 300]
+bank_amounts = [100, 200, 300, 300, 709.9]
+system_amounts = [50, 50, 120, 80, 200, 300, 101.25, 103.15, 302.1, 101.1, 102.3]
 
 bank_transactions = [
     Transaction(
