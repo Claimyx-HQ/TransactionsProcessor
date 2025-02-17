@@ -18,7 +18,10 @@ class NCSCSVParser(CSVParser):
         file_name: str | None = "",
         file_key: str | None = None,
     ) -> List[Transaction]:
-        first_cell = self._get_first_excel_cell(file, file_name or "")
+        # TODO: Check where file name could be None
+        if not file_name:
+            raise ValueError("file name is required")
+        first_cell = self._get_first_excel_cell(file, file_name)
         if first_cell == "Date":
             self.date_col_index = 0
             self.description_col_indx = 1

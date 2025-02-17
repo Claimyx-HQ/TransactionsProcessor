@@ -22,13 +22,13 @@ def test_find_one_to_many_matches():
 
     expected_dict = {
         100.0: [50.0, 50.0],
-        709.9: [101.25, 103.15, 302.1, 101.1, 102.3],
-        200.0: [200.0],
+        709.9: [101.1, 101.25, 102.3, 103.15, 302.1],
+        200.0: [80.0, 120.0],
         300.0: [300.0],
     }
 
     matched_values = _matched_to_values(matches)
-    # assert expected_dict == matched_values
+    assert expected_dict == matched_values
 
 
 def _matched_to_values(matched: ReconcilingMatches) -> Dict[float, List[float]]:

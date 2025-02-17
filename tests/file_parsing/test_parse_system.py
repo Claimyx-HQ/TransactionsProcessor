@@ -49,7 +49,7 @@ def test_parse_ncs_file2():
         amount=0.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=18923,
-        origin="ncs.xls",
+        origin="ncs.xlsx",
     )
     parser = NCSParser()
 
