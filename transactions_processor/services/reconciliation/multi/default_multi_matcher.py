@@ -56,17 +56,8 @@ class DefaultMultiMatcher(MultiMatcher):
                 possible_matches = ReconciliationUtils.find_matches_n_sum2(
                     origin_transactions_group, target_transaction, max_possibilities
                 )
-                # ReconciliationUtils.find_matches_n_sum(
-                #     origin_transactions_group,
-                #     target_transaction,
-                #     max_possibilities,
-                #     0,
-                #     [],
-                #     possible_matches,
-                # )
             if possible_matches:
                 matches[target_transaction] = possible_matches
-        # return matches
         conn.send(matches)
         conn.close()
 
