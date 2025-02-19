@@ -327,22 +327,16 @@ def find_matches(
         valid_bank_transactions, valid_system_transactions
     )
 
-    # TODO: this is a hack until excel parser will handle transactions instead of amounts
-    # perfect_matches = [
-    #     transaction[0].amount for transaction in matched_transactions.matched
-    # ]
-    # unmatched_bank_amounts = [
-    #     transaction.amount for transaction in matched_transactions.unmatched_bank
-    # ]
-    # unmatched_system_amounts = [
-    #     transaction.amount for transaction in matched_transactions.unmatched_system
-    # ]
-    # zero_and_negative_system_amounts = [
-    #     amount for amount in unmatched_system_amounts if amount <= 0
-    # ]
-    # unmatched_system_amounts = [
-    #     amount for amount in unmatched_system_amounts if amount > 0
-    # ]
+    zero_and_negative_system_amounts = [
+        transaction
+        for transaction in matched_transactions.unmatched_system
+        if transaction.amount <= 0
+    ]
+    unmatched_system_amounts = [
+        transaction
+        for transaction in matched_transactions.unmatched_system
+        if transaction.amount > 0
+    ]
 
     logger.debug(
         f"Matching complete, perfect matches: {len(matched_transactions.matched)}"
@@ -353,11 +347,11 @@ def find_matches(
 
     multi_matches = transaction_matcher.find_one_to_many_matches(
         matched_transactions.unmatched_bank,
-        matched_transactions.unmatched_system,
+        unmatched_system_amounts,
         max_matches=max_matches,
     )
 
-    # unmatched_system_amounts.extend(zero_and_negative_system_amounts)
+    multi_matches.unmatched_system.extend(zero_and_negative_system_amounts)
 
     logger.info(
         f"""
