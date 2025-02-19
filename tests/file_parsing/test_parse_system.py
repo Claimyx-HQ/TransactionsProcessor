@@ -45,7 +45,7 @@ def test_parse_ncs_file2():
     file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2024, 12, 1, 0, 0),
-        description="Atlantic Union SNF",
+        description="Really should be PNC. trans to PC acct",
         amount=0.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
         batch_number=18923,
@@ -54,6 +54,31 @@ def test_parse_ncs_file2():
     parser = NCSParser()
 
     transactions = parser.parse_transactions(file, "ncs.xlsx")
+    parsed_transaction = transactions[0]
+
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
+
+    file.close()
+
+
+def test_parse_ncs_file2_2():
+    file_path = "tests/data/system/NCS/version_2/ncs2.xlsx"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2025, 1, 2, 0, 0),
+        description="RFMS",
+        amount=1067.44,
+        uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=18819,
+        origin="ncs2.xlsx",
+    )
+    parser = NCSParser()
+
+    transactions = parser.parse_transactions(file, "ncs2.xlsx")
     parsed_transaction = transactions[0]
 
     assert first_transaction.date == parsed_transaction.date

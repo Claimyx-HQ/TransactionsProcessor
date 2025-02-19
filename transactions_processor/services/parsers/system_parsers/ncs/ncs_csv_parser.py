@@ -24,9 +24,15 @@ class NCSCSVParser(CSVParser):
         first_cell = self._get_first_excel_cell(file, file_name)
         if first_cell == "Date":
             self.date_col_index = 0
-            self.description_col_indx = 1
+            self.description_col_indx = 4
             self.amount_col_index = 3
             self.batch_col_index = 7
+        elif first_cell == "Company":
+            self.date_col_index = 1
+            self.description_col_indx = 5
+            self.amount_col_index = 4
+            self.batch_col_index = 8
+
         return super().parse_transactions(file, file_name, file_key)
 
     def _get_first_excel_cell(self, file: BinaryIO, file_name: str) -> str:
