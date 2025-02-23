@@ -36,7 +36,7 @@ class NCSCSVParser(CSVParser):
         return super().parse_transactions(file, file_name, file_key)
 
     def _get_first_excel_cell(self, file: BinaryIO, file_name: str) -> str:
-        file_extension = file_name.split(".")[-1]
+        file_extension = file_name.split(".")[-1].lower()
         if file_extension == "xlsx":
             return get_xlsx_first_cell(file)
         elif file_extension == "xls":

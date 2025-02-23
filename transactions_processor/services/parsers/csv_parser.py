@@ -9,6 +9,7 @@ from transactions_processor.services.parsers.transactions_parser import (
 import io
 import pandas as pd
 from loguru import logger
+import chardet
 
 
 filtered_transaction_descriptions = [
@@ -71,10 +72,19 @@ class CSVParser(TransactionsParser):
             file.seek(0)
             return excel_df
         except Exception as e:
-            logger.info(f"Failed to parse file as Excel: {e}\nTrying as CSV")
-            file.seek(0)
             try:
-                excel_df = pd.read_csv(file)
+                logger.info(f"Failed to parse file as Excel: {e}\nTrying as CSV")
+                file.seek(0)
+                sample_bytes = file.read(1024)
+                file.seek(0)
+
+                if chardet:
+                    detection = chardet.detect(sample_bytes)
+                    encoding = detection.get("encoding", "utf-8")
+                else:
+                    encoding = "utf-8"
+
+                excel_df = pd.read_csv(file, encoding=encoding)
                 logger.info(f"Successfully parsed CSV data")
                 return excel_df
 

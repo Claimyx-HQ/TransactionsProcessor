@@ -40,6 +40,31 @@ def test_parse_ncs_file():
     file.close()
 
 
+def test_parse_ncs_file_bad_foregin_encoding():
+    file_path = "tests/data/system/NCS/version_1/ncs-foreign-encoding.csv"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2024, 9, 1, 0, 0),
+        description="Anthem (part of 66,187.59)",
+        amount=8023.03,
+        uuid="80164d55-8276-4802-96d0-7b14889d2908",
+        batch_number=5237,
+        origin="ncs-foreign-encoding.csv",
+    )
+    parser = NCSParser()
+
+    transactions = parser.parse_transactions(file, "ncs-foreign-encoding.csv")
+    parsed_transaction = transactions[0]
+
+    assert first_transaction.date == parsed_transaction.date
+    assert first_transaction.description == parsed_transaction.description
+    assert first_transaction.amount == parsed_transaction.amount
+    assert first_transaction.batch_number == parsed_transaction.batch_number
+    assert first_transaction.origin == parsed_transaction.origin
+
+    file.close()
+
+
 def test_parse_ncs_file2():
     file_path = "tests/data/system/NCS/version_2/ncs.xlsx"
     file = open(file_path, "rb")
