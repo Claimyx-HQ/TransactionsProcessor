@@ -19,7 +19,7 @@ class NCSParser(TransactionsParser):
     def parse_transactions(
         self, file: BinaryIO, file_name: str | None, file_key: str | None = None
     ) -> List[Transaction]:
-        file_extension = file_name.split(".")[-1] if file_name else None
+        file_extension = file_name.split(".")[-1].lower() if file_name else None
         if not file_extension:
             raise ValueError("unknown file type")
         if file_extension.lower() == "pdf":
