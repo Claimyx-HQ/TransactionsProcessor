@@ -68,6 +68,9 @@ from transactions_processor.services.parsers.bank_parsers.customers_bank_parser 
 from transactions_processor.services.parsers.bank_parsers.daca_bank_parser import (
     DACABankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.fifth_third_bank_feed_parser import (
+    FifthThirdBankFeedParser,
+)
 from transactions_processor.services.parsers.bank_parsers.first_financial_bank_parser import (
     FirstFinancialBankParser,
 )
@@ -1203,6 +1206,22 @@ def test_parse_city_wide_bank_feeds_parser():
     )
     parser = CityWideBankFeedsParser()
     transactions = parser.parse_transactions(file, "city_wide_bank_feeds.xls")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_fifth_third_bank_feeds():
+    file_path = "tests/data/banks/fifth_third_bank/fifth_third_bank_feed.csv"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2025, 2, 28, 0, 0),
+        description="UPMC HEALTH PLAN PAYMENTS PAYABLES 1232813536 PLATINUM RIDGE CENTER TRN*1*E2657436*1232813536  022825",
+        amount=28096.92,
+        uuid="",
+    )
+    parser = FifthThirdBankFeedParser()
+    transactions = parser.parse_transactions(file, "fifth_third_bank_feed.csv")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
