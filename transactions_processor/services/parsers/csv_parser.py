@@ -68,7 +68,7 @@ class CSVParser(TransactionsParser):
     def _parse_excel(self, file: BinaryIO) -> pd.DataFrame:
         try:
             logger.info("Trying to parse file as Excel")
-            excel_df = pd.read_excel(file, sheet_name=0)
+            excel_df = pd.read_excel(file, sheet_name=0, header=None)
             file.seek(0)
             return excel_df
         except Exception as e:
@@ -84,7 +84,7 @@ class CSVParser(TransactionsParser):
                 else:
                     encoding = "utf-8"
 
-                excel_df = pd.read_csv(file, encoding=encoding)
+                excel_df = pd.read_csv(file, encoding=encoding, header=None)
                 logger.info(f"Successfully parsed CSV data")
                 return excel_df
 
