@@ -189,7 +189,7 @@ def test_parse_forbright_bank():
     file_path = "tests/data/banks/forbright/forbright_bank_4.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 3, 4, 0, 0),
+        date=datetime(2025, 3, 4, 0, 0),
         description="' Cash Mgmt Trsfr Cr",
         amount=7903.0,
         uuid="80164d55-8276-4802-96d0-7b14889d2908",
@@ -235,7 +235,7 @@ def test_parse_flagstar_bank():
     file_path = "tests/data/banks/flagstar/flagstar_bank.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 3, 4, 0, 0),
+        date=datetime(2025, 3, 4, 0, 0),
         description="ACH DEPOSITck/ref no.4301137",
         amount=3000.0,
         uuid="957be6d2-2419-4443-90a2-213110210e9d",
@@ -283,7 +283,7 @@ def test_parse_servis1st_bank():
     file_path = "tests/data/banks/servis1st/servis1st_bank.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 3, 1, 0, 0),
+        date=datetime(2025, 3, 1, 0, 0),
         description="From DDA 1110372735,To DDA 111",
         amount=190000.0,
         uuid="4f9d028b-10db-4a1b-be79-09b75b482e77",
@@ -578,7 +578,7 @@ def test_parse_citizens_bank():
     file_path = "tests/data/banks/citizens/citizens_bank_2.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 3, 1, 0, 0),
+        date=datetime(2025, 3, 1, 0, 0),
         description="Square Inc 240301P2 240301 L21564304743",
         amount=384.85,
         uuid="2ef3f67e-583e-40f4-bb19-f76dcbaff0c7",
@@ -783,7 +783,7 @@ def test_parse_regions_bank():
     file_path = "tests/data/banks/regions/regions_bank_1.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 3, 1, 0, 0),
+        date=datetime(2025, 3, 1, 0, 0),
         description="NDC SweepFac C893  Silver Stream",
         amount=8557.0,
         uuid="94769be0-2915-434f-b211-ae074c1cc1f4",
@@ -1211,13 +1211,29 @@ def test_parse_city_wide_bank_feeds_parser():
     file.close()
 
 
-def test_parse_fifth_third_bank_feeds():
-    file_path = "tests/data/banks/fifth_third_bank/fifth_third_bank_feed.csv"
+def test_parse_fifth_third_bank_feeds_v1():
+    file_path = "tests/data/banks/fifth_third_bank/fifth_third_bank_feed_v1.csv"
     file = open(file_path, "rb")
     first_transaction = Transaction(
         date=datetime(2025, 2, 28, 0, 0),
         description="UPMC HEALTH PLAN PAYMENTS PAYABLES 1232813536 PLATINUM RIDGE CENTER TRN*1*E2657436*1232813536  022825",
         amount=28096.92,
+        uuid="",
+    )
+    parser = FifthThirdBankFeedParser()
+    transactions = parser.parse_transactions(file, "fifth_third_bank_feed.csv")
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
+
+def test_parse_fifth_third_bank_feeds_v2():
+    file_path = "tests/data/banks/fifth_third_bank/fifth_third_bank_feed_v2.csv"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2025, 3, 3, 0, 0),
+        description="ACH Credit Received",
+        amount=5120,
         uuid="",
     )
     parser = FifthThirdBankFeedParser()
