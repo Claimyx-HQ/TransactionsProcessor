@@ -146,36 +146,35 @@ from transactions_processor.services.parsers.bank_parsers.truist_bank_parser imp
 from transactions_processor.services.parsers.bank_parsers.united_bank_parser import (
     UnitedBankParser,
 )
-
 from transactions_processor.services.parsers.bank_parsers.vista_bank_parser import (
     VistaBankParser,
 )
-
-
 from transactions_processor.services.parsers.bank_parsers.vera_bank_parser import (
     VeraBankParser,
 )
-
 from transactions_processor.services.parsers.bank_parsers.valley_bank_parser import (
     ValleyBankParser,
 )
-
 from transactions_processor.services.parsers.bank_parsers.webster_bank_parser import (
     WebsterBankParser,
 )
 from transactions_processor.services.parsers.bank_parsers.wells_fargo_bank_parser import (
     WellsFargoBankParser,
 )
-
 from transactions_processor.services.parsers.bank_parsers.yad_bank_feeds_parser import (
     YadBankFeedsParser,
 )
-
 from transactions_processor.services.parsers.bank_parsers.workday_bank_feeds_parser import (
     WorkdayBankFeedsParser,
 )
 from transactions_processor.services.parsers.bank_parsers.mt_bank_parser import (
     MTBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.snb_bank_parser import (
+    SnbBankParser,
+)
+from transactions_processor.services.parsers.bank_parsers.first_state_bank_parser import (
+    FirstStateBankParser,
 )
 
 
@@ -439,7 +438,7 @@ def test_parse_popular_bank():
     file_path = "tests/data/banks/popular/Popular.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 4, 1, 0, 0),
+        date=datetime(2025, 4, 1, 0, 0),
         description="Preauthorized Credit",
         amount=1399.24,
         uuid="4f9d028b-10db-4a1b-be79-09b75b482e77",
@@ -493,7 +492,7 @@ def test_parse_huntington_bank():
     file_path = "tests/data/banks/huntington/Huntington.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 4, 2, 0, 0),
+        date=datetime(2025, 4, 2, 0, 0),
         description="ECHO-AMERIHEALTH HCCLAIMPMT 240402 264320480 TRN*1*1131116478*1341858379\\",
         amount=333678.01,
         uuid="4f9d028b-10db-4a1b-be79-09b75b482e77",
@@ -510,7 +509,7 @@ def test_parse_cibc_bank():
     file_path = "tests/data/banks/cibc/CIBC.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 4, 1, 0, 0),
+        date=datetime(2025, 4, 1, 0, 0),
         description="Preauthorized Credit",
         amount=5664.32,
         uuid="4f9d028b-10db-4a1b-be79-09b75b482e77",
@@ -544,7 +543,7 @@ def test_parse_midwest_bank():
     file_path = "tests/data/banks/midwest/Midwest.pdf"
     file = open(file_path, "rb")
     first_transaction = Transaction(
-        date=datetime(2024, 4, 1, 0, 0),
+        date=datetime(2025, 4, 1, 0, 0),
         description="' Preauthorized Credit",
         amount=276.13,
         uuid="4f9d028b-10db-4a1b-be79-09b75b482e77",
@@ -910,7 +909,8 @@ def test_parse_bank_of_bok_financial():  # This bank has the same parser that Ba
         origin="BOK Financial Operating.pdf",
     )
     parser = BankOfTexasParser()
-    transactions = parser.parse_transactions(file, "BOK Financial Operating.pdf")
+    transactions = parser.parse_transactions(
+        file, "BOK Financial Operating.pdf")
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
@@ -1241,3 +1241,48 @@ def test_parse_fifth_third_bank_feeds_v2():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+
+
+def test_parse_snb_bank():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/snb/snb_bank_1.pdf"
+    first_transaction = Transaction(
+        date=datetime(2025, 3, 3, 0, 0),
+        description='HCCLAIMPMT Wellpoint ICSC TRN* 1* 3263319782* 1452485907',
+        amount=711.41,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = SnbBankParser()
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_first_state_bank_1():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/first_state/first_state_bank_1.pdf"
+    first_transaction = Transaction(
+        date=datetime(2025, 3, 4, 0, 0),
+        description='HEALTH HUMAN SVC 17562154561012 HCCLAIMPMT 0026794370',
+        amount=1353.38,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = FirstStateBankParser()
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+
+
+def test_parse_first_state_bank_2():
+    logger = logging.getLogger(__name__)
+    file_path = "tests/data/banks/first_state/first_state_bank_2.pdf"
+    first_transaction = Transaction(
+        date=datetime(2025, 3, 4, 0, 0),
+        description='NDC SWEEP FAC N358 9680013061',
+        amount=7720.15,
+        uuid='4f9d028b-10db-4a1b-be79-09b75b482e77',
+    )
+    parser = FirstStateBankParser()
+    transactions = parser.parse_transactions(file_path)
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
