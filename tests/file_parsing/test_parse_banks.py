@@ -1256,7 +1256,6 @@ def test_parse_security_state_bank_feeds():
     )
     parser = SecurityStateBankFeedParser()
     transactions = parser.parse_transactions(file, "security_state_bank_south_texas.csv")
-    print(len(transactions))
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
