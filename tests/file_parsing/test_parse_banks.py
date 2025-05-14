@@ -122,6 +122,7 @@ from transactions_processor.services.parsers.bank_parsers.prosperity_bank_parser
 from transactions_processor.services.parsers.bank_parsers.regions_bank_parser import (
     RegionsBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.security_state_bank_parser import SecurityStateBankFeedParser
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
@@ -1241,3 +1242,22 @@ def test_parse_fifth_third_bank_feeds_v2():
     parsed_transaction = transactions[0]
     _check_the_test(first_transaction, parsed_transaction)
     file.close()
+
+def test_parse_security_state_bank_feeds():
+    file_path = "tests/data/banks/security_state_bank_south_texas/security_state_bank_south_texas.csv"
+    file = open(file_path, "rb")
+    first_transaction = Transaction(
+        date=datetime(2025, 4, 1, 0, 0),
+        description="Deposit",
+        amount=4884.0,
+        uuid="",
+        batch_number="20250401-000000000870000317752",
+        origin="100103043",
+    )
+    parser = SecurityStateBankFeedParser()
+    transactions = parser.parse_transactions(file, "security_state_bank_south_texas.csv")
+    print(len(transactions))
+    parsed_transaction = transactions[0]
+    _check_the_test(first_transaction, parsed_transaction)
+    file.close()
+
