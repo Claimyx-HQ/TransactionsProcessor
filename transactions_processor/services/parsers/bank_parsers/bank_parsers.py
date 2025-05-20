@@ -119,6 +119,7 @@ from transactions_processor.services.parsers.bank_parsers.prosperity_bank_parser
 from transactions_processor.services.parsers.bank_parsers.regions_bank_parser import (
     RegionsBankParser,
 )
+from transactions_processor.services.parsers.bank_parsers.security_state_bank_parser import SecurityStateBankFeedParser
 from transactions_processor.services.parsers.bank_parsers.servis1st_bank_parser import (
     Servis1stBankParser,
 )
@@ -225,4 +226,5 @@ bank_parsers: Dict[str, type[TransactionsParser]] = {
     "city_wide_bank_feeds": CityWideBankFeedsParser,
     "prosperity_bank": ProsperityBankParser,
     "fifth_third_bank_feed": FifthThirdBankFeedParser,
+    "security_state_bank_feed": SecurityStateBankFeedParser,
 }
