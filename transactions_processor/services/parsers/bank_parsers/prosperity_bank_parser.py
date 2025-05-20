@@ -11,18 +11,19 @@ class ProsperityBankParser(PDFParser):
         self.valid_table = False
 
     def _parse_row(self, row: List[Any], table_index: int) -> Union[Transaction, None]:
-        section_title = str(row[0])
+        section_title = str(row[0]) + str(row[1])
         if not self.valid_table:
             if section_title.startswith("DEPOSITS"):
                 self.valid_table = True
         else:
-            if section_title.startswith("OTHER"):
+            if section_title.startswith("OTHER DEBITS"):
                 self.valid_table = False
-            date_str = row[0]
-            if valid_date(date_str, "%d/%m/%Y") and self.valid_table:
-                pass
-                description_str, amount_str = row[1], row[2]
-                amount = parse_amount(amount_str)
-                if valid_amount(amount):
-                    return Transaction.from_raw_data(date_str, description_str, amount)
+        date_str = row[0]
+        if valid_date(date_str, "%m/%d/%Y") and self.valid_table:
+            pass
+            description_str, amount_str = row[1], row[2]
+            amount = parse_amount(amount_str)
+            if valid_amount(amount):
+                transaction = Transaction.from_raw_data(date_str, description_str, amount)
+                return transaction
         return None
